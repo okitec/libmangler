@@ -1,0 +1,27 @@
+# HTMLs are usually generated from Markdown files.
+*.html
+
+# This is just an example file tree for the books.
+data/
+
+##### ANDROID #####
+# Taken from http://stackoverflow.com/questions/24902538/how-to-add-android-project-to-git
+
+# object files
+*.apk
+*.ap_
+*.dex
+*.class
+
+# generated files and config
+client/bin/
+client/gen/
+client/local.properties
+
+# Eclipse stuff - matter of debate; should stay in for now
+#.classpath
+#.project
+#.settings
+
+proguard/
+.metadata/
