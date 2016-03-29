@@ -112,7 +112,7 @@ Changelog der Bibliotheksverwaltung
 	könnte in Go geschrieben werden, aber Go kann bisher keine UI, also wäre
 	ein Java/Go-Mix nötig.
 
-29 03 2016: [GIT] [GO] [SPEC]
+29 03 2016: [GIT] [GO] [SPEC] [SRV]
 	libmangler wird ab sofort mit Git verwaltet. Ich habe gerade .gitignore
 	vorbereitet.
 
@@ -133,3 +133,7 @@ Changelog der Bibliotheksverwaltung
 	Die Spezifikation ist jetzt wieder komplett aktuell. Die Kommandos des
 	Protokolls sind nun auch schön formatiert. Der erste Commit sollte gut
 	sein.
+
+	Ich habe ein Skelett für den Server geschrieben, der auf manche Zeichen
+	mit einer bestimmten Aushabe reagiert ("What?", ...). Also ein temporärer
+	Chatbot.
