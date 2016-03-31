@@ -137,3 +137,10 @@ Changelog der Bibliotheksverwaltung
 	Ich habe ein Skelett für den Server geschrieben, der auf manche Zeichen
 	mit einer bestimmten Aushabe reagiert ("What?", ...). Also ein temporärer
 	Chatbot.
+
+01 04 2016: [LEXER] [SIMPLE CMDS]
+	Nach einem eher missglückten Versuch, einen angenehmen Lexer nach Rob Pikes
+	Methode zu schreiben, habe ich heute die Handle-Loop verbessert und die
+	simplen Kommandos v und q implementiert. Simple Commands sind diejenigen
+	Befehle, die nicht mit einer Selektion arbeiten. Die Protokollversion ist
+	jetzt -1, da nicht das ganze Protokoll gehandled wird.

@@ -1,4 +1,4 @@
-/* libmangler server is naught but a chatbot at the moment */
+/* Manglersrv implements the v and q simple commands at the moment. */
 package main
 
 import (
@@ -6,52 +6,59 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
+	"unicode"
 )
 
+// Protocol constants
 const (
-	protoVersion = 2
+	protoVersion = -1
 	protoPort    = 40000
 )
 
-// handle handles a network connection and chats with the client
+// handle handles a network connection and chats with the client.
 func handle(conn net.Conn) {
 	defer conn.Close()
 	defer log.Println("client", conn.RemoteAddr(), "disconnected")
 
-handle:
+	buf := make([]byte, 128)
 	for {
-		buf := make([]byte, 64)
 		n, err := conn.Read(buf)
+
+		s := string(buf[0:n])
+	parse:
+		for _, r := range s {
+			if unicode.IsSpace(r) {
+				continue
+			}
+
+			switch r {
+			case '\n':
+				break parse
+			case 'q':
+				// We must handle QUIT here to avoid closing the connection both
+				// in the deferred call and in cmd.go.
+				return
+			case 'A', 'a', 'u', 'v':
+				// 'Simple' commands not operating on selections.
+
+				args := strings.Fields(s)
+
+				fn := simpleCmdtab[r]
+				err := fn(conn, args)
+				if err != nil {
+					log.Printf("cmd %c: %v", r, err)
+				}
+				break parse
+			}
+		}
+
 		if err != nil {
 			if err != io.EOF {
 				log.Println("conn.Read error:", err)
-				return
-			} else if err == io.EOF && n == 0 {
-				return
 			}
-		}
 
-		// Empty message?
-		if n == 0 {
-			continue
-		}
-
-		for i := 0; i < len(buf); {
-			switch buf[i] {
-			case ' ': // XXX do general whitespace check
-				i++
-			case 'h':
-				fmt.Fprintln(conn, "Be welcomed, friend of libmangler!")
-				continue handle
-			case 'q':
-				fmt.Fprintln(conn, "Farewell, milord!")
-				return
-			case '\n':
-				continue handle
-			default:
-				fmt.Fprintln(conn, "What?")
-				continue handle
-			}
+			return
 		}
 	}
 }
