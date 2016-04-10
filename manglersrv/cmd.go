@@ -8,7 +8,7 @@ import (
 )
 
 // simpleCmdFn describes a 'simple' command that does not work on selections.
-// Examples are A, a, u, v and q. Because we must not close the rwection here
+// Examples are A, a, u, v and q. Because we must not close the connection here
 // (handle has the close deferred already), q is implemented in handle() directly.
 type simpleCmdFn func(rw io.ReadWriter, args []string) error
 
