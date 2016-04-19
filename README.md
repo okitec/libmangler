@@ -1,10 +1,8 @@
-W-Seminar-Projekt Bibliotheksverwaltung
-=======================================
+W-Seminar Android: Fachbibliotheksverwaltung
+============================================
 
-Dieses Verzeichnis soll die Seminararbeit, den Source der App (in Java)
-und den Source des Servers (in Go) beinhalten. Die Spezifikation ist
-auch enthalten.
+*This is a school project. The documentation and project paper are written in German.*
 
-Der Code ist durchgängig auf Englisch, die Dokumentation auf Deutsch,
-auch wenn ich es gerne anders machen würde.
- 
+Dieses Projekt realisiert ein Fachbibliothekssystem mit einem in Java geschriebenen
+Android-Client und einem in Go geschriebenen Server. Das Protokoll ist minimalistisch
+gehalten (siehe Spezifikation).
