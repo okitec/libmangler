@@ -151,15 +151,51 @@ sind, kann man alle filtern, die zum selben User gehören, etc.
 
 *Beschreibung*
 
-Gibt alle Informationen zu jedem Eintrag in *Dot* aus.
+Gibt alle Informationen zu jedem Eintrag in *Dot* aus. Das verwendete Format ist JSON.
+Die folgenden Beispiele dienen als Definitionen:
 
-		id	594
-		isbn	978-3-898664-536-2
-		author	Jon Erickson
-		title	Hacking: Die Kunst des Exploits
-		notes	{
-			2016-03-24T11:01+01:00	<- ISO 1801-Date
-			...
+Copies:
+
+		{
+			"id":    594,
+			"user": "Dominik Okwieka"
+			"book": {
+				"isbn":   "978-3-898664-536-2"
+				"author": "Jon Erickson"
+				"title":  "Hacking: Die Kunst des Exploits"
+			}
+			"notes": [
+				"2016-03-24T11:01+01:00 <- ISO 1801-Date"
+		  		...
+			]
+		}
+		
+Bücher:
+
+		{
+			"isbn":   "978-3-898664-536-2"
+			"author": "Jon Erickson"
+			"title":  "Hacking: Die Kunst des Exploits"
+			"notes": [
+				"2016-04-10T22:23+01:00 Relativ interessantes Buch"
+			]
+			"copies": [
+				594,
+				405,
+				406
+			]
+		}
+
+User:
+
+		{
+			"name": "Dominik Okwieka"
+			"notes": [
+				"2016-04-10T22:26+01:00 dag gummit"
+			]
+			"copies": [
+				594
+			]
 		}
 
 #### `r` - return
@@ -196,7 +232,9 @@ zurückgegeben.
 
 *Beschreibung*
 
-Fügt eine Notiz zu allen Objekten der Selektion hinzu.
+Fügt eine Notiz zu allen Objekten der Selektion hinzu. Der Zeitpunkt wird
+im ISO 1801-Format mitprotokolliert. Die Notizen eines Objekts werden bei
+einem `p`-Befehl mitausgegeben.
 
 #### `R` - retire
 
