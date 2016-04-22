@@ -126,7 +126,7 @@ func main() {
 	}
 
 	books = make(map[ISBN]Book)
-	books[ISBN("978-0-201-07981-4")] = Book{ISBN("978-0-201-07981-4"), "The AWK Programming Language", nil}
+	NewBook("978-0-201-07981-4", "The AWK Programming Language")
 
 	for {
 		conn, err := ln.Accept()

@@ -8,12 +8,13 @@ import (
 
 type ISBN string
 
-// struct Book implements elem. XXX
+// Struct Book stores information about books. The physical manifestations of the
+// book are called Copies. Books are identified by their unique ISBN.
 type Book struct {
 	isbn  ISBN
 	title string
 	notes []string
-	// copies []bcopy // XXX
+	// copies []Copy // XXX
 }
 
 // books contains all book structs.
@@ -36,6 +37,18 @@ func (b *Book) Delete() {
 	// XXX delete from disk
 	// XXX should this return an error?
 	delete(books, b.isbn)
+}
+
+// NewBook adds a Book to the system.
+// XXX worldcat automated metadata fetching would be nice
+func NewBook(isbn, title string) error {
+	if !isISBN13(isbn) {
+		return fmt.Errorf("NewBook: %q is not a ISBN-13")
+	}
+
+	books[ISBN(isbn)] = Book{ISBN(isbn), title, nil}
+	// XXX add a small note; "b := books[ISBN(isbn)]; b.Note(...)" has no effect. Why?
+	return nil
 }
 
 // The isISBN13 function checks whether its argument is a valid ISBN-13.
