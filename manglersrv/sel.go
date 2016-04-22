@@ -35,7 +35,7 @@ var seltab = map[rune]selFn{
 			if isISBN13(s) {
 				for _, b := range books {
 					if s == string(b.isbn) {
-						rsel = append(rsel, b)
+						rsel = append(rsel, &b)
 					}
 				}
 			} else {

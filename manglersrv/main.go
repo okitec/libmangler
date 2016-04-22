@@ -29,6 +29,7 @@ func handle(conn net.Conn) {
 
 		s := string(buf[0:n])
 	parse:
+		// We actually modify s sometimes.
 		for _, r := range s {
 			if unicode.IsSpace(r) {
 				continue
@@ -90,13 +91,15 @@ func handle(conn net.Conn) {
 				}
 
 			case 'n':
-				args := strings.Fields(s)
-				note := args[1]
-
+				// The note is all text after "n" and before the EOL, whitespace-trimmed.
+				note := s[1:strings.IndexRune(s, '\n')]
+				note = strings.TrimSpace(note)
 				for _, e := range dot {
 					e.Note(note)
 				}
 
+				// No need to continue, the note is the rest of the line.
+				break parse
 			case 'd':
 				for _, e := range dot {
 					e.Delete()

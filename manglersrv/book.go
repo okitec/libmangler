@@ -18,19 +18,19 @@ type Book struct {
 // books contains all book structs.
 var books map[ISBN]Book
 
-func (b Book) String() string {
+func (b *Book) String() string {
 	return string(b.isbn)
 }
 
-func (b Book) Print() string {
+func (b *Book) Print() string {
 	return fmt.Sprintln(b.isbn, b.title, b.notes) // XXX implement format as in spec
 }
 
-func (b Book) Note(note string) {
+func (b *Book) Note(note string) {
 	b.notes = append(b.notes, note)
 }
 
-func (b Book) Delete() {
+func (b *Book) Delete() {
 	// XXX delete from disk
 	// XXX should this return an error?
 	delete(books, b.isbn)
