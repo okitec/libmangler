@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // Selections, elements and commands working on selections
 
@@ -28,12 +31,19 @@ var seltab = map[rune]selFn{
 	'B': func(sel []elem, args []string) ([]elem, error) {
 		var rsel []elem // returned selection
 
-		for _, b := range books {
-			for _, s := range args {
-				if b.String() == s {
-					rsel = append(rsel, elem(b))
+		for _, s := range args {
+			fmt.Printf("s = %q\n", s)
+			if isISBN13(s) {
+				for _, b := range books {
+					if s == string(b.isbn) {
+						rsel = append(rsel, b)
+					}
 				}
+			} else {
+				return rsel, errors.New("unimplemented selection argument type")
+
 			}
+
 		}
 
 		return rsel, nil

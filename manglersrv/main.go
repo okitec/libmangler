@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
@@ -50,6 +51,27 @@ func handle(conn net.Conn) {
 					log.Printf("cmd %c: %v", r, err)
 				}
 				break parse
+			case 'B':
+				// Split /foo, bar, quux,/ into ["foo" "bar" "quux"].
+				start := strings.IndexRune(s, '/') + 1       // +1: skip the slash
+				end := strings.IndexRune(s[start:], '/') + 2 // +2: XXX why exactly? (slice end)
+
+				fmt.Printf("s[%v:%v] = %q", start, end, s[start:end])
+				// XXX really hacky solution, doesn't fulfill spec
+				csvr := csv.NewReader(strings.NewReader(s[start:end]))
+
+				args, err := csvr.Read()
+				if err != nil {
+					log.Println("bad selection argument")
+				}
+
+				fn := seltab[r]
+				rsel, err := fn(nil, args)
+				if err != nil {
+					log.Printf("cmd %c: %v", r, err)
+				}
+
+				log.Printf("rsel = %v", rsel)
 			}
 		}
 
