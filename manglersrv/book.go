@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"unicode"
 )
 
@@ -26,8 +27,9 @@ func (b *Book) Print() string {
 	return fmt.Sprintln(b.isbn, b.title, b.notes) // XXX implement format as in spec
 }
 
+// Note saves a note after prepending a ISO 8601 == RFC 3339 date.
 func (b *Book) Note(note string) {
-	b.notes = append(b.notes, note)
+	b.notes = append(b.notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
 }
 
 func (b *Book) Delete() {
