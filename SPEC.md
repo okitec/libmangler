@@ -165,7 +165,7 @@ Copies:
 				"title":  "Hacking: Die Kunst des Exploits"
 			}
 			"notes": [
-				"2016-03-24T11:01+01:00 <- ISO 1801-Date"
+				"2016-03-24T11:01+01:00 <- ISO 8601-Date"
 		  		...
 			]
 		}
@@ -228,13 +228,13 @@ zurückgegeben.
 
 *Synopsis*
 
-		n note
+		n note...
 
 *Beschreibung*
 
-Fügt eine Notiz zu allen Objekten der Selektion hinzu. Der Zeitpunkt wird
-im ISO 1801-Format mitprotokolliert. Die Notizen eines Objekts werden bei
-einem `p`-Befehl mitausgegeben.
+Fügt eine Notiz zu allen Objekten der Selektion hinzu. Die Notiz erstreckt sich bis
+zum Zeilenende; Anführungszeichen sind nicht nötig. Der Zeitpunkt wird im ISO 8601-Format
+mitprotokolliert. Die Notizen eines Objekts werden bei einem `p`-Befehl mitausgegeben.
 
 #### `R` - retire
 
