@@ -17,11 +17,12 @@ const (
 	protoPort    = 40000
 )
 
-// handle handles a network connection and chats with the client.
+// handle handles a network connection.
 func handle(conn net.Conn) {
 	defer conn.Close()
 	defer log.Println("client", conn.RemoteAddr(), "disconnected")
 
+	var dot []elem
 	buf := make([]byte, 128)
 	for {
 		n, err := conn.Read(buf)
@@ -36,13 +37,14 @@ func handle(conn net.Conn) {
 			switch r {
 			case '\n':
 				break parse
+
 			case 'q':
 				// We must handle QUIT here to avoid closing the connection both
 				// in the deferred call and in cmd.go.
 				return
+
 			case 'A', 'a', 'u', 'v':
 				// 'Simple' commands not operating on selections.
-
 				args := strings.Fields(s)
 
 				fn := simpleCmdtab[r]
@@ -51,27 +53,54 @@ func handle(conn net.Conn) {
 					log.Printf("cmd %c: %v", r, err)
 				}
 				break parse
+
 			case 'B':
+				// B/.../, C/.../, U/.../ reset the selection.
+				dot = nil
+
 				// Split /foo, bar, quux,/ into ["foo" "bar" "quux"].
 				start := strings.IndexRune(s, '/') + 1       // +1: skip the slash
-				end := strings.IndexRune(s[start:], '/') + 2 // +2: XXX why exactly? (slice end)
+				end := strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
 
-				fmt.Printf("s[%v:%v] = %q", start, end, s[start:end])
-				// XXX really hacky solution, doesn't fulfill spec
+				// XXX really hacky solution, doesn't fulfill spec (strings are single-quoted in spec)
 				csvr := csv.NewReader(strings.NewReader(s[start:end]))
 
 				args, err := csvr.Read()
 				if err != nil {
 					log.Println("bad selection argument")
+					break parse
 				}
 
 				fn := seltab[r]
-				rsel, err := fn(nil, args)
+				// Do not use := here, it would redefine dot. Subtle.
+				dot, err = fn(dot, args)
 				if err != nil {
 					log.Printf("cmd %c: %v", r, err)
 				}
 
-				log.Printf("rsel = %v", rsel)
+				// Skip the selection arg, i.e. everything between the slashes (/.../)
+				s = s[end+1:]
+				// Actually reset the range-loop, as we modify the string.
+				// Else we'd have spurious looping (I tested it).
+				goto parse
+
+			case 'p':
+				for _, e := range dot {
+					fmt.Fprintln(conn, e.Print())
+				}
+
+			case 'n':
+				args := strings.Fields(s)
+				note := args[1]
+
+				for _, e := range dot {
+					e.Note(note)
+				}
+
+			case 'd':
+				for _, e := range dot {
+					e.Delete()
+				}
 			}
 		}
 
@@ -92,6 +121,9 @@ func main() {
 	if err != nil {
 		log.Panicln("net.Listen failed:", err)
 	}
+
+	books = make(map[ISBN]Book)
+	books[ISBN("978-0-201-07981-4")] = Book{ISBN("978-0-201-07981-4"), "The AWK Programming Language", nil}
 
 	for {
 		conn, err := ln.Accept()

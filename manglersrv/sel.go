@@ -32,7 +32,6 @@ var seltab = map[rune]selFn{
 		var rsel []elem // returned selection
 
 		for _, s := range args {
-			fmt.Printf("s = %q\n", s)
 			if isISBN13(s) {
 				for _, b := range books {
 					if s == string(b.isbn) {
