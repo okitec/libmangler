@@ -21,15 +21,12 @@ const (
 	protoPort    = 40000
 )
 
-// handle handles a network connection.
-func handle(conn net.Conn) {
-	defer conn.Close()
-	defer log.Println("client", conn.RemoteAddr(), "disconnected")
-
+// The function handle communicates with a client, resolving its requests.
+func handle(rw io.ReadWriter) {
 	var dot []elem
 	buf := make([]byte, 128)
 	for {
-		n, err := conn.Read(buf)
+		n, err := rw.Read(buf)
 
 		s := string(buf[0:n])
 	parse:
@@ -53,7 +50,7 @@ func handle(conn net.Conn) {
 				args := strings.Fields(s)
 
 				fn := simpleCmdtab[r]
-				err := fn(conn, args)
+				err := fn(rw, args)
 				if err != nil {
 					log.Printf("cmd %c: %v", r, err)
 				}
@@ -91,7 +88,7 @@ func handle(conn net.Conn) {
 
 			case 'p':
 				for _, e := range dot {
-					fmt.Fprintln(conn, e.Print())
+					fmt.Fprintln(rw, e.Print())
 				}
 
 			case 'n':
@@ -139,6 +136,10 @@ func main() {
 			continue
 		}
 
-		go handle(conn)
+		go func() {
+			defer conn.Close()
+			defer log.Println("client", conn.RemoteAddr(), "disconnected")
+			handle(conn)
+		}()
 	}
 }
