@@ -1,4 +1,8 @@
-/* Manglersrv implements the v and q simple commands at the moment. */
+/*
+Manglersrv implements the v, q, B, p, n, and d commands at the moment.
+Only Books are implemented; only ISBNs can be selected. Copies and Users
+don't yet exist. The specification is violated by the CSV Reader for command B.
+*/
 package main
 
 import (
