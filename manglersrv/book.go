@@ -18,7 +18,7 @@ type Book struct {
 }
 
 // books contains all book structs.
-var books map[ISBN]Book
+var books map[ISBN]*Book
 
 func (b *Book) String() string {
 	return string(b.isbn)
@@ -41,14 +41,15 @@ func (b *Book) Delete() {
 
 // NewBook adds a Book to the system.
 // XXX worldcat automated metadata fetching would be nice
-func NewBook(isbn, title string) error {
+func NewBook(isbn, title string) (*Book, error) {
 	if !isISBN13(isbn) {
-		return fmt.Errorf("NewBook: %q is not a ISBN-13")
+		return nil, fmt.Errorf("NewBook: %q is not a ISBN-13")
 	}
 
-	books[ISBN(isbn)] = Book{ISBN(isbn), title, nil}
-	// XXX add a small note; "b := books[ISBN(isbn)]; b.Note(...)" has no effect. Why?
-	return nil
+	b := Book{ISBN(isbn), title, nil}
+	books[ISBN(isbn)] = &b
+	b.Note("added to the system")
+	return &b, nil
 }
 
 // The isISBN13 function checks whether its argument is a valid ISBN-13.

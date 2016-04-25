@@ -125,7 +125,7 @@ func main() {
 		log.Panicln("net.Listen failed:", err)
 	}
 
-	books = make(map[ISBN]Book)
+	books = make(map[ISBN]*Book)
 	NewBook("978-0-201-07981-4", "The AWK Programming Language")
 
 	for {
