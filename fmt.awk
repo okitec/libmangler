@@ -1,4 +1,4 @@
-# fmt.awk;: format into Linelen-character lines
+# fmt.awk: format into Linelen-character lines
 # (code copied from Rob Pike's and Brian W. Kernighan's "The Practice of Programming",
 # p. 229, to avoid reinventing the wheel.)
 
