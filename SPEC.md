@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 2
+Version: Protokollversion 3
 
 0. Index
 --------
@@ -86,7 +86,8 @@ Das Protokoll ist ein UTF-8-basiertes Textprotokoll. IMHO ist es nicht
 nötig, dem Semi-Standard zu folgen und alles über HTTP zu machen;
 ich preferiere es, Plaintext-Protokolle in derselben Netzwerkschicht
 wie HTTP zu kreieren, anstatt über HTTP zu "tunneln". Aus Prinzip
-verwende ich kein XML. Falls nötig wird also JSON eingesetzt.
+verwende ich kein XML. Falls nötig wird also JSON eingesetzt. Oder
+S-Expressions.
 
 Die Datenmengen sind klein und die Performanceanforderungen gering.
 Die kurze Schreibweise ist jedoch mnemonisch und einfach genug, um
@@ -151,52 +152,33 @@ sind, kann man alle filtern, die zum selben User gehören, etc.
 
 *Beschreibung*
 
-Gibt alle Informationen zu jedem Eintrag in *Dot* aus. Das verwendete Format ist JSON.
+Gibt alle Informationen zu jedem Eintrag in *Dot* aus. S-Expressions werden als Format verwendet.
 Die folgenden Beispiele dienen als Definitionen:
 
 Copies:
 
-		{
-			"id":    594,
-			"user": "Dominik Okwieka"
-			"book": {
-				"isbn":   "978-3-898664-536-2"
-				"author": "Jon Erickson"
-				"title":  "Hacking: Die Kunst des Exploits"
-			}
-			"notes": [
-				"2016-03-24T11:01+01:00 <- ISO 8601-Date"
-		  		...
-			]
-		}
-		
+		(copy 594
+			(user "Dominik Okwieka")
+		 	(book "978-0-201-07981-4"
+				(author "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
+				(title "The AWK Programming Language")
+			)
+			(notes "2016-03-24T11:01+01:00 <- ISO 8601-Date" "...")
+		)
 Bücher:
 
-		{
-			"isbn":   "978-3-898664-536-2"
-			"author": "Jon Erickson"
-			"title":  "Hacking: Die Kunst des Exploits"
-			"notes": [
-				"2016-04-10T22:23+01:00 Relativ interessantes Buch"
-			]
-			"copies": [
-				594,
-				405,
-				406
-			]
-		}
-
+		(book "978-0-201-07981-4"
+			(author "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
+			(title "The AWK Programming Language")
+			(notes "2016-04-26T18:16+02:00 excellent read")
+			(copies 594 405 406)
+		)
 User:
 
-		{
-			"name": "Dominik Okwieka"
-			"notes": [
-				"2016-04-10T22:26+01:00 dag gummit"
-			]
-			"copies": [
-				594
-			]
-		}
+		(user "Dominik Okwieka"
+			(notes "2016-04-10T22:26+01:00 dag gummit")
+			(copies 594)
+		)
 
 #### `r` - return
 
