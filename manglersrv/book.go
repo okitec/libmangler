@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 	"unicode"
 )
@@ -24,8 +25,20 @@ func (b *Book) String() string {
 	return string(b.isbn)
 }
 
+// The Print method prints information about the book, including a list of copies,
+// in beautifully formatted and indented s-exps.
 func (b *Book) Print() string {
-	return fmt.Sprintln(b.isbn, b.title, b.notes) // XXX implement format as in spec
+	const fmtstr =
+`(book %q
+	(author %s)
+	(title %s)
+	(notes
+		"%s"
+	)
+	(copies %v)
+)`
+
+	return fmt.Sprintf(fmtstr, b.isbn, "WIP", b.title, strings.Join(b.notes, "\"\n\t\t\""), "WIP")
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.
