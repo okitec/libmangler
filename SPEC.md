@@ -115,7 +115,7 @@ Die Antworten haben dieses Format:
 
 Ein einzelner Punkt auf einer sonst leeren Zeile signalisiert das Ende
 der Antwort. Um einzelne Punkte im Output zu erlauben, kann dieser mit
-einem Backslash escapet werden ('\.').
+einem Backslash escapet werden ('\\.').
 
 
 >>> **XXX Geht es besser? Ein Prototyp muss her.**
