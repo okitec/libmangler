@@ -52,7 +52,7 @@ var seltab = map[rune]selFn{
 		var rsel []elem
 
 		for _, s := range args {
-			if id, err := strconv.Atoi(s); err != nil {
+			if id, err := strconv.ParseInt(s, 10, 64); err == nil {
 				for _, c := range copies {
 					if c.id == id {
 						rsel = append(rsel, c)

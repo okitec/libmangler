@@ -137,6 +137,7 @@ func main() {
 	NewUser("Florian the Florist from Florida")
 	NewUser("Gaius Valerius Catullus")
 	NewUser("Drago Mafloy")
+	copies = make(map[int64]*Copy)
 	NewCopy(books["978-0-201-07981-4"])
 
 	for {

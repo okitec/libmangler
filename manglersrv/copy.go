@@ -3,20 +3,19 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"strings"
+//	"strings"
 	"time"
 )
 
 type Copy struct {
-	id    int
+	id    int64
 	user  *User
 	book  *Book
 	notes []string
 }
 
-// The slice copies holds pointers to all copied indexed by id.
-// Unlike users and books, a slice suffices here.
-var copies []*Copy
+// The map copies holds pointers to all copied indexed by id.
+var copies map[int64]*Copy
 
 func (c *Copy) String() string {
 	return fmt.Sprint(c.id)
@@ -32,10 +31,9 @@ func (c *Copy) Print() string {
 	(notes
 		"%s"
 	)
-)
-`
+)`
 
-	return fmt.Sprintf(fmtstr, c.id, c.user, c.book, "WIP", c.book.title, strings.Join(c.notes, "\"\n\t\t\""))
+	return fmt.Sprintln("got here") //fmt.Sprintf(fmtstr, c.id, c.user, c.book, "WIP", c.book.title, strings.Join(c.notes, "\"\n\t\t\"")) // XXX
 }
 
 func (c *Copy) Note(note string) {
@@ -44,14 +42,14 @@ func (c *Copy) Note(note string) {
 
 func (c *Copy) Delete() {
 	// XXX This doesn't compress the slices.
-	copies[c.id] = nil
+	delete(copies, c.id)
 	c.user.copies[c.id] = nil
 	c.book.copies[c.id] = nil
 }
 
 func NewCopy(b *Book) (*Copy, error) {
 	// XXX collisions may happen; FIX!
-	c := Copy{rand.Int(), nil, b, nil}
+	c := Copy{int64(rand.Int()), nil, b, nil}
 	b.copies = append(b.copies, &c)
 	return &c, nil
 }
