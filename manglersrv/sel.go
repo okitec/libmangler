@@ -47,4 +47,17 @@ var seltab = map[rune]selFn{
 
 		return rsel, nil
 	},
+	'U': func(sel []elem, args []string) ([]elem, error) {
+		var rsel []elem
+
+		for _, s := range args {
+			for _, u := range users {
+				if s == u.name {
+					rsel = append(rsel, u)
+				}
+			}
+		}
+
+		return rsel, nil
+	},
 }

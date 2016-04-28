@@ -56,7 +56,7 @@ func handle(rw io.ReadWriter) {
 				}
 				break parse
 
-			case 'B':
+			case 'B', 'U':
 				// B/.../, C/.../, U/.../ reset the selection.
 				dot = nil
 
@@ -73,6 +73,11 @@ func handle(rw io.ReadWriter) {
 					break parse
 				}
 
+				for i := range args {
+					args[i] = strings.TrimSpace(args[i])
+				}
+
+				
 				fn := seltab[r]
 				// Do not use := here, it would redefine dot. Subtle.
 				dot, err = fn(dot, args)
@@ -128,6 +133,10 @@ func main() {
 
 	books = make(map[ISBN]*Book)
 	NewBook("978-0-201-07981-4", "The AWK Programming Language")
+	users = make(map[string]*User)
+	users["Florian the Florist from Florida"] = &User{"Florian the Florist from Florida", nil}
+	users["Gaius Valerius Catullus"] = &User{"Gaius Valerius Catullus", nil}
+	users["Drago Mafloy"] = &User{"Drago Mafloy", nil}
 
 	for {
 		conn, err := ln.Accept()
