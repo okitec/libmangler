@@ -145,6 +145,7 @@ func main() {
 			continue
 		}
 
+		log.Println("client", conn.RemoteAddr(), "connected")
 		go func() {
 			defer conn.Close()
 			defer log.Println("client", conn.RemoteAddr(), "disconnected")
