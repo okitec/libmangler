@@ -7,9 +7,9 @@ import (
 )
 
 type User struct {
-	name  string
-	notes []string
-	//copies []Copy
+	name   string
+	notes  []string
+	copies []*Copy
 }
 
 var users map[string]*User
@@ -19,8 +19,7 @@ func (u *User) String() string {
 }
 
 func (u *User) Print() string {
-	const fmtstr = `
-(user %q
+	const fmtstr = `(user %q
 	(notes
 		"%s"
 	)
@@ -45,7 +44,7 @@ func NewUser(name string) (*User, error) {
 		return users[name], fmt.Errorf("NewUser: user %q already exists", name)
 	}
 
-	u := User{name, nil}
+	u := User{name, nil, nil}
 	users[name] = &u
 	return &u, nil
 }

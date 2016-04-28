@@ -12,10 +12,10 @@ type ISBN string
 // Struct Book stores information about books. The physical manifestations of the
 // book are called Copies. Books are identified by their unique ISBN.
 type Book struct {
-	isbn  ISBN
-	title string
-	notes []string
-	// copies []Copy // XXX
+	isbn   ISBN
+	title  string
+	notes  []string
+	copies []*Copy
 }
 
 // books contains all book structs.
@@ -28,8 +28,7 @@ func (b *Book) String() string {
 // The Print method prints information about the book, including a list of copies,
 // in beautifully formatted and indented s-exps.
 func (b *Book) Print() string {
-	const fmtstr =
-`(book %q
+	const fmtstr = `(book %q
 	(author %s)
 	(title %s)
 	(notes
@@ -55,11 +54,12 @@ func (b *Book) Delete() {
 // NewBook adds a Book to the system.
 // XXX worldcat automated metadata fetching would be nice
 func NewBook(isbn, title string) (*Book, error) {
+	// XXX check whether Book already exists
 	if !isISBN13(isbn) {
 		return nil, fmt.Errorf("NewBook: %q is not a ISBN-13")
 	}
 
-	b := Book{ISBN(isbn), title, nil}
+	b := Book{ISBN(isbn), title, nil, nil}
 	books[ISBN(isbn)] = &b
 	b.Note("added to the system")
 	return &b, nil
