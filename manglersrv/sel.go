@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 // Selections, elements and commands working on selections
@@ -43,6 +44,21 @@ var seltab = map[rune]selFn{
 
 			}
 
+		}
+
+		return rsel, nil
+	},
+	'C': func(sel []elem, args []string) ([]elem, error) {
+		var rsel []elem
+
+		for _, s := range args {
+			if id, err := strconv.Atoi(s); err != nil {
+				for _, c := range copies {
+					if c.id == id {
+						rsel = append(rsel, c)
+					}
+				}
+			}
 		}
 
 		return rsel, nil

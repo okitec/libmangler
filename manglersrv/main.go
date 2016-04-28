@@ -56,7 +56,7 @@ func handle(rw io.ReadWriter) {
 				}
 				break parse
 
-			case 'B', 'U':
+			case 'B', 'C', 'U':
 				// B/.../, C/.../, U/.../ reset the selection.
 				dot = nil
 
@@ -137,6 +137,7 @@ func main() {
 	NewUser("Florian the Florist from Florida")
 	NewUser("Gaius Valerius Catullus")
 	NewUser("Drago Mafloy")
+	NewCopy(books["978-0-201-07981-4"])
 
 	for {
 		conn, err := ln.Accept()
