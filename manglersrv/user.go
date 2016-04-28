@@ -37,3 +37,15 @@ func (u *User) Note(note string) {
 func (u *User) Delete() {
 	delete(users, u.name)
 }
+
+// The function NewUser adds a User. If a User of that name already exists,
+// it will be returned with an non-nil error.
+func NewUser(name string) (*User, error) {
+	if users[name] != nil {
+		return users[name], fmt.Errorf("NewUser: user %q already exists", name)
+	}
+
+	u := User{name, nil}
+	users[name] = &u
+	return &u, nil
+}

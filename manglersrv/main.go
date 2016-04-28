@@ -134,9 +134,9 @@ func main() {
 	books = make(map[ISBN]*Book)
 	NewBook("978-0-201-07981-4", "The AWK Programming Language")
 	users = make(map[string]*User)
-	users["Florian the Florist from Florida"] = &User{"Florian the Florist from Florida", nil}
-	users["Gaius Valerius Catullus"] = &User{"Gaius Valerius Catullus", nil}
-	users["Drago Mafloy"] = &User{"Drago Mafloy", nil}
+	NewUser("Florian the Florist from Florida")
+	NewUser("Gaius Valerius Catullus")
+	NewUser("Drago Mafloy")
 
 	for {
 		conn, err := ln.Accept()
