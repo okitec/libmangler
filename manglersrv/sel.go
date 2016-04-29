@@ -17,7 +17,7 @@ type selFn func(sel []elem, args []string) ([]elem, error)
 type elem interface {
 	fmt.Stringer      // returns the id (copies), ISBN (books) or name (users)
 	Print() string    // cmd p (all info)
-	Note(note string) // cmd n
+	Note(note string) // cmd n  // XXX make fmt-like
 	Delete()          // cmd d
 }
 

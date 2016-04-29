@@ -58,6 +58,40 @@ func (c *Copy) Delete() {
 	}
 }
 
+// The method Lend lends a Copy to a User. An error is returned if the Copy is already lent or
+// u is nil.
+func (c *Copy) Lend(u *User) error {
+	if c.user != nil {
+		return fmt.Errorf("can't lend %v: already lent", c)
+	}
+
+	if u == nil {
+		return fmt.Errorf("can't lend %v: no user specified", c)
+	}
+
+	c.user = u
+	u.copies = append(u.copies, c)
+	c.Note(fmt.Sprintf("lent to %q", u))
+	return nil
+}
+
+// The method Return returns a Copy that was lent to an user.
+func (c *Copy) Return() {
+	u := c.user
+	if c.user == nil {
+		return
+	}
+
+	for i := range c.user.copies {
+		if c.user.copies[i] == c {
+			c.user.copies[i] = nil // XXX This doesn't compress the slices.
+		}
+	}
+
+	c.user = nil
+	c.Note(fmt.Sprintf("returned from %q", u))
+}
+
 func NewCopy(b *Book) (*Copy, error) {
 	// XXX collisions may happen; FIX!
 	c := Copy{int64(rand.Int()), nil, b, nil}

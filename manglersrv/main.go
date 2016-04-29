@@ -116,9 +116,40 @@ func handle(rw io.ReadWriter) {
 
 				// No need to continue, the note is the rest of the line.
 				break parse
+
 			case 'd':
 				for _, e := range dot {
 					e.Delete()
+				}
+
+			case 'l':
+				name := s[1:strings.IndexRune(s, '\n')]
+				name = strings.TrimSpace(name)
+				u := users[name]
+
+				for _, e := range dot {
+					c, ok := e.(*Copy)
+					if !ok {
+						log.Printf("tried to lend a non-Copy element")
+						fmt.Fprintln(rw, "can't lend: not a Copy")
+						break
+					}
+
+					c.Lend(u)
+				}
+
+				break parse
+
+			case 'r':
+				for _, e := range dot {
+					c, ok := e.(*Copy)
+					if !ok {
+						log.Printf("tried to return a non-Copy element")
+						fmt.Fprintln(rw, "can't return: not a Copy")
+						break
+					}
+
+					c.Return()
 				}
 			}
 		}
@@ -148,15 +179,17 @@ func main() {
 	// debugging examples
 	NewBook("978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
 	NewBook("978-0-141-03614-4", "Nineteen Eighty-Four", []string{"George Orwell"})
-	NewUser("Florian the Florist from Florida")
-	NewUser("Gaius Valerius Catullus")
-	NewUser("Drago Mafloy")
+	u1, _ := NewUser("Florian the Florist from Florida")
+	u2, _ := NewUser("Gaius Valerius Catullus")
+	u3, _ := NewUser("Drago Mafloy")
 	c1, _ := NewCopy(books["978-0-201-07981-4"])
 	c2, _ := NewCopy(books["978-0-201-07981-4"])
 	c3, _ := NewCopy(books["978-0-141-03614-4"])
-	users["Drago Mafloy"].copies = append(users["Drago Mafloy"].copies, c1)
-	users["Drago Mafloy"].copies = append(users["Drago Mafloy"].copies, c3)
-	users["Gaius Valerius Catullus"].copies = append(users["Gaius Valerius Catullus"].copies, c2)
+	c4, _ := NewCopy(books["978-0-141-03614-4"])
+	c1.Lend(u1)
+	c2.Lend(u2)
+	c3.Lend(u2)
+	c4.Lend(u3)
 
 	for {
 		conn, err := ln.Accept()
