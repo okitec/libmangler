@@ -193,7 +193,7 @@ Gibt alle Copies der Selektion zurück.
 *Beschreibung*
 
 Leiht alle Bücher der Selektion an den *(L-)*User. Der Username erstreckt sich bis zum Ende
-der Zeile und sollte nicht gequotet sein. Bei einem Fehler wird ein String der Form
+der Zeile und darf nicht gequotet sein. Bei einem Fehler wird ein String der Form
 
 		can't lend [id]: <error string>
 
@@ -204,12 +204,12 @@ angegeben.
 
 *Synopsis*
 
-		n note...
+		n note
 
 *Beschreibung*
 
 Fügt eine Notiz zu allen Objekten der Selektion hinzu. Die Notiz erstreckt sich bis
-zum Zeilenende; Anführungszeichen sind nicht nötig. Der Zeitpunkt wird im ISO 8601-Format
+zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im ISO 8601-Format
 mitprotokolliert. Die Notizen eines Objekts werden bei einem `p`-Befehl mitausgegeben.
 
 #### `R` - retire
@@ -262,7 +262,8 @@ Erzeugt `n` Exemplare dieses Buchs.
 
 *Beschreibung*
 
-Erzeugt User.
+Erzeugt User. Der Name erstreckt sich bis zum Ende der Zeile.
+Er darf nicht gequotet sein.
 
 #### `q` - quit
 
