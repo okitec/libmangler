@@ -147,10 +147,16 @@ func main() {
 
 	// debugging examples
 	NewBook("978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
+	NewBook("978-0-141-03614-4", "Nineteen Eighty-Four", []string{"George Orwell"})
 	NewUser("Florian the Florist from Florida")
 	NewUser("Gaius Valerius Catullus")
 	NewUser("Drago Mafloy")
-	NewCopy(books["978-0-201-07981-4"])
+	c1, _ := NewCopy(books["978-0-201-07981-4"])
+	c2, _ := NewCopy(books["978-0-201-07981-4"])
+	c3, _ := NewCopy(books["978-0-141-03614-4"])
+	users["Drago Mafloy"].copies = append(users["Drago Mafloy"].copies, c1)
+	users["Drago Mafloy"].copies = append(users["Drago Mafloy"].copies, c3)
+	users["Gaius Valerius Catullus"].copies = append(users["Gaius Valerius Catullus"].copies, c2)
 
 	for {
 		conn, err := ln.Accept()
