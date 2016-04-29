@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 )
 
 // simpleCmdFn describes a 'simple' command that does not work on selections.
@@ -24,7 +25,7 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			return errors.New(s)
 		}
 
-		_, err := NewBook(args[1], "foo", nil)  // XXX fetch or ask for title and author
+		_, err := NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
 		return err
 	},
 	'a': func(rw io.ReadWriter, args []string) error {
@@ -58,7 +59,16 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 		return nil
 	},
 	'u': func(rw io.ReadWriter, args []string) error {
-		return errors.New("unimplemented")
+		if len(args) < 2 {
+			s := "specify username"
+			fmt.Fprintln(rw, s)
+			return errors.New(s)
+		}
+
+		// args[1:]: skip first element "u"
+		name := strings.Join(args[1:], " ")
+		_, err := NewUser(name)
+		return err
 	},
 	'v': func(rw io.ReadWriter, args []string) error {
 		fmt.Fprintf(rw, "libmangler proto %d\n", protoVersion)
