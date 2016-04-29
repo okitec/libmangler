@@ -77,7 +77,6 @@ func handle(rw io.ReadWriter) {
 					args[i] = strings.TrimSpace(args[i])
 				}
 
-				
 				fn := seltab[r]
 				// Do not use := here, it would redefine dot. Subtle.
 				dot, err = fn(dot, args)
