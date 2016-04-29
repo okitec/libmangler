@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 )
@@ -22,6 +21,7 @@ type elem interface {
 	Delete()          // cmd d
 }
 
+// XXX Write a script that generates this from a table. This is too mechanical.
 var seltab = map[rune]selFn{
 	'.': func(sel []elem, args []string) ([]elem, error) {
 		return sel, nil
@@ -48,9 +48,22 @@ var seltab = map[rune]selFn{
 						rsel = append(rsel, b)
 					}
 				}
+			} else if id, err := strconv.ParseInt(s, 10, 64); err == nil {
+				for _, b := range books {
+					for _, c := range b.copies {
+						if c.id == id {
+							rsel = append(rsel, b)
+						}
+					}
+				}
 			} else {
-				return rsel, errors.New("unimplemented selection argument type")
-
+				for _, b := range books {
+					for _, c := range b.copies {
+						if c.user.name == s {
+							rsel = append(rsel, b)
+						}
+					}
+				}
 			}
 
 		}
@@ -70,10 +83,32 @@ var seltab = map[rune]selFn{
 		}
 
 		for _, s := range args {
-			if id, err := strconv.ParseInt(s, 10, 64); err == nil {
+			if isISBN13(s) {
+				for _, b := range books {
+					if s == string(b.isbn) {
+						// Convert from []*Copy to []elem
+						var cs []elem
+						for _, c := range b.copies {
+							cs = append(cs, c)
+						}
+						rsel = append(rsel, cs...)
+					}
+				}
+			} else if id, err := strconv.ParseInt(s, 10, 64); err == nil {
 				for _, c := range copies {
 					if c.id == id {
 						rsel = append(rsel, c)
+					}
+				}
+			} else {
+				for _, u := range users {
+					if u.name == s {
+						// Convert from []*Copy to []elem
+						var cs []elem
+						for _, c := range u.copies {
+							cs = append(cs, c)
+						}
+						rsel = append(rsel, cs...)
 					}
 				}
 			}
@@ -94,9 +129,28 @@ var seltab = map[rune]selFn{
 		}
 
 		for _, s := range args {
-			for _, u := range users {
-				if s == u.name {
-					rsel = append(rsel, u)
+			if isISBN13(s) {
+				// Do it this way around to avoid duplicate users.
+				for _, u := range users {
+					for _, c := range u.copies {
+						if s == string(c.book.isbn) {
+							rsel = append(rsel, u)
+						}
+					}
+				}
+			} else if id, err := strconv.ParseInt(s, 10, 64); err == nil {
+				for _, u := range users {
+					for _, c := range u.copies {
+						if c.id == id {
+							rsel = append(rsel, u)
+						}
+					}
+				}
+			} else {
+				for _, u := range users {
+					if s == u.name {
+						rsel = append(rsel, u)
+					}
 				}
 			}
 		}
