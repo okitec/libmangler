@@ -37,7 +37,7 @@ func (b *Book) Print() string {
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, b.isbn, "WIP", b.title, strings.Join(b.notes, "\"\n\t\t\""), b.copies) // XXX b.copies is printed as [...]
+	return fmt.Sprintf(fmtstr, b.isbn, "WIP", b.title, strings.Join(b.notes, "\"\n\t\t\""),sCopies(b.copies))
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.

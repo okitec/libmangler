@@ -26,7 +26,7 @@ func (u *User) Print() string {
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, u.name, strings.Join(u.notes, "\"\n\t\t\""), "WIP")
+	return fmt.Sprintf(fmtstr, u.name, strings.Join(u.notes, "\"\n\t\t\""), sCopies(u.copies))
 }
 
 func (u *User) Note(note string) {

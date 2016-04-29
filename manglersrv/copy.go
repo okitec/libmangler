@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -45,13 +46,13 @@ func (c *Copy) Delete() {
 
 	for i := range c.user.copies {
 		if c.user.copies[i] == c {
-			c.user.copies[i] = nil  // XXX This doesn't compress the slices.
+			c.user.copies[i] = nil // XXX This doesn't compress the slices.
 		}
 	}
 
 	for i := range c.book.copies {
 		if c.book.copies[i] == c {
-			c.book.copies[i] = nil  // XXX This doesn't compress the slices.
+			c.book.copies[i] = nil // XXX This doesn't compress the slices.
 		}
 	}
 }
@@ -62,4 +63,16 @@ func NewCopy(b *Book) (*Copy, error) {
 	b.copies = append(b.copies, &c)
 	copies[c.id] = &c
 	return &c, nil
+}
+
+// Function sCopies takes an array of string and concatenates it to a space-separated list string.
+func sCopies(copies []*Copy) string {
+	var buf bytes.Buffer
+
+	for _, c := range copies {
+		buf.WriteString(c.String())
+		buf.WriteRune(' ')
+	}
+
+	return buf.String()
 }
