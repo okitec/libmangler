@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
-//	"strings"
+	"strings"
 	"time"
 )
 
@@ -14,7 +14,7 @@ type Copy struct {
 	notes []string
 }
 
-// The map copies holds pointers to all copied indexed by id.
+// The map copies holds pointers to all copies indexed by id.
 var copies map[int64]*Copy
 
 func (c *Copy) String() string {
@@ -33,7 +33,7 @@ func (c *Copy) Print() string {
 	)
 )`
 
-	return fmt.Sprintln("got here") //fmt.Sprintf(fmtstr, c.id, c.user, c.book, "WIP", c.book.title, strings.Join(c.notes, "\"\n\t\t\"")) // XXX
+	return fmt.Sprintf(fmtstr, c.id, c.user, c.book, "WIP", c.book.title, strings.Join(c.notes, "\"\n\t\t\"")) // XXX spec
 }
 
 func (c *Copy) Note(note string) {
@@ -41,15 +41,25 @@ func (c *Copy) Note(note string) {
 }
 
 func (c *Copy) Delete() {
-	// XXX This doesn't compress the slices.
 	delete(copies, c.id)
-	c.user.copies[c.id] = nil
-	c.book.copies[c.id] = nil
+
+	for i := range c.user.copies {
+		if c.user.copies[i] == c {
+			c.user.copies[i] = nil  // XXX This doesn't compress the slices.
+		}
+	}
+
+	for i := range c.book.copies {
+		if c.book.copies[i] == c {
+			c.book.copies[i] = nil  // XXX This doesn't compress the slices.
+		}
+	}
 }
 
 func NewCopy(b *Book) (*Copy, error) {
 	// XXX collisions may happen; FIX!
 	c := Copy{int64(rand.Int()), nil, b, nil}
 	b.copies = append(b.copies, &c)
+	copies[c.id] = &c
 	return &c, nil
 }
