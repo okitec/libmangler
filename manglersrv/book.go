@@ -31,7 +31,7 @@ func (b *Book) String() string {
 func (b *Book) Print() string {
 	const fmtstr = `(book %q
 	(authors "%s")
-	(title %s)
+	(title %q)
 	(notes
 		"%s"
 	)
