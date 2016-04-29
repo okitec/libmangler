@@ -199,12 +199,13 @@ Gibt alle Copies der Selektion zurück.
 
 *Beschreibung*
 
-Leiht alle Bücher der Selektion an den *(L-)*User. Bei einem Fehler
-wird ein String der Form
+Leiht alle Bücher der Selektion an den *(L-)*User. Der Username erstreckt sich bis zum Ende
+der Zeile und sollte nicht gequotet sein. Bei einem Fehler wird ein String der Form
 
-		can't lend <id>: <error string>
+		can't lend [id]: <error string>
 
-zurückgegeben.
+zurückgegeben. Die ID wird insbesondere bei einem internen Fehler nicht
+angegeben.
 
 #### `n` - note
 
