@@ -118,11 +118,7 @@ der Antwort. Um einzelne Punkte im Output zu erlauben, kann dieser mit
 einem Backslash escapet werden ('\\.').
 
 
->>> **XXX Geht es besser? Ein Prototyp muss her.**
-
 ### 4.2 Befehlsliste
-
->>> **XXX Verschönern und Beispiele hinzufügen**
 
 >>> **XXX Antworten und Fehler exakt spezifizieren**
 
@@ -179,6 +175,10 @@ User:
 			(notes "2016-04-10T22:26+01:00 dag gummit")
 			(copies 594)
 		)
+
+Wenn eine Copy nicht an einen User verliehen ist, wird der leere String verwendet:
+
+		(user "")
 
 #### `r` - return
 
