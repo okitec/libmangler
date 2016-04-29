@@ -59,18 +59,27 @@ func handle(rw io.ReadWriter) {
 			case 'B', 'C', 'U':
 				// B/.../, C/.../, U/.../ reset the selection.
 				dot = nil
+				var args []string
+				var end int
 
-				// Split /foo, bar, quux,/ into ["foo" "bar" "quux"].
-				start := strings.IndexRune(s, '/') + 1       // +1: skip the slash
-				end := strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
+				args = nil
+				hasarg := false
 
-				// XXX really hacky solution, doesn't fulfill spec (strings are single-quoted in spec)
-				csvr := csv.NewReader(strings.NewReader(s[start:end]))
+				// Is there a slash? If so, split /foo, bar, quux,/ into ["foo" "bar" "quux"].
+				// If not, args will be nil and hasarg stays false.
+				start := strings.IndexRune(s, '/')
+				if start != -1 {
+					hasarg = true
+					start++                                     // +1: skip the slash
+					end = strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
+					// XXX really hacky solution, doesn't fulfill spec (strings are single-quoted in spec)
+					csvr := csv.NewReader(strings.NewReader(s[start:end]))
 
-				args, err := csvr.Read()
-				if err != nil {
-					log.Println("bad selection argument")
-					break parse
+					args, err = csvr.Read()
+					if err != nil {
+						log.Println("bad selection argument")
+						break parse
+					}
 				}
 
 				for i := range args {
@@ -84,11 +93,13 @@ func handle(rw io.ReadWriter) {
 					log.Printf("cmd %c: %v", r, err)
 				}
 
-				// Skip the selection arg, i.e. everything between the slashes (/.../)
-				s = s[end+1:]
-				// Actually reset the range-loop, as we modify the string.
-				// Else we'd have spurious looping (I tested it).
-				goto parse
+				// Skip the selection arg, i.e. everything between the slashes (/.../).
+				if hasarg {
+					s = s[end+1:]
+					// Actually reset the range-loop, as we modify the string.
+					// Else we'd have spurious looping (I tested it).
+					goto parse
+				}
 
 			case 'p':
 				for _, e := range dot {

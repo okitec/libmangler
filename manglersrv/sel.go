@@ -32,6 +32,15 @@ var seltab = map[rune]selFn{
 	'B': func(sel []elem, args []string) ([]elem, error) {
 		var rsel []elem // returned selection
 
+		// Select all if no constraints given.
+		if args == nil {
+			for _, b := range books {
+				rsel = append(rsel, b)
+			}
+
+			return rsel, nil
+		}
+
 		for _, s := range args {
 			if isISBN13(s) {
 				for _, b := range books {
@@ -51,6 +60,15 @@ var seltab = map[rune]selFn{
 	'C': func(sel []elem, args []string) ([]elem, error) {
 		var rsel []elem
 
+		// Select all if no constraints given.
+		if args == nil {
+			for _, c := range copies {
+				rsel = append(rsel, c)
+			}
+
+			return rsel, nil
+		}
+
 		for _, s := range args {
 			if id, err := strconv.ParseInt(s, 10, 64); err == nil {
 				for _, c := range copies {
@@ -65,6 +83,15 @@ var seltab = map[rune]selFn{
 	},
 	'U': func(sel []elem, args []string) ([]elem, error) {
 		var rsel []elem
+
+		// Select all if no constraints given.
+		if args == nil {
+			for _, u := range users {
+				rsel = append(rsel, u)
+			}
+
+			return rsel, nil
+		}
 
 		for _, s := range args {
 			for _, u := range users {
