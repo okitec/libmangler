@@ -131,7 +131,7 @@ func main() {
 	}
 
 	books = make(map[ISBN]*Book)
-	NewBook("978-0-201-07981-4", "The AWK Programming Language")
+	NewBook("978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
 	users = make(map[string]*User)
 	NewUser("Florian the Florist from Florida")
 	NewUser("Gaius Valerius Catullus")

@@ -26,7 +26,7 @@ func (c *Copy) Print() string {
 	const fmtstr = `(copy %v
 	(user %q)
 	(book %q
-		(authors %s)
+		(authors "%s")
 		(title %q)
 	)
 	(notes
@@ -34,7 +34,8 @@ func (c *Copy) Print() string {
 	)
 )`
 
-	return fmt.Sprintf(fmtstr, c.id, c.user, c.book, "WIP", c.book.title, strings.Join(c.notes, "\"\n\t\t\"")) // XXX spec
+	return fmt.Sprintf(fmtstr, c.id, c.user, c.book, strings.Join(c.book.authors, `" "`),
+		c.book.title, strings.Join(c.notes, "\"\n\t\t\""))
 }
 
 func (c *Copy) Note(note string) {

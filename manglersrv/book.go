@@ -30,7 +30,7 @@ func (b *Book) String() string {
 // in beautifully formatted and indented s-exps.
 func (b *Book) Print() string {
 	const fmtstr = `(book %q
-	(authors %s)
+	(authors "%s")
 	(title %s)
 	(notes
 		"%s"
@@ -38,7 +38,8 @@ func (b *Book) Print() string {
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, b.isbn, "WIP", b.title, strings.Join(b.notes, "\"\n\t\t\""), sCopies(b.copies))
+	return fmt.Sprintf(fmtstr, b.isbn, strings.Join(b.authors, `" "`), b.title,
+		strings.Join(b.notes, "\"\n\t\t\""), sCopies(b.copies))
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.
@@ -54,13 +55,13 @@ func (b *Book) Delete() {
 
 // NewBook adds a Book to the system.
 // XXX worldcat automated metadata fetching would be nice
-func NewBook(isbn, title string) (*Book, error) {
+func NewBook(isbn, title string, authors []string) (*Book, error) {
 	// XXX check whether Book already exists
 	if !isISBN13(isbn) {
 		return nil, fmt.Errorf("NewBook: %q is not a ISBN-13")
 	}
 
-	b := Book{ISBN(isbn), title, nil, nil}
+	b := Book{ISBN(isbn), title, authors, nil, nil}
 	books[ISBN(isbn)] = &b
 	b.Note("added to the system")
 	return &b, nil
