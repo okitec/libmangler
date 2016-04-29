@@ -71,7 +71,7 @@ func NewBook(isbn, title string, authors []string) (*Book, error) {
 // The input string may have dashes between the components. This is not required,
 // the check bases solely on length and checksum.
 // Examples: "978-0-201-07981-4", "9780201079814"
-func isISBN13(s string) bool { 
+func isISBN13(s string) bool {
 	if len(s) < 13 {
 		return false
 	}
@@ -86,30 +86,29 @@ func isISBN13(s string) bool {
 
 		if r == '-' {
 			continue
-		}
-
-		if unicode.IsDigit(r) {
+		} else if unicode.IsDigit(r) {
 			isbn[ndigits] = int(r) - '0'
 			ndigits++
+		} else {
+			return false // bad characters
 		}
 	}
 
-	// Checksum calculation. Note that the odd digits have even indexes in the array.
+	// Checksum validation. Note that the odd digits have even indexes in the array.
+	// The ISBN is valid if adding the check digit to the sum makes it a multiple of ten.
 
 	sum := 0
-	for i := 0; i < 12; i += 2 {
-		sum += isbn[i] // odd numbers
+	for i := 0; i < 13; i += 2 {
+		sum += isbn[i] // odd numbers (includes check digit)
 	}
 
 	for i := 1; i < 12; i += 2 {
 		sum += 3 * isbn[i] // even numbers
 	}
 
-	chksum := 10 - sum%10
-
-	if chksum != isbn[12] {
-		return false
+	if (sum % 10) == 0 {
+		return true
 	}
 
-	return true
+	return false
 }

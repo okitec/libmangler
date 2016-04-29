@@ -8,6 +8,8 @@ var isISBN13Tests = []struct {
 }{
 	{"9780201079814", true},
 	{"978-0-201-07981-4", true},
+	{"978-3-468-11032-0", true},
+	{"978-81-203-0596-0", true},
 
 	{"", false},
 	{"abcdefghijklmn", false},
