@@ -26,7 +26,7 @@ func (c *Copy) Print() string {
 	const fmtstr = `(copy %v
 	(user %q)
 	(book %q
-		(author %s)
+		(authors %s)
 		(title %q)
 	)
 	(notes

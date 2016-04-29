@@ -12,10 +12,11 @@ type ISBN string
 // Struct Book stores information about books. The physical manifestations of the
 // book are called Copies. Books are identified by their unique ISBN.
 type Book struct {
-	isbn   ISBN
-	title  string
-	notes  []string
-	copies []*Copy
+	isbn    ISBN
+	title   string
+	authors []string
+	notes   []string
+	copies  []*Copy
 }
 
 // books contains all book structs.
@@ -29,7 +30,7 @@ func (b *Book) String() string {
 // in beautifully formatted and indented s-exps.
 func (b *Book) Print() string {
 	const fmtstr = `(book %q
-	(author %s)
+	(authors %s)
 	(title %s)
 	(notes
 		"%s"
@@ -37,7 +38,7 @@ func (b *Book) Print() string {
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, b.isbn, "WIP", b.title, strings.Join(b.notes, "\"\n\t\t\""),sCopies(b.copies))
+	return fmt.Sprintf(fmtstr, b.isbn, "WIP", b.title, strings.Join(b.notes, "\"\n\t\t\""), sCopies(b.copies))
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.

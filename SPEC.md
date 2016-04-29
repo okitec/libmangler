@@ -160,7 +160,7 @@ Copies:
 		(copy 594
 			(user "Dominik Okwieka")
 		 	(book "978-0-201-07981-4"
-				(author "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
+				(authors "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
 				(title "The AWK Programming Language")
 			)
 			(notes "2016-03-24T11:01+01:00 <- ISO 8601-Date" "...")
@@ -168,7 +168,7 @@ Copies:
 Bücher:
 
 		(book "978-0-201-07981-4"
-			(author "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
+			(authors "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
 			(title "The AWK Programming Language")
 			(notes "2016-04-26T18:16+02:00 excellent read")
 			(copies 594 405 406)
