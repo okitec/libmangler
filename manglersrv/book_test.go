@@ -11,10 +11,10 @@ var isISBN13Tests = []struct {
 
 	{"", false},
 	{"abcdefghijklmn", false},
-	//{"978--0-201-07981-4", false}, // too many dashes; minor offence, ignored for now
 	{"978-0-201-07981-9", false}, // bad checksum
 	{"3945856", false},
 	{"0-201-07981-X", false}, // ISBN-10
+	{"00000000000000000000000000", false}, // too long
 }
 
 func TestIsISBN13(t *testing.T) {

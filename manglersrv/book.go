@@ -71,16 +71,16 @@ func NewBook(isbn, title string, authors []string) (*Book, error) {
 // The input string may have dashes between the components. This is not required,
 // the check bases solely on length and checksum.
 // Examples: "978-0-201-07981-4", "9780201079814"
-func isISBN13(s string) bool {
+func isISBN13(s string) bool { 
 	if len(s) < 13 {
 		return false
 	}
 
 	var isbn [13]int
 	ndigits := 0
-	for i, r := range s {
-		// s has more runes than 13 digits + 4 dashes or more digits than expected.
-		if i > 17 || ndigits > 13 {
+	for _, r := range s {
+		// s has more digits than expected
+		if ndigits >= 13 {
 			return false
 		}
 
