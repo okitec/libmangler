@@ -107,16 +107,9 @@ Selektion *Dot* genannt.
 nicht zu übersehen. (Ich tippe gerade dieses Dokument in `sam`. Ein
 sehr produktiver Plain-Text-Editor).
 
-Die Antworten haben dieses Format:
-
-		<textual status/error string>
-			multi-line output (JSON?), if needed
-		.
-
-Ein einzelner Punkt auf einer sonst leeren Zeile signalisiert das Ende
-der Antwort. Um einzelne Punkte im Output zu erlauben, kann dieser mit
-einem Backslash escapet werden ('\\.').
-
+Das Antwortformat des Servers ist von den ausgeführten Kommandos
+abhängig. Wenn ein Command fehlerfrei funktioniert, sollte er
+üblicherweise keinen Output generieren (*Unix Rule of Silence*).
 
 ### 4.2 Befehlsliste
 
