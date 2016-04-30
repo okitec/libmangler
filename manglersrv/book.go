@@ -51,7 +51,7 @@ func (b *Book) Delete() {
 	// XXX delete from disk
 	// XXX should this return an error?
 
-	if b.copies != nil {
+	if len(b.copies) > 0 {
 		return
 	}
 
