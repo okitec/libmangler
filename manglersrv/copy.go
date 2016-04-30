@@ -71,7 +71,7 @@ func (c *Copy) Lend(u *User) error {
 
 	c.user = u
 	u.copies = append(u.copies, c)
-	c.Note(fmt.Sprintf("lent to %q", u))
+	c.Note(fmt.Sprintf("lent to %s", u))
 	return nil
 }
 
@@ -89,7 +89,7 @@ func (c *Copy) Return() {
 	}
 
 	c.user = nil
-	c.Note(fmt.Sprintf("returned from %q", u))
+	c.Note(fmt.Sprintf("returned from %s", u))
 }
 
 func NewCopy(b *Book) (*Copy, error) {
