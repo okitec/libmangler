@@ -45,9 +45,11 @@ func (c *Copy) Note(note string) {
 func (c *Copy) Delete() {
 	delete(copies, c.id)
 
-	for i := range c.user.copies {
-		if c.user.copies[i] == c {
-			c.user.copies[i] = nil // XXX This doesn't compress the slices.
+	if c.user != nil {
+		for i := range c.user.copies {
+			if c.user.copies[i] == c {
+				c.user.copies[i] = nil // XXX This doesn't compress the slices.
+			}
 		}
 	}
 
