@@ -5,4 +5,4 @@ W-Seminar Android: Fachbibliotheksverwaltung
 
 Dieses Projekt realisiert ein Fachbibliothekssystem mit einem in Java geschriebenen
 Android-Client und einem in Go geschriebenen Server. Das Protokoll ist minimalistisch
-gehalten (siehe Spezifikation).
+gehalten (siehe [Spezifikation](SPEC.md)).
