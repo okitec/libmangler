@@ -45,15 +45,27 @@ func (c *Copy) Note(note string) {
 func (c *Copy) Delete() {
 	delete(copies, c.id)
 
+resized0:
 	for i := range c.user.copies {
 		if c.user.copies[i] == c {
-			c.user.copies[i] = nil // XXX This doesn't compress the slices.
+			// See https://github.com/golang/go/wiki/SliceTricks
+			n := len(c.user.copies)
+			c.user.copies[i] = c.user.copies[n-1]
+			c.user.copies[n-1] = nil
+			c.user.copies = c.user.copies[:n-1]
+			// reset range loop because slice is shorter
+			goto resized0
 		}
 	}
 
+resized1:
 	for i := range c.book.copies {
 		if c.book.copies[i] == c {
-			c.book.copies[i] = nil // XXX This doesn't compress the slices.
+			n := len(c.user.copies)
+			c.user.copies[i] = c.user.copies[n-1]
+			c.user.copies[n-1] = nil
+			c.user.copies = c.user.copies[:n-1]
+			goto resized1
 		}
 	}
 }
@@ -82,9 +94,14 @@ func (c *Copy) Return() {
 		return
 	}
 
+resized:
 	for i := range c.user.copies {
 		if c.user.copies[i] == c {
-			c.user.copies[i] = nil // XXX This doesn't compress the slices.
+			n := len(c.user.copies)
+			c.user.copies[i] = c.user.copies[n-1]
+			c.user.copies[n-1] = nil
+			c.user.copies = c.user.copies[:n-1]
+			goto resized
 		}
 	}
 
