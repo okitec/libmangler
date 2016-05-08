@@ -50,6 +50,11 @@ func (b *Book) Note(note string) {
 func (b *Book) Delete() {
 	// XXX delete from disk
 	// XXX should this return an error?
+
+	if len(b.copies) > 0 {
+		return
+	}
+
 	delete(books, b.isbn)
 }
 
