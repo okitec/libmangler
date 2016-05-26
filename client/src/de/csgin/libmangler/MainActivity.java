@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 public class MainActivity extends Activity {
@@ -23,7 +24,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		initbuttons();
-
 	/*
 		try {
 			conn = new Connection(SRVADDR);
@@ -50,7 +50,10 @@ public class MainActivity extends Activity {
 					i.putExtra("SAVE_HISTORY", false);
 					startActivityForResult(i, SCANREQ);
 				} catch(Exception e) {
-					// XXX handle specific exception - app not found
+					// XXX handle specific exception
+					// XXX localisations
+					Toast.makeText(getBaseContext(), "Please install the ZXing Barcode scanner app.", Toast.LENGTH_LONG).show();
+					finish();
 				}
 			}
 		});

@@ -85,12 +85,9 @@ public class Connection {
 		return pvers;
 	}
 
-	/* transact: send request, return answer; *exit* on error */
+	/* transact: send request, return answer */
 	private String transact(String req) {
-	 	TransactTask tt = new TransactTask();
-		tt.execute(req);
-		
-		return result;
+			return null;
 	}
 
 	/* mksel: generate selection string for a list of IDs */
@@ -102,20 +99,5 @@ public class Connection {
 			sel += "id, ";    /* trailing comma is fine */
 
 		return sel;
-	}
-
-	private class TransactService extends IntentService {
-		public TransactService() {
-		}
-
-		protected void onHandleIntent(Intent i) {
-			try {
-				String req = i.getStringExtra("req");
-				out.println(req);
-				i.putExtra("ans", in.readLine());
-			} catch (IOException ioe) {
-				System.exit(1);
-			}
-		}
 	}
 }
