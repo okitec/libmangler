@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 3
+Version: Protokollversion 4
 
 0. Index
 --------
@@ -120,9 +120,11 @@ abhängig. Wenn ein Command fehlerfrei funktioniert, sollte er
 		B       Selektiert alle Bücher.
 		C       Selektiert alle Copies, d.h. Buchexemplare.
 		U       Selektiert alle Ausleiher (User).
+		T       Selektiert alle Tags.
 		/isbn/  Selektiert etwas mit dieser ISBN (Bücher, Copies, User)
 		/id/    Selektiert etwas mit dieser ID
 		/name/  Selektiert etwas mit diesem Namen
+		/@tag/  Selektiert etwas mit diesem Tag
 
 Im Selektionsargument (/.../) lassen sich mehrere Kriterien durch ein
 Komma kombinieren; ein abschließendes Komma ist erlaubt.
@@ -211,6 +213,16 @@ angegeben.
 Fügt eine Notiz zu allen Objekten der Selektion hinzu. Die Notiz erstreckt sich bis
 zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im ISO 8601-Format
 mitprotokolliert. Die Notizen eines Objekts werden bei einem `p`-Befehl mitausgegeben.
+
+#### '@' - add or remove tag
+
+*Synopsis*
+
+		@ tag +|-
+
+*Beschreibung*
+
+Fügt einen Tag zu allen Elementen der Selektion hinzu bzw. entfernt ihn.
 
 #### `R` - retire
 
