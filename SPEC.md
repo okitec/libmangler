@@ -6,14 +6,14 @@ Version: Protokollversion 3
 0. Index
 --------
 
-1. Projektziele
-2. Einschränkungen
-3. Architektur und Implementierungssprachen
-4. Operationen/Protokoll
-	1. Allgemeines
-	2. Befehlsliste
-5. Datenstrukturen
-6. Referenzen
+1. [Projektziele](#1-projektziele)
+2. [Einschränkungen](#2-einschränkungen)
+3. [Architektur und Implementierungssprachen](#3-architektur-und-implementierungssprachen)
+4. [Operationen/Protokoll](#4-operationenprotokoll)
+	1. [Allgemeines](#41-allgemeines)
+	2. [Befehlsliste](#42-befehlsliste)
+5. [Datenstrukturen](#5-datenstrukturen)
+6. [Referenzen](#6-referenzen)
 
 1. Projektziele
 ---------------
