@@ -112,8 +112,12 @@ public class MainActivity extends Activity {
 		if (req == SCANREQ) {
 			if (ans == RESULT_OK) {
 				String s = data.getStringExtra("SCAN_RESULT");
-				id = Long.parseLong(s);
-				dispinfo(id);
+				try {
+					id = Long.parseLong(s);
+					dispinfo(id);
+				} catch(NumberFormatException nfe) {
+					Toast.makeText(getBaseContext(), "QR code is not a valid copy ID", Toast.LENGTH_LONG).show();
+				}
 			}
 			/* don't do anything on failure */
 		}
