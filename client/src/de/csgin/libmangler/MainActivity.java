@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
 		Bscan.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
 				try {
 					Intent i = new Intent("com.google.zxing.client.android.SCAN");
 					i.putExtra("SCAN_MODE", "QR_CODE_MODE");
@@ -109,6 +110,7 @@ public class MainActivity extends Activity {
 	@Override
 	public void onActivityResult(int req, int ans, Intent data) {
 		super.onActivityResult(req, ans, data);
+		// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
 		if (req == SCANREQ) {
 			if (ans == RESULT_OK) {
 				String s = data.getStringExtra("SCAN_RESULT");
