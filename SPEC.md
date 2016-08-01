@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 4
+Version: Protokollversion 5
 
 0. Index
 --------
@@ -86,8 +86,8 @@ Das Protokoll ist ein UTF-8-basiertes Textprotokoll. IMHO ist es nicht
 nötig, dem Semi-Standard zu folgen und alles über HTTP zu machen;
 ich preferiere es, Plaintext-Protokolle in derselben Netzwerkschicht
 wie HTTP zu kreieren, anstatt über HTTP zu "tunneln". Aus Prinzip
-verwende ich kein XML. Falls nötig wird also JSON eingesetzt. Oder
-S-Expressions.
+verwende ich kein XML. Stattdsessen werden S-Expressions eingesetzt,
+wie sie in Lisp zu finden sind.
 
 Die Datenmengen sind klein und die Performanceanforderungen gering.
 Die kurze Schreibweise ist jedoch mnemonisch und einfach genug, um
@@ -95,7 +95,13 @@ von einem Menschen verstanden und geschrieben werden zu können.
 
 Generelles Request-Format:
 
-		selector cmd parameters \n
+		tag selector cmd parameters \n
+
+Der Tag ist eine dezimale Ganzzahl und dient der Identifikation des
+Requests und Responses auf Clientseite, da synchrones Netzwerken in
+Android eher kontraproduktiv ist: die graphische Oberfläche würde
+nicht geupdatet. Deswegen wird ein Helferthread verwendet, der die
+Tags der Antworten den jeweiligen Handlern zuordnet.
 
 Ein Selektor wählt aus, auf welche Einträge der folgende Befehl
 angewendet werden soll. *Einträge* bedeutet in diesem Kontext
@@ -108,8 +114,10 @@ nicht zu übersehen. (Ich tippe gerade dieses Dokument in `sam`. Ein
 sehr produktiver Plain-Text-Editor).
 
 Das Antwortformat des Servers ist von den ausgeführten Kommandos
-abhängig. Wenn ein Command fehlerfrei funktioniert, sollte er
+abhängig, zu Beginn ist jedoch immer der dezimale Tag des Requests
+zu finden. Wenn ein Command fehlerfrei funktioniert, sollte er
 üblicherweise keinen Output generieren (*Unix Rule of Silence*).
+In dem Fall wird nur der Tag gesendet, ohne eigentlichen Payload.
 
 ### 4.2 Befehlsliste
 
