@@ -120,7 +120,7 @@ abhängig. Wenn ein Command fehlerfrei funktioniert, sollte er
 		B       Selektiert alle Bücher.
 		C       Selektiert alle Copies, d.h. Buchexemplare.
 		U       Selektiert alle Ausleiher (User).
-		T       Selektiert alle Tags.
+		L       Selektiert alle Labels.
 		/isbn/  Selektiert etwas mit dieser ISBN (Bücher, Copies, User)
 		/id/    Selektiert etwas mit dieser ID
 		/name/  Selektiert etwas mit diesem Namen
@@ -214,15 +214,15 @@ Fügt eine Notiz zu allen Objekten der Selektion hinzu. Die Notiz erstreckt sich
 zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im ISO 8601-Format
 mitprotokolliert. Die Notizen eines Objekts werden bei einem `p`-Befehl mitausgegeben.
 
-#### '@' - add or remove tag
+#### '@' - add or remove label
 
 *Synopsis*
 
-		@ tag +|-
+		@ label +|-
 
 *Beschreibung*
 
-Fügt einen Tag zu allen Elementen der Selektion hinzu bzw. entfernt ihn.
+Fügt ein Label zu allen Elementen der Selektion hinzu bzw. entfernt es.
 
 #### `R` - retire
 
