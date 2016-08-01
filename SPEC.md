@@ -113,11 +113,17 @@ Selektion *Dot* genannt.
 nicht zu übersehen. (Ich tippe gerade dieses Dokument in `sam`. Ein
 sehr produktiver Plain-Text-Editor).
 
-Das Antwortformat des Servers ist von den ausgeführten Kommandos
-abhängig, zu Beginn ist jedoch immer der dezimale Tag des Requests
-zu finden. Wenn ein Command fehlerfrei funktioniert, sollte er
-üblicherweise keinen Output generieren (*Unix Rule of Silence*).
-In dem Fall wird nur der Tag gesendet, ohne eigentlichen Payload.
+Das Antwortformat sieht wie folgt aus:
+
+		tag lines \n
+		<payload>
+
+Der Tag gleicht dem des Requests, der diese Antwort veranlasst hat.
+Die Größe der eigentlichen Antwort wird in Zeilen angegeben.
+
+Wenn ein Command fehlerfrei funktioniert, sollte er keinen Output
+generieren (*Unix Rule of Silence*). In dem Fall wird nur der Header
+gesendet, ohne eigentlichen Payload (`lines` ist dann `0`).
 
 ### 4.2 Befehlsliste
 
