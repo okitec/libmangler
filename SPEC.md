@@ -18,58 +18,56 @@ Version: Protokollversion 5
 1. Projektziele
 ---------------
 
-Die Bibliotheksverwaltung soll der Lehrmittelbücherei helfen,
-Ausleihe und Rückgabe schnell durchzuführen und Beschädigungen zu
-notieren. Die Besitzerschaft eines Buchexemplars (sog. *Copy*) soll
-mitgeloggt werden. Das Einfügen eines neuen Buches und die Ablösung
-alter Ausgaben muss auch einfach sein.
+Die Bibliotheksverwaltung soll der Lehrmittelbücherei helfen, Ausleihe und
+Rückgabe schnell durchzuführen und Beschädigungen zu notieren. Die
+Besitzerschaft eines Buchexemplars (sog. *Copy*) soll mitgeloggt werden. Das
+Einfügen eines neuen Buches und die Ablösung alter Ausgaben muss auch einfach
+sein.
 
-Da es eine Lehrmittelbücherei ist, sollten Informationen wie
-Jahrgangstufe, Fach und Zweig pro Buch gespeichert werden können. Das
-Zusammenstellen einer Bücherliste für einen Schüler einer
-bestimmten Jahrgangsstufe und eines bestimmten Zweigs wäre auch
-angebracht.
+Da es eine Lehrmittelbücherei ist, sollten Informationen wie Jahrgangstufe,
+Fach und Zweig pro Buch gespeichert werden können. Das Zusammenstellen einer
+Bücherliste für einen Schüler einer bestimmten Jahrgangsstufe und eines
+bestimmten Zweigs wäre auch angebracht.
 
 Bücher werden durch aufgeklebte QR-Codes eindeutig identifiziert. Die
-Generation von Codes für neue Bücher muss möglich sein, indem z.B.
-eine Bilddatei für eine bestimmte ID erzeugt wird.
+Generation von Codes für neue Bücher muss möglich sein, indem z.B. eine
+Bilddatei für eine bestimmte ID erzeugt wird.
 
 
 2. Einschränkungen
 ------------------
 
-Die App muss auf einem Android-Handy laufen. Der Server ist in Go
-geschrieben und statisch kompiliert, sodass eine Binary für Windows
-ohne Installation oder irgendwelche Dateien direkt lauffähig ist.
+Die App muss auf einem Android-Handy laufen. Der Server ist in Go geschrieben
+und statisch kompiliert, sodass eine Binary für Windows ohne Installation oder
+irgendwelche Dateien direkt lauffähig ist.
 
 
 3. Architektur und Implementierungssprachen
 -------------------------------------------
 
-Die Bibliotheksverwaltung ist eine Ansammlung von Programmen. Die App
-ist einer der zwei Clients. Sie verfügt über Fähigkeiten wie
+Die Bibliotheksverwaltung ist eine Ansammlung von Programmen. Die App ist einer
+der zwei Clients. Sie verfügt über Fähigkeiten wie
+
 
  - QR-Code lesen
  - Infos zum Buch anzeigen
  - Ausleihe, Rückgabe, Beschädigung oder Aussortierung melden
 
-und ist ähnlich einem *dumb terminal*, das nur Daten vom Server
-fetcht und um Aktionen bittet. Sie wird in Java geschrieben. Die UI
-wird semi-dynamisch generiert; vorgefertigte Layouts werden mithilfe
-eines `ViewFlipper`s ein- und ausgeblendet, um der unnötigen Komplexität
-zu vieler Activities zu entgehen.
+und ist ähnlich einem *dumb terminal*, das nur Daten vom Server fetcht und um
+Aktionen bittet. Sie wird in Java geschrieben. Die UI wird semi-dynamisch
+generiert; vorgefertigte Layouts werden mithilfe eines `ViewFlipper`s ein- und
+ausgeblendet, um der unnötigen Komplexität zu vieler Activities zu entgehen.
 
-Der zweite Client ist ein Desktopprogramm, das zwar keine QR-Codes
-lesen kann und somit nicht zur Interaktion mit den physikalischen
-Büchern da ist, jedoch der einfachen Verwaltung der Bücher und
-Büchertypen gewidmet ist; dafür ist ein großer Bildschirm und eine
-Tastatur hilfreicher als ein Smartphone. Das Programm ist auch
-dasjenige, welches QR-Codes für neue Bücher generiert. Die
+Der zweite Client ist ein Desktopprogramm, das zwar keine QR-Codes lesen kann
+und somit nicht zur Interaktion mit den physikalischen Büchern da ist, jedoch
+der einfachen Verwaltung der Bücher und Büchertypen gewidmet ist; dafür ist
+ein großer Bildschirm und eine Tastatur hilfreicher als ein Smartphone. Das
+Programm ist auch dasjenige, welches QR-Codes für neue Bücher generiert. Die
 Implementierungssprache ist Java, Go oder Python.
 
-Beide Clients interagieren mit einem Server, der nicht den Umweg über
-HTTP geht; Pakete werden direkt zwischen Client und Server über einen
-TCP-Stream ausgetauscht. Die Programmiersprache des Servers ist Go.
+Beide Clients interagieren mit einem Server, der nicht den Umweg über HTTP
+geht; Pakete werden direkt zwischen Client und Server über einen TCP-Stream
+ausgetauscht. Die Programmiersprache des Servers ist Go.
 
 
 4. Operationen/Protokoll
@@ -78,53 +76,50 @@ TCP-Stream ausgetauscht. Die Programmiersprache des Servers ist Go.
 ### 4.1 Allgemeines
 
 Das Client-Server-Protokoll muss über einen zuverlässigen (und evtl.
-Reihenfolge einhaltenden) Stream übertragen werden. Dies kann durch
-TCP gewährleistet werden. Zudem sollte er durch TLS verschlüsselt
-sein. Die Portnummer ist 40000.
+Reihenfolge einhaltenden) Stream übertragen werden. Dies kann durch TCP
+gewährleistet werden. Zudem sollte er durch TLS verschlüsselt sein. Die
+Portnummer ist 40000.
 
-Das Protokoll ist ein UTF-8-basiertes Textprotokoll. IMHO ist es nicht
-nötig, dem Semi-Standard zu folgen und alles über HTTP zu machen;
-ich preferiere es, Plaintext-Protokolle in derselben Netzwerkschicht
-wie HTTP zu kreieren, anstatt über HTTP zu "tunneln". Aus Prinzip
-verwende ich kein XML. Stattdsessen werden S-Expressions eingesetzt,
-wie sie in Lisp zu finden sind.
+Das Protokoll ist ein UTF-8-basiertes Textprotokoll. IMHO ist es nicht nötig,
+dem Semi-Standard zu folgen und alles über HTTP zu machen; ich preferiere es,
+Plaintext-Protokolle in derselben Netzwerkschicht wie HTTP zu kreieren, anstatt
+über HTTP zu "tunneln". Aus Prinzip verwende ich kein XML. Stattdessen werden
+S-Expressions eingesetzt, wie sie in Lisp zu finden sind.
 
-Die Datenmengen sind klein und die Performanceanforderungen gering.
-Die kurze Schreibweise ist jedoch mnemonisch und einfach genug, um
-von einem Menschen verstanden und geschrieben werden zu können.
+Die Datenmengen sind klein und die Performanceanforderungen gering. Die kurze
+Schreibweise ist jedoch mnemonisch und einfach genug, um von einem Menschen
+verstanden und geschrieben werden zu können.
 
 Generelles Request-Format:
 
 		tag selector cmd parameters \n
 
-Der Tag ist eine dezimale Ganzzahl und dient der Identifikation des
-Requests und Responses auf Clientseite, da synchrones Netzwerken in
-Android eher kontraproduktiv ist: die graphische Oberfläche würde
-nicht geupdatet. Deswegen wird ein Helferthread verwendet, der die
-Tags der Antworten den jeweiligen Handlern zuordnet.
+Der Tag ist eine dezimale Ganzzahl und dient der Identifikation des Requests und
+Responses auf Clientseite, da synchrones Netzwerken in Android eher
+kontraproduktiv ist: die graphische Oberfläche würde nicht geupdatet. Deswegen
+wird ein Helferthread verwendet, der die Tags der Antworten den jeweiligen
+Handlern zuordnet.
 
-Ein Selektor wählt aus, auf welche Einträge der folgende Befehl
-angewendet werden soll. *Einträge* bedeutet in diesem Kontext
-Bücher, Buchexemplare und auch User. Die Selektion kann nur Einträge
-eines Typs auf einmal haben. Nach der Schreibweise `'.'` wid die
-Selektion *Dot* genannt.
+Ein Selektor wählt aus, auf welche Einträge der folgende Befehl angewendet
+werden soll. *Einträge* bedeutet in diesem Kontext Bücher, Buchexemplare und
+auch User. Die Selektion kann nur Einträge eines Typs auf einmal haben. Nach
+der Schreibweise `'.'` wid die Selektion *Dot* genannt.
 
-Ähnlichkeiten zu der Kommandosprache des [`sam`][sam]-Editors sind
-nicht zu übersehen. (Ich tippe gerade dieses Dokument in `sam`. Ein
-sehr produktiver Plain-Text-Editor).
+Ähnlichkeiten zu der Kommandosprache des [`sam`][sam]-Editors sind nicht zu
+übersehen. (Ich tippe gerade dieses Dokument in `sam`. Ein sehr produktiver
+Plain-Text-Editor).
 
 Das Antwortformat sieht wie folgt aus:
 
 		tag lines \n
 		<payload>
 
-Der Tag gleicht dem des Requests, der diese Antwort veranlasst hat.
-Die Größe der eigentlichen Antwort wird in Zeilen angegeben.
+Der Tag gleicht dem des Requests, der diese Antwort veranlasst hat. Die Größe
+der eigentlichen Antwort wird in Zeilen angegeben.
 
-Wenn ein Command fehlerfrei funktioniert, sollte er keinen Output
-generieren (*Unix Rule of Silence*). In dem Fall wird ein leerer
-Payload gesendet, der jedoch noch Whitespace enthalten kann (kleines,
-etwas unschönes Artefakt).
+Wenn ein Command fehlerfrei funktioniert, sollte er keinen Output generieren
+(*Unix Rule of Silence*). In dem Fall wird ein leerer Payload gesendet, der
+jedoch noch Whitespace enthalten kann (kleines, etwas unschönes Artefakt).
 
 ### 4.2 Befehlsliste
 
@@ -141,14 +136,14 @@ etwas unschönes Artefakt).
 		/name/  Selektiert etwas mit diesem Namen
 		/@tag/  Selektiert etwas mit diesem Tag
 
-Im Selektionsargument (/.../) lassen sich mehrere Kriterien durch ein
-Komma kombinieren; ein abschließendes Komma ist erlaubt.
+Im Selektionsargument (/.../) lassen sich mehrere Kriterien durch ein Komma
+kombinieren; ein abschließendes Komma ist erlaubt.
 
 		C/0, 4, 5,/   - selektiert Copies der IDs 0, 4 und 5
 
-Wenn z.B. User selektiert sind, kann man alle filtern, die ein Buch
-mit einer bestimmten ISBN haben. Wenn z.B. alle Copies selektiert
-sind, kann man alle filtern, die zum selben User gehören, etc.
+Wenn z.B. User selektiert sind, kann man alle filtern, die ein Buch mit einer
+bestimmten ISBN haben. Wenn z.B. alle Copies selektiert sind, kann man alle
+filtern, die zum selben User gehören, etc.
 
 #### `p` - print
 
@@ -158,8 +153,9 @@ sind, kann man alle filtern, die zum selben User gehören, etc.
 
 *Beschreibung*
 
-Gibt alle Informationen zu jedem Eintrag in *Dot* aus. S-Expressions werden als Format verwendet.
-Die folgenden Beispiele dienen als Definitionen:
+Gibt alle Informationen zu jedem Eintrag in *Dot* aus. S-Expressions werden als
+Format verwendet. Die folgenden Beispiele dienen als Definitionen:
+
 
 Copies:
 
@@ -186,7 +182,9 @@ User:
 			(copies 594)
 		)
 
-Wenn eine Copy nicht an einen User verliehen ist, wird der leere String verwendet:
+Wenn eine Copy nicht an einen User verliehen ist, wird der leere String
+verwendet:
+
 
 		(user "")
 
@@ -209,8 +207,9 @@ Gibt alle Copies der Selektion zurück.
 
 *Beschreibung*
 
-Leiht alle Bücher der Selektion an den *(L-)*User. Der Username erstreckt sich bis zum Ende
-der Zeile und darf nicht gequotet sein. Bei einem Fehler wird ein String der Form
+Leiht alle Bücher der Selektion an den *(L-)*User. Der Username erstreckt sich
+bis zum Ende der Zeile und darf nicht gequotet sein. Bei einem Fehler wird ein
+String der Form
 
 		can't lend [id]: <error string>
 
@@ -225,9 +224,10 @@ angegeben.
 
 *Beschreibung*
 
-Fügt eine Notiz zu allen Objekten der Selektion hinzu. Die Notiz erstreckt sich bis
-zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im ISO 8601-Format
-mitprotokolliert. Die Notizen eines Objekts werden bei einem `p`-Befehl mitausgegeben.
+Fügt eine Notiz zu allen Objekten der Selektion hinzu. Die Notiz erstreckt sich
+bis zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im
+ISO 8601-Format mitprotokolliert. Die Notizen eines Objekts werden bei einem
+`p`-Befehl mitausgegeben.
 
 #### '@' - add or remove label
 
@@ -257,8 +257,8 @@ Zieht alle Copies der Selektion aus dem Verkehr.
 
 *Beschreibung*
 
-Löscht Selektion. Bücher mit existierenden Copies können nicht
-gelöscht werden, User mit ausgeliehenen Copies auch nicht.
+Löscht Selektion. Bücher mit existierenden Copies können nicht gelöscht
+werden, User mit ausgeliehenen Copies auch nicht.
 
 #### `A` - add book
 
@@ -268,8 +268,8 @@ gelöscht werden, User mit ausgeliehenen Copies auch nicht.
 
 *Beschreibung*
 
-Erzeugt ein neues Buch, das diese ISBN hat. Weitere Informationen
-werden, falls möglich, aus dem Internet gefetcht.
+Erzeugt ein neues Buch, das diese ISBN hat. Weitere Informationen werden, falls
+möglich, aus dem Internet gefetcht.
 
 #### `a` - add copy of a book
 
@@ -314,13 +314,13 @@ Gibt die Protokollversion in der Form
 
 		libmangler proto P
 
-wobei P die Protokollversion ist, zurück. Man muss die eigene
-Protokollversion auch übermitteln.
+wobei P die Protokollversion ist, zurück. Man muss die eigene Protokollversion
+auch übermitteln.
+
 
 ### 4.3 Beispiele
 
-Selektiere alle Copies des Users *Hans*, printe Infos, und gib alle
-zurück.
+Selektiere alle Copies des Users *Hans*, printe Infos, und gib alle zurück.
 
 		C/Hans/p
 		r
@@ -333,19 +333,18 @@ Selektiere alle Copies zu diesem Buch und retire sie.
 5. Datenstrukturen
 ------------------
 
-Die Exemplare eines Buches werden auch als *Copies* bezeichnet,
-besonders im Code. (Ursprünglich nannte ich die Exemplare *Bücher*
-und die "Klasse" *Buchtypen*, aber das ist eine unglückliche
-Benennung.)
+Die Exemplare eines Buches werden auch als *Copies* bezeichnet, besonders im
+Code. (Ursprünglich nannte ich die Exemplare *Bücher* und die "Klasse"
+*Buchtypen*, aber das ist eine unglückliche Benennung.)
 
-Der Server hat vollkommene Freiheit, wie diese Struktur im Speicher
-und auf der Disk zu repräsentieren ist. Jede Copy hat eine eindeutige
-ID, jedes Buch wird durch die ISBN eindeutig identifiziert. Die App
-sollte nichts groß speichern, nur evtl. cachen.
+Der Server hat vollkommene Freiheit, wie diese Struktur im Speicher und auf der
+Disk zu repräsentieren ist. Jede Copy hat eine eindeutige ID, jedes Buch wird
+durch die ISBN eindeutig identifiziert. Die App sollte nichts groß speichern,
+nur evtl. cachen.
 
-Die Ausleiher eines Buches werden durch einen String identifiziert,
-dessen Form frei wählbar ist, sofern das ganze System ein
-einheitliches Format verwendet und man Ausleiher wieder finden kann.
+Die Ausleiher eines Buches werden durch einen String identifiziert, dessen Form
+frei wählbar ist, sofern das ganze System ein einheitliches Format verwendet
+und man Ausleiher wieder finden kann.
 
 Dateisystemstruktur:
 

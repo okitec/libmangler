@@ -2,7 +2,7 @@
 # (code copied from Rob Pike's and Brian W. Kernighan's "The Practice of Programming",
 # p. 229, to avoid reinventing the wheel.)
 
-BEGIN { Linelen = 70 }
+BEGIN { Linelen = 80 }
 
 /./  { for(i = 1; i <= NF; i++) addword($i)}  # non-blank line
 /^$/ { printline(); print "" }                # blank line
