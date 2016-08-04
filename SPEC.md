@@ -122,8 +122,9 @@ Der Tag gleicht dem des Requests, der diese Antwort veranlasst hat.
 Die Größe der eigentlichen Antwort wird in Zeilen angegeben.
 
 Wenn ein Command fehlerfrei funktioniert, sollte er keinen Output
-generieren (*Unix Rule of Silence*). In dem Fall wird nur der Header
-gesendet, ohne eigentlichen Payload (`lines` ist dann `0`).
+generieren (*Unix Rule of Silence*). In dem Fall wird ein leerer
+Payload gesendet, der jedoch noch Whitespace enthalten kann (kleines,
+etwas unschönes Artefakt).
 
 ### 4.2 Befehlsliste
 

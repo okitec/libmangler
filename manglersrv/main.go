@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -25,10 +26,32 @@ const (
 func handle(rw io.ReadWriter) {
 	var dot []elem
 	buf := make([]byte, 128)
+
 	for {
 		n, err := rw.Read(buf)
 
-		s := string(buf[0:n])
+		req := string(buf[0:n])
+		args := strings.Split(req, " ")
+		if len(args) < 2 {
+			log.Printf("request without tag: %s", req)
+			fmt.Fprintf(rw, "error: request without tag: %s\n", req) // XXX breaks Java side
+			// XXX duplication, see end of handle()
+			if err != nil {
+				return
+			}
+			continue
+		}
+
+		tag, err := strconv.Atoi(args[0])
+		if err != nil {
+			log.Printf("non-numerical tag %s", args[0])
+			fmt.Fprintf(rw, "error: non-numerical tag %s\n", args[0]) // XXX breaks Java side
+			continue
+		}
+
+		// stitch rest of request back together, excluding tag
+		s := strings.Join(args[1:len(args)], " ")
+
 	parse:
 		// We actually modify s sometimes.
 		for _, r := range s {
@@ -50,10 +73,13 @@ func handle(rw io.ReadWriter) {
 				args := strings.Fields(s)
 
 				fn := simpleCmdtab[r]
-				err := fn(rw, args)
+				sret, err := fn(args)
 				if err != nil {
 					log.Printf("cmd %c: %v", r, err)
 				}
+
+				sret += "\n"
+				fmt.Fprintf(rw, "%d %d\n%s", tag, strings.Count(sret, "\n"), sret)
 				break parse
 
 			case 'B', 'C', 'U':
@@ -102,9 +128,12 @@ func handle(rw io.ReadWriter) {
 				}
 
 			case 'p':
+				sret := ""
 				for _, e := range dot {
-					fmt.Fprintln(rw, e.Print())
+					sret += e.Print() + "\n"
 				}
+				fmt.Fprintf(rw, "%d %d\n", tag, strings.Count(sret, "\n"))
+				fmt.Fprint(rw, sret)
 
 			case 'n':
 				// The note is all text after "n" and before the EOL, whitespace-trimmed.
@@ -131,7 +160,7 @@ func handle(rw io.ReadWriter) {
 					c, ok := e.(*Copy)
 					if !ok {
 						log.Printf("tried to lend a non-Copy element")
-						fmt.Fprintln(rw, "can't lend: not a Copy")
+						fmt.Fprintf(rw, "%d 1\nerror: can't lend: not a Copy\n", tag)
 						break
 					}
 
@@ -145,7 +174,7 @@ func handle(rw io.ReadWriter) {
 					c, ok := e.(*Copy)
 					if !ok {
 						log.Printf("tried to return a non-Copy element")
-						fmt.Fprintln(rw, "can't return: not a Copy")
+						fmt.Fprintf(rw, "%d 1\nerror: can't return: not a Copy\n", tag)
 						break
 					}
 
