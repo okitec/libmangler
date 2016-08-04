@@ -14,9 +14,9 @@ import java.util.Random;
  *
  *     new Req("B/978-0-201-07981-4/p", new RespHandler() {
  *         public void onResponse(Req r, String resp) {
- *             Log.i("derp", resp);
+ *             new Toast.makeText(this, "derp: " + resp, Toast.LENGTH_LONG).show();
  *         }
- *     });
+ *     }).send(out);
  */
 public class Req {
 	private static HashMap<Integer, Req> reqs;

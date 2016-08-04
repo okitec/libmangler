@@ -12,9 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+
 public class MainActivity extends Activity {
 	private static final int SCANREQ = 0;
-	private static final String SRVADDR = "okwieka-9pi2";
+	private static final String SRVADDR = "oquasinus-pc";
 	private Connection conn;
 	private long id = -1;            /* id of last scanned copy */
 
@@ -24,19 +27,14 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 		initbuttons();
-	/*
+
 		try {
-			conn = new Connection(SRVADDR);
+			conn = new Connection(SRVADDR, this);
 		} catch(UnknownHostException uhe) {
-			Toast.makeText(this, "Server nicht gefunden - Netzwerkfehler?", Toast.LENGTH_LONG).show();
-			Log.e("srv", "can't locate server at " + SRVADDR);
-			System.exit(1);
+			conn.panic("Server nicht gefunden - Netzwerkfehler?");
 		} catch(IOException ioe) {
-			Toast.makeText(this, "Verbindungsfehler", Toast.LENGTH_LONG).show();
-			Log.e("srv", "can't open socket to server " + SRVADDR);
-			System.exit(1);
+			conn.panic("Verbindungsfehler");
 		}
-	*/
 	}
 
 	private void initbuttons() {
@@ -116,7 +114,7 @@ public class MainActivity extends Activity {
 				String s = data.getStringExtra("SCAN_RESULT");
 				try {
 					id = Long.parseLong(s);
-					dispinfo(id);
+					conn.print(id);
 				} catch(NumberFormatException nfe) {
 					Toast.makeText(getBaseContext(), "QR code is not a valid copy ID", Toast.LENGTH_LONG).show();
 				}
@@ -125,10 +123,10 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	/* dispinfo: go into detailed info layout for a copy of that id */
-	private void dispinfo(long id) {
+	/* dispinfo: ATM, just display the string */
+	public void dispinfo(String s) {
 		TextView Tinfo = (TextView) findViewById(R.id.Tinfo);
-		Tinfo.setText("Copy ID: " + id);
+		Tinfo.setText("Fetched from server: " + s);
 
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
 		vf.showNext();
