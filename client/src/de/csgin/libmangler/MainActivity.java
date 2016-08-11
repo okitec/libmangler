@@ -8,16 +8,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-
 public class MainActivity extends Activity {
+	/* ViewFlipper indexes */
+	private static final int MainLayout = 0;
+	private static final int InfoLayout = 1;
+	private static final int SearchLayout = 2;
+
 	private static final int SCANREQ = 0;
-	private static final String SRVADDR = "oquasinus-pc";
+	private static final String SRVADDR = "oquasinus.duckdns.org";
+	private static final int PORT = 40000;
 	private Connection conn;
 	private long id = -1;            /* id of last scanned copy */
 
@@ -28,13 +32,8 @@ public class MainActivity extends Activity {
 
 		initbuttons();
 
-		try {
-			conn = new Connection(SRVADDR, this);
-		} catch(UnknownHostException uhe) {
-			conn.panic("Server nicht gefunden - Netzwerkfehler?");
-		} catch(IOException ioe) {
-			conn.panic("Verbindungsfehler");
-		}
+		Req.init(this, SRVADDR, PORT);
+		conn = new Connection(this);
 	}
 
 	private void initbuttons() {
@@ -57,15 +56,40 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Button Btomain = (Button) findViewById(R.id.Btomain);
-		Btomain.setOnClickListener(new OnClickListener() {
+		Button Bsearch = (Button) findViewById(R.id.Bsearch);
+		Bsearch.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
-				vf.showNext();
+				vf.setDisplayedChild(SearchLayout);
 			}
 		});
-		
+
+		OnClickListener tomain = new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
+				vf.setDisplayedChild(MainLayout);
+			}
+		};
+		Button Btomain = (Button) findViewById(R.id.Btomain);
+		Button Btomain2 = (Button) findViewById(R.id.Btomain2);
+		Btomain.setOnClickListener(tomain);
+		Btomain2.setOnClickListener(tomain);
+
+		Button Bdosearch = (Button) findViewById(R.id.Bdosearch);
+		Bdosearch.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EditText Esearch = (EditText) findViewById(R.id.Esearch);
+				long id;
+
+				// XXX search for more than just id!
+				id = Long.parseLong(Esearch.getText().toString());
+				conn.print(id);
+			}
+		});
+
 		Button Blend = (Button) findViewById(R.id.Blend);
 		// XXX add listener when networking code works
 		Button Bretire = (Button) findViewById(R.id.Bretire);
@@ -129,6 +153,6 @@ public class MainActivity extends Activity {
 		Tinfo.setText("Fetched from server: " + s);
 
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
-		vf.showNext();
+		vf.setDisplayedChild(InfoLayout);
 	}
 }

@@ -1,9 +1,9 @@
 <ViewFlipper
-    xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:id="@+id/flipper">
+	android:id="@+id/flipper" >
 
 		<LinearLayout
 			android:id="@+id/searchLayout"
@@ -12,10 +12,10 @@
 			android:orientation="vertical" >
 
 			<Button
-			    android:id="@+id/Bscan"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/scan" />
+				android:id="@+id/Bscan"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/scan" />
 
 			<Button
 				android:id="@+id/Bsearch"
@@ -36,28 +36,52 @@
 				android:layout_height="wrap_content" />
 
 			<Button
-			    android:id="@+id/Blend"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/lend" />
+				android:id="@+id/Blend"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/lend" />
 
 			<Button
-			    android:id="@+id/Bnote"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/note" />
+				android:id="@+id/Bnote"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/note" />
 
 			<Button
-			    android:id="@+id/Bretire"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/retire" />
+				android:id="@+id/Bretire"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/retire" />
 
 			<Button
-			    android:id="@+id/Btomain"
-			    android:layout_width="match_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/tomain" />
-
+				android:id="@+id/Btomain"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
    		 </LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/searchLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<EditText
+				android:id="@+id/Esearch"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+
+			<Button
+				android:id="@+id/Bdosearch"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/dosearch" />
+
+			<Button
+				android:id="@+id/Btomain2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+
+		</LinearLayout>
 </ViewFlipper>
