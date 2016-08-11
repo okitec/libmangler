@@ -1,36 +1,30 @@
 package de.csgin.libmangler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+/**
+ * Whereas the actual connection is managed in the Req class, the protocol lives
+ * in Connection. When one of these routines is called, the proper request will be
+ * assembled and sent to the server.
+ *
+ * XXX let caller decide on RespHandler (removes Context dependency)
+ * XXX naming: not really a Connection any longer, more of a protocol
+ * XXX could be totally static
+ */
 public class Connection {
-	private static final int PORT = 40000;
 	private static final int VERS = 2;
 
 	/* protocol error strings */
 	private static final String LENDERR = "can't lend";
 
-	private Socket socket;
-	private BufferedReader in;
-	private PrintWriter out;
 	private Context ctxt;
 	private RespHandler nilHandler;
 
-	/* just rethrow, we can't tell the user */
-	public Connection(String addr, Context ctxt) throws UnknownHostException, IOException {
+	public Connection(Context ctxt) {
 		int vers;
 
-		socket = new Socket(addr, PORT);
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		out = new PrintWriter(socket.getOutputStream());
 		this.ctxt = ctxt;
 		nilHandler = new RespHandler() {
 			public void onResponse(Req r, String resp) {}
@@ -42,15 +36,15 @@ public class Connection {
 			public void onResponse(Req r, String resp) {
 				((MainActivity)ctxt).dispinfo(resp);
 			}
-		}).send(out);
+		}).send();
 	}
 
 	public void delete(long... id) {
-		new Req("C/" + mksel(id) + "/d", nilHandler).send(out);
+		new Req("C/" + mksel(id) + "/d", nilHandler).send();
 	}
 
 	public void note(String note, long... id) {
-		new Req("C/" + mksel(id) + "/n " + note, nilHandler).send(out);
+		new Req("C/" + mksel(id) + "/n " + note, nilHandler).send();
 	}
 
 	/* lend: lend copy to user */
@@ -65,19 +59,19 @@ public class Connection {
 
 				// XXX show success?
 			}
-		}).send(out);
+		}).send();
 	}
 
 	public void returncopy(long... id) {
-		new Req("C/" + mksel(id) + "/r", nilHandler).send(out);
+		new Req("C/" + mksel(id) + "/r", nilHandler).send();
 	}
 
 	public void retire(long... id) {
-		new Req("C/" + mksel(id) + "/R", nilHandler).send(out);
+		new Req("C/" + mksel(id) + "/R", nilHandler).send();
 	}
 
 	public void quit(String reason) {
-		new Req("q " + reason, nilHandler).send(out);
+		new Req("q " + reason, nilHandler).send();
 	}
 
 	/* version: see if server operates on same protocol version */
@@ -100,7 +94,7 @@ public class Connection {
 				if(pv != VERS)
 					panic("protocol version mismatch");
 			}
-		}).send(out);
+		}).send();
 	}
 
 	/**

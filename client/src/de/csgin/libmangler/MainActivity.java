@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+// XXX handle pause/resume, reestablish connection
 public class MainActivity extends Activity {
 	/* ViewFlipper indexes */
 	private static final int MainLayout = 0;

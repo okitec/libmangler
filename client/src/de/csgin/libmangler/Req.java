@@ -3,8 +3,11 @@ package de.csgin.libmangler;
 import android.app.Activity;
 import android.content.Context;
 import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -22,6 +25,12 @@ public class Req {
 	private static HashMap<Integer, Req> reqs;
 	private static Random r;
 	private static Context ctxt;
+
+	private static String addr;
+	private static int port;
+	private static Socket socket;
+	private static BufferedReader br;
+	private static PrintWriter pw;
 
 	public final int tag;
 	public final String s;
@@ -44,9 +53,9 @@ public class Req {
 		}
 	}
 
-	public void send(PrintWriter pw) {
+	public void send() {
 		reqs.put(new Integer(tag), this);
-		pw.print(s + "\n");	
+		pw.print(s + "\n"); // XXX still networking on main thread here	
 	}
 
 	private static void recvloop(BufferedReader br) throws IOException {
@@ -93,13 +102,29 @@ public class Req {
 		}
 	}
 
-	public static void init(Context context, final BufferedReader br) {
+	private static void reconnect() {
+		try {
+			socket = new Socket(addr, port);
+			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			pw = new PrintWriter(socket.getOutputStream());
+		} catch(UnknownHostException uhe) {
+			// XXX how to call panic here?
+		} catch(IOException ioe) {
+			// XXX and here?
+		}
+	}
+
+	public static void init(Context context, final String addr, final int port) {
 		reqs = new HashMap<Integer, Req>();
 		r = new Random();
 		ctxt = context;
+		Req.addr = addr;
+		Req.port = port;
 
 		new Thread(new Runnable() {
 			public void run() {
+				reconnect();
+
 				try {
 					recvloop(br);
 				} catch(IOException ioe) {
