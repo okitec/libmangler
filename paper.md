@@ -19,8 +19,9 @@ Inhaltsverzeichnis
 3. Gesichtspunkte von Protokollen
 4. Das Protokoll
 5. Detailbetrachtung des Servers und des Clients
-6. Literaturverzeichnis
-7. Eidesstattliche Erklärung
+6. Glossar
+7. Literaturverzeichnis
+8. Eidesstattliche Erklärung
 
 1. Einleitung
 -------------
@@ -92,26 +93,57 @@ vergleichen.
 
 ### 3.1 Anforderungen
 
- - sinnvolle Kommunikation
- - sichere Übertragung
- - am Ziel ankommen
- - in richtiger Reihenfolge ankommen
- - Bandbreite
- - Latenzzeit
- - simple Implementierung
- - Robustheit
- - Portabilität: Interaktion verschiedenartiger Systeme
- - Testbarkeit und Verständlichkeit
+Nichts ist wichtiger als die Funktionsfähigkeit des Protokolls: es muss eine
+sinnvolle Kommunikation zwischen Hosts erlauben. Dazu gehört natürlich, dass
+nichts in falscher Reihenfolge, unvollständig, korrumpiert, oder am falschen
+Ziel ankommt. Deshalb verwenden die meisten Protokolle TCP als Unterbau, dass
+all diese Dinge garantieren kann. Böswillige Betrachtung und Manipulation der
+Daten kann man durch z.B. SSL/TLS verhindern, das leicht integrierbar ist.
+Protokolle, die TCP verwenden, sind stream-basiert, das heißt, es scheint für
+sie eine bidirektionale Verbindung der Hosts zu bestehen. Solch ein Stream wird
+durch den sogenannten Three-Way-Handshake aufgebaut, was zu Beginn dauert.
+
+Doch nicht immer laufen Protokolle über TCP. Prominentes Beispiel ist das
+Domain Name System (DNS), das primär der Auflösung von Hostnamen in
+IP-Adressen dient. Das DNS-Protokoll verwendet UDP, eine Alternative zu TCP, das
+nicht einmal garantiert, dass das Paket ankommt. Es wird aus zwei Gründen
+verwendet: es hat geringere Latenzzeit, weil kein TCP-Stream aufgebaut werden
+muss; zudem muss der DNS-Server sich nicht um offene Verbindungen sorgen [cit].
+
+Viele Protokolle haben also Performanceanforderungen. Es gibt hier zwei
+Größen: Bandbreite und Latenzzeit. Bandbreite ist die Datenmenge pro
+Zeiteinheit, die über das Protokoll übertragen wird; Latenzzeit ist die Zeit,
+bis die Antwort des entfernten Hosts beim Anfrager eintrifft. Je nachdem, was
+die Anwendung ist, ist das eine wichtiger als das andere. Wer Videos übertragen
+will, achtet auf Bandbreite. Wer ein Echtzeitmultiplayerspiel hat, den
+interessieren möglichst geringe Latenzzeiten.
+
+Die folgenden Attribute sind jedoch am wichtigsten: Robustheit, Testbarkeit,
+Verständlichkeit und Portabilität. Ohne Robustheit und Portabilität kann ein
+Protokoll im heterogenen Internet nicht überleben: es gibt meist mehrere, immer
+leicht falsche Implementierungen, die auf einer Vielzahl unterschiedlicher
+Architekturen und einer Vielzahl unterschiedlicher Betriebssysteme laufen. Ohne
+Testbarkeit ist es unmöglich, genau diese Robustheit zu testen. Ohne
+Verständnis für das Protokoll tappt der Entwickler im Dunkeln herum.
+
+Um das Protokoll korrekt implementieren zu können, muss es einfach sein, denn
+einfache Protokolle führen zu einfachen Implementierungen. Einfacher Code
+lässt sich vollständiger testen, ist wartbar und portierbar.
+
 
 ### 3.2 Ansätze
+
+Es ist Zeit, mehrere Ansätze zu vergleichen; jeder hat bestimmte Vor- und
+Nachteile. Die folgende Liste enthält verschiedenartige Protokolle, manche mehr
+und manche weniger bekannt.
 
  - 9P
  - DNS
  - FTP
  - HTTP
- - SMTP, POP3
  - IMAP
  - mpmp
- - Protokoll im Protokoll (SOAP)
+ - Protokoll im Protokoll
+ - SMTP
 
-### 3.3 Vergleiche
+
