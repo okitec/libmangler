@@ -240,6 +240,18 @@ func main() {
 	c3.Lend(u2)
 	c4.Lend(u3)
 
+	//cf. https://golang.org/pkg/os/signal/#Notify
+	//cf. http://stackoverflow.com/questions/11268943/golang-is-it-possible-to-capture-a-ctrlc-signal-and-run-a-cleanup-function-in
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, os.Interrupt)
+	go func() {
+		for _ = range sc {
+			store()
+			log.Println("Saved data, exiting now...")
+			os.Exit(0)
+		}
+	}()
+
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
