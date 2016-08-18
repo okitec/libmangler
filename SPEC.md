@@ -346,16 +346,9 @@ Die Ausleiher eines Buches werden durch einen String identifiziert, dessen Form
 frei wählbar ist, sofern das ganze System ein einheitliches Format verwendet
 und man Ausleiher wieder finden kann.
 
-Dateisystemstruktur:
-
-		/users
-			/users/<name>
-			...
-		/books/
-			/books/<isbn>
-				/books/<isbn>/data
-				/books/<isbn>/<copy id>
-			...
+Gespeichert werden die Daten in drei Dateien: `users`, `books` und `copies`.
+Das Format gleicht jeweils dem Output von `Up`, `Bp` und `Cp`, inklusive einer
+ersten Zeile aus Tag und Anzahlder Zeilen; diese sollte ignoriert werden.
 
 6. Referenzen
 -------------
