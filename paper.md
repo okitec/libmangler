@@ -86,7 +86,7 @@ darauf achten, dass die Botschaft unverändert ankommt, dass sie *sicher*
 ankommt, ohne überhört worden zu sein. Es kann viel schiefgehen.
 
 In dieser Arbeit wird hauptsächlich von Anwendungsprotokollen die Rede sein,
-also Protokollen der siebten Schilcht des OSI-Modells. IP, TCP, ARP, usw., sind
+also Protokollen der siebten Schicht des OSI-Modells. IP, TCP, ARP, usw., sind
 natürlich auch Protokolle, lassen sich aber schwer mit Anwendungsprotokollen
 vergleichen.
 
@@ -98,7 +98,7 @@ sinnvolle Kommunikation zwischen Hosts erlauben. Dazu gehört natürlich, dass
 nichts in falscher Reihenfolge, unvollständig, korrumpiert, oder am falschen
 Ziel ankommt. Deshalb verwenden die meisten Protokolle TCP als Unterbau, dass
 all diese Dinge garantieren kann. Böswillige Betrachtung und Manipulation der
-Daten kann man durch z.B. SSL/TLS verhindern, das leicht integrierbar ist.
+Daten kann man z.B. durch SSL/TLS verhindern, das leicht integrierbar ist.
 Protokolle, die TCP verwenden, sind stream-basiert, das heißt, es scheint für
 sie eine bidirektionale Verbindung der Hosts zu bestehen. Solch ein Stream wird
 durch den sogenannten Three-Way-Handshake aufgebaut, was zu Beginn dauert.
@@ -107,8 +107,9 @@ Doch nicht immer laufen Protokolle über TCP. Prominentes Beispiel ist das
 Domain Name System (DNS), das primär der Auflösung von Hostnamen in
 IP-Adressen dient. Das DNS-Protokoll verwendet UDP, eine Alternative zu TCP, das
 nicht einmal garantiert, dass das Paket ankommt. Es wird aus zwei Gründen
-verwendet: es hat geringere Latenzzeit, weil kein TCP-Stream aufgebaut werden
-muss; zudem muss der DNS-Server sich nicht um offene Verbindungen sorgen [cit].
+verwendet: es hat eine geringere Latenzzeit, weil kein TCP-Stream aufgebaut
+werden muss; zudem muss der DNS-Server sich nicht um offene Verbindungen sorgen
+[cit].
 
 Viele Protokolle haben also Performanceanforderungen. Es gibt hier zwei
 Größen: Bandbreite und Latenzzeit. Bandbreite ist die Datenmenge pro
