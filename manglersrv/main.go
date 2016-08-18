@@ -11,6 +11,8 @@ import (
 	"io"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
 	"unicode"
@@ -22,9 +24,152 @@ const (
 	protoPort    = 40000
 )
 
-// The function handle communicates with a client, resolving its requests.
+// The function interpret executes the line and returnsa string that should be
+// sent to the client. This is also used by store(), which is why it was split off
+// handle in the first place.
+func interpret(s string, dot *[]elem, tag int) (ret string) {
+	var err error
+
+parse:
+	// We actually modify s sometimes, which is why we need a parse goto-label.
+	for _, r := range s {
+		if unicode.IsSpace(r) {
+			continue
+		}
+
+		switch r {
+		case '\n':
+			return ""
+
+		case 'q':
+			// We must handle QUIT here to avoid closing the connection both
+			// in the deferred call and in cmd.go. So send special quit string,
+			// handle will know.
+			return "quit"
+
+		case 'A', 'a', 'u', 'v':
+			// 'Simple' commands not operating on selections.
+			args := strings.Fields(s)
+
+			fn := simpleCmdtab[r]
+			sret, err := fn(args)
+			if err != nil {
+				log.Printf("cmd %c: %v", r, err)
+			}
+
+			sret += "\n"
+			return fmt.Sprintf("%d %d\n%s", tag, strings.Count(sret, "\n"), sret)
+		case 'B', 'C', 'U':
+			// B/.../, C/.../, U/.../ reset the selection.
+			*dot = nil
+			var args []string
+			var end int
+
+			args = nil
+			hasarg := false
+
+			// Is there a slash? If so, split /foo, bar, quux,/ into ["foo" "bar" "quux"].
+			// If not, args will be nil and hasarg stays false.
+			start := strings.IndexRune(s, '/')
+			if start != -1 {
+				hasarg = true
+				start++                                     // +1: skip the slash
+				end = strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
+				// XXX really hacky solution, doesn't fulfill spec (strings are single-quoted in spec)
+				csvr := csv.NewReader(strings.NewReader(s[start:end]))
+
+				args, err = csvr.Read()
+				if err != nil {
+					log.Println("bad selection argument")
+					return ""
+				}
+			}
+
+			for i := range args {
+				args[i] = strings.TrimSpace(args[i])
+			}
+
+			fn := seltab[r]
+			// Do not use := here, it would redefine dot. Subtle.
+			*dot, err = fn(*dot, args)
+			if err != nil {
+				log.Printf("cmd %c: %v", r, err)
+			}
+
+			// Skip the selection arg, i.e. everything between the slashes (/.../).
+			if hasarg {
+				s = s[end+1:]
+				// Actually reset the range-loop, as we modify the string.
+				// Else we'd have spurious looping (I tested it).
+				goto parse
+			}
+
+		case 'p':
+			sret := ""
+			for _, e := range *dot {
+				sret += e.Print() + "\n"
+			}
+			return fmt.Sprintf("%d %d\n%s", tag, strings.Count(sret, "\n"), sret)
+
+		case 'n':
+			// The note is all text after "n" and before the EOL, whitespace-trimmed.
+			note := s[1:strings.IndexRune(s, '\n')]
+			note = strings.TrimSpace(note)
+			for _, e := range *dot {
+				e.Note(note)
+			}
+
+			// No need to continue, the note is the rest of the line.
+			return ""
+
+		case 'd':
+			for _, e := range *dot {
+				e.Delete()
+			}
+
+			return ""
+
+		case 'l':
+			name := s[1:strings.IndexRune(s, '\n')]
+			name = strings.TrimSpace(name)
+			u := users[name]
+
+			for _, e := range *dot {
+				c, ok := e.(*Copy)
+				if !ok {
+					log.Printf("tried to lend a non-Copy element")
+					return fmt.Sprintf("%d 1\nerror: can't lend: not a Copy\n", tag)
+					break
+				}
+
+				c.Lend(u)
+			}
+
+			return ""
+
+		case 'r':
+			for _, e := range *dot {
+				c, ok := e.(*Copy)
+				if !ok {
+					log.Printf("tried to return a non-Copy element")
+					return fmt.Sprintf("%d 1\nerror: can't return: not a Copy\n", tag)
+					break
+				}
+
+				c.Return()
+			}
+
+			return ""
+		}
+	}
+
+	return ""
+}
+
+// The function handle communicates with a client, resolving its requests via interpret().
 func handle(rw io.ReadWriter) {
 	var dot []elem
+	var err error
 	buf := make([]byte, 128)
 
 	for {
@@ -51,145 +196,20 @@ func handle(rw io.ReadWriter) {
 
 		// stitch rest of request back together, excluding tag
 		s := strings.Join(args[1:len(args)], " ")
-
-	parse:
-		// We actually modify s sometimes.
-		for _, r := range s {
-			if unicode.IsSpace(r) {
-				continue
-			}
-
-			switch r {
-			case '\n':
-				break parse
-
-			case 'q':
-				// We must handle QUIT here to avoid closing the connection both
-				// in the deferred call and in cmd.go.
-				return
-
-			case 'A', 'a', 'u', 'v':
-				// 'Simple' commands not operating on selections.
-				args := strings.Fields(s)
-
-				fn := simpleCmdtab[r]
-				sret, err := fn(args)
-				if err != nil {
-					log.Printf("cmd %c: %v", r, err)
-				}
-
-				sret += "\n"
-				fmt.Fprintf(rw, "%d %d\n%s", tag, strings.Count(sret, "\n"), sret)
-				break parse
-
-			case 'B', 'C', 'U':
-				// B/.../, C/.../, U/.../ reset the selection.
-				dot = nil
-				var args []string
-				var end int
-
-				args = nil
-				hasarg := false
-
-				// Is there a slash? If so, split /foo, bar, quux,/ into ["foo" "bar" "quux"].
-				// If not, args will be nil and hasarg stays false.
-				start := strings.IndexRune(s, '/')
-				if start != -1 {
-					hasarg = true
-					start++                                     // +1: skip the slash
-					end = strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
-					// XXX really hacky solution, doesn't fulfill spec (strings are single-quoted in spec)
-					csvr := csv.NewReader(strings.NewReader(s[start:end]))
-
-					args, err = csvr.Read()
-					if err != nil {
-						log.Println("bad selection argument")
-						break parse
-					}
-				}
-
-				for i := range args {
-					args[i] = strings.TrimSpace(args[i])
-				}
-
-				fn := seltab[r]
-				// Do not use := here, it would redefine dot. Subtle.
-				dot, err = fn(dot, args)
-				if err != nil {
-					log.Printf("cmd %c: %v", r, err)
-				}
-
-				// Skip the selection arg, i.e. everything between the slashes (/.../).
-				if hasarg {
-					s = s[end+1:]
-					// Actually reset the range-loop, as we modify the string.
-					// Else we'd have spurious looping (I tested it).
-					goto parse
-				}
-
-			case 'p':
-				sret := ""
-				for _, e := range dot {
-					sret += e.Print() + "\n"
-				}
-				fmt.Fprintf(rw, "%d %d\n", tag, strings.Count(sret, "\n"))
-				fmt.Fprint(rw, sret)
-
-			case 'n':
-				// The note is all text after "n" and before the EOL, whitespace-trimmed.
-				note := s[1:strings.IndexRune(s, '\n')]
-				note = strings.TrimSpace(note)
-				for _, e := range dot {
-					e.Note(note)
-				}
-
-				// No need to continue, the note is the rest of the line.
-				break parse
-
-			case 'd':
-				for _, e := range dot {
-					e.Delete()
-				}
-
-			case 'l':
-				name := s[1:strings.IndexRune(s, '\n')]
-				name = strings.TrimSpace(name)
-				u := users[name]
-
-				for _, e := range dot {
-					c, ok := e.(*Copy)
-					if !ok {
-						log.Printf("tried to lend a non-Copy element")
-						fmt.Fprintf(rw, "%d 1\nerror: can't lend: not a Copy\n", tag)
-						break
-					}
-
-					c.Lend(u)
-				}
-
-				break parse
-
-			case 'r':
-				for _, e := range dot {
-					c, ok := e.(*Copy)
-					if !ok {
-						log.Printf("tried to return a non-Copy element")
-						fmt.Fprintf(rw, "%d 1\nerror: can't return: not a Copy\n", tag)
-						break
-					}
-
-					c.Return()
-				}
-			}
-		}
-
-		if err != nil {
-			if err != io.EOF {
-				log.Println("conn.Read error:", err)
-			}
-
+		ret := interpret(s, &dot, tag)
+		if ret == "quit" {
 			return
+		} else {
+			fmt.Fprint(rw, ret)
 		}
+	}
+
+	if err != nil {
+		if err != io.EOF {
+			log.Println("conn.Read error:", err)
+		}
+
+		return
 	}
 }
 
