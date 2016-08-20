@@ -20,8 +20,9 @@ Inhaltsverzeichnis
 4. Das Protokoll
 5. Detailbetrachtung des Servers und des Clients
 6. Glossar
-7. Literaturverzeichnis
-8. Eidesstattliche Erklärung
+7. Danksagungen
+8. Literaturverzeichnis
+9. Eidesstattliche Erklärung
 
 1. Einleitung
 -------------
@@ -109,7 +110,7 @@ IP-Adressen dient. Das DNS-Protokoll verwendet UDP, eine Alternative zu TCP, das
 nicht einmal garantiert, dass das Paket ankommt. Es wird aus zwei Gründen
 verwendet: es hat eine geringere Latenzzeit, weil kein TCP-Stream aufgebaut
 werden muss; zudem muss der DNS-Server sich nicht um offene Verbindungen sorgen
-[cit].
+[citation needed].
 
 Viele Protokolle haben also Performanceanforderungen. Es gibt hier zwei
 Größen: Bandbreite und Latenzzeit. Bandbreite ist die Datenmenge pro
@@ -136,7 +137,8 @@ lässt sich vollständiger testen, ist wartbar und portierbar.
 
 Es ist Zeit, mehrere Ansätze zu vergleichen; jeder hat bestimmte Vor- und
 Nachteile. Die folgende Liste enthält verschiedenartige Protokolle, manche mehr
-und manche weniger bekannt.
+und manche weniger bekannt. Die ersten zwei Beispiele werden binär codiert,
+der Rest ist textbasiert.
 
  - 9P
  - DNS
@@ -147,4 +149,80 @@ und manche weniger bekannt.
  - Protokoll im Protokoll
  - SMTP
 
+#### 3.2.1 9P
 
+*9P* ist das Dateisystemprotokoll des Betriebssystems *Plan 9 from Bell Labs*
+[plan9]. Plan 9 wurde entwickelt, um das Unix-Prinzip *Everything is a file*
+weiterzutreiben: alles – Geräte, Mailboxen, das Netzwerksystem, das
+Grafiksystem und viel mehr – wird durch *Dateisysteme* repräsentiert, deren
+Daten zumeist on-the-fly generiert werden (vgl. `/proc`). Jeder Prozess hat
+einen eigenen sogenannten *Namespace*, der die Ansammlung aller von diesem
+Prozess gemounteten Dateisysteme ist. Der Zugriff auf diese findet über 9P
+statt; zur Implementierung eines eigenen Dateisystems muss man nur einen
+9P-Server schreiben, was durch Hilfsfunktionen sehr einfach ist [citation
+needed]. Die 9P-Verbindung wird zumeist über TCP getunnelt, wenn der Server
+nicht lokal ist. Man kann das `/proc`-Verzeichnis eines anderen Systems mounten
+und dann die dortigen Prozesse debuggen. Man kann den Bildschirm, die Maus und
+die Tastatur eines anderen Systems mounten und diesen dann als Terminal
+verwenden. Man kann die Zwischenablage eines anderen Systems mounten und so
+auslesen oder modifizieren.
+
+Das Protokoll kümmert sich um das Navigieren im Verzeichnisbaum sowie dem
+Erstellen, Öffnen, Lesen, Schreiben und Löschen von Dateien. Die Belastung des
+Protokolls ist vielseitig: manchmal werden wenige, große Pakete versendet, so
+z.B. beim Lesen großer Dateien von einer Festplatte. Meist jedoch werden viele
+kleine Pakete versendet, da kurze Strings in die Kontrolldateien von Geräten
+geschrieben werden. In diesem Fall kann die Größe der Paket-Header Überhand
+nehmen. Die Entwickler haben darauf geachtet, den Header möglichst kurz zu
+halten [citation needed].
+
+9P verwendet binär kodierte Header und identifiziert offene Dateien mit
+eindeutigen Ganzzahlen, die *Fids* genannt werden, ist also zustandsbasiert. Der
+Client beginnt jede "Transaktion" mit einer T-Message (*T* steht für
+*transmit*) und der Server antwortet mit einer R-Message (*R* steht für
+*reply*). Jede T-Message erhält vom Client einen eindeutigen *Tag*; die Antwort
+des Servers hat denselben. *Tags* finden sich auch in IMAP und im
+*libmangler*-Protokoll [9p]. Fehler werden gemeldet, indem ein spezielles Paket,
+`Rerror`, gesendet wird; dieses enthält einen String, das den Fehler
+beschreibt.
+
+#### 3.2.2 DNS – Domain Name System
+
+ - binär
+ - zustandslos
+ - UDP
+ - kurze Requests
+
+#### 3.2.3 FTP – File Transfer Protocol
+
+ - textbasiert
+ - XYZ-Fehlercodes
+ - CAPSLOCK COMMANDS
+ - eine Kontrollverbindung, mehrere Dateiverbindungen
+ - active/passive mode
+
+#### 3.2.4 HTTP/1.1 – Hypertext Transfer Protocol
+
+ - textbasiert
+ - XYZ-Fehlercodes
+ - eine Verbindung pro Datei, sofern nicht Keep Alive verwendet wird
+ - zustandslos
+ - octet-counting
+
+#### 3.2.5 IMAP – Internet Message Access Protocol
+
+ - textbasiert
+ - verwendet Tags
+ - XYZ-Fehlercodes
+ - hält einen Verzeichnisbaum mit Nachrichten instand
+
+#### 3.2.6 Protokoll im Protokoll
+
+#### 3.2.7 SMTP – Simple Mail Transfer Protocol
+
+ - textbasiert
+ - octet-stuffing
+ - XYZ-Fehlercodes
+ - eine Verbindung
+
+**XXX perhaps too redundant**
