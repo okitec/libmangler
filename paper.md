@@ -141,13 +141,12 @@ und manche weniger bekannt. Die ersten zwei Beispiele werden binär codiert,
 der Rest ist textbasiert.
 
  - 9P
- - DNS
+ - NTP
  - FTP
  - HTTP
  - IMAP
  - mpmp
  - Protokoll im Protokoll
- - SMTP
 
 #### 3.2.1 9P
 
@@ -186,12 +185,16 @@ des Servers hat denselben. *Tags* finden sich auch in IMAP und im
 `Rerror`, gesendet wird; dieses enthält einen String, das den Fehler
 beschreibt.
 
-#### 3.2.2 DNS – Domain Name System
+#### 3.2.2 NTP – Network Time Protocol
 
  - binär
- - zustandslos
- - UDP
- - kurze Requests
+ - drei Modi: Peer-to-Peer, Client/Server, Broadcast
+ - Strata
+ - Dynamic Server Discovery: Manycast-Clients senden Suchpakete aus; Manycast-Server im TTL-Bereich
+   antworten auf diese; TTL beginnt bei eins und wird inkrementiert, bis genug Assoziationen gefunden
+   wurden (3); es wird kontinuierlich nach genaueren Assoziationen gesucht. Wenn eine gefunden wird,
+   wird die ungenaueste ersetzt.
+ - src: RFC 5905
 
 #### 3.2.3 FTP – File Transfer Protocol
 
@@ -218,11 +221,3 @@ beschreibt.
 
 #### 3.2.6 Protokoll im Protokoll
 
-#### 3.2.7 SMTP – Simple Mail Transfer Protocol
-
- - textbasiert
- - octet-stuffing
- - XYZ-Fehlercodes
- - eine Verbindung
-
-**XXX perhaps too redundant**
