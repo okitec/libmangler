@@ -145,7 +145,6 @@ der Rest ist textbasiert.
 
  - 9P
  - NTP
- - FTP
  - HTTP
  - IMAP
  - mpmp
@@ -228,17 +227,7 @@ XXX mehr Fokus auf Protokoll, weniger auf Umstände?
 
  - src: RFC 5905, Wikipedia
 
-#### 3.2.3 FTP – File Transfer Protocol
-
- - textbasiert
- - XYZ-Fehlercodes
- - CAPSLOCK COMMANDS
- - eine Kontrollverbindung, mehrere Dateiverbindungen
- - active/passive mode
-
- - src: RFC 959
-
-#### 3.2.4 HTTP/1.1 – Hypertext Transfer Protocol
+#### 3.2.3 HTTP/1.1 – Hypertext Transfer Protocol
 
  - textbasiert
  - XYZ-Fehlercodes
@@ -246,12 +235,15 @@ XXX mehr Fokus auf Protokoll, weniger auf Umstände?
  - zustandslos
  - octet-counting
 
-#### 3.2.5 IMAP – Internet Message Access Protocol
+#### 3.2.4 IMAP – Internet Message Access Protocol
 
  - textbasiert
  - verwendet Tags
  - XYZ-Fehlercodes
  - hält einen Verzeichnisbaum mit Nachrichten instand
+
+#### 3.2.5 mpmp
+
 
 #### 3.2.6 Protokoll im Protokoll
 
