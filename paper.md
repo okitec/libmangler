@@ -102,23 +102,26 @@ all diese Dinge garantieren kann. Böswillige Betrachtung und Manipulation der
 Daten kann man z.B. durch SSL/TLS verhindern, das leicht integrierbar ist.
 Protokolle, die TCP verwenden, sind stream-basiert, das heißt, es scheint für
 sie eine bidirektionale Verbindung der Hosts zu bestehen. Solch ein Stream wird
-durch den sogenannten Three-Way-Handshake aufgebaut, was zu Beginn dauert.
+durch den sogenannten Three-Way-Handshake aufgebaut: der Client sendet ein
+SYN-Paket, der Server antwortet mit SYN-ACK, der Client antwortet darauf mit
+einem ACK.
 
 Doch nicht immer laufen Protokolle über TCP. Prominentes Beispiel ist das
 Domain Name System (DNS), das primär der Auflösung von Hostnamen in
-IP-Adressen dient. Das DNS-Protokoll verwendet UDP, eine Alternative zu TCP, das
-nicht einmal garantiert, dass das Paket ankommt. Es wird aus zwei Gründen
-verwendet: es hat eine geringere Latenzzeit, weil kein TCP-Stream aufgebaut
-werden muss; zudem muss der DNS-Server sich nicht um offene Verbindungen sorgen
-[citation needed].
+IP-Adressen dient. Das DNS-Protokoll verwendet UDP (User Datagram Protocol), die
+verbindungslose Alternative zu TCP. Bei UDP werden einzelne Pakete übertragen, von
+denen man nicht weiß, ob und in welcher Reihenfolge sie ankommen. Die Pakete werden
+auch *Datagramme* genannt, daher der Protokollname. DNS verwendet UDP, um die
+Kosten des Three-Way-Handshake zu vermeiden;; zudem muss der DNS-Server sich nicht
+um offene Verbindungen sorgen [citation needed].
 
 Viele Protokolle haben also Performanceanforderungen. Es gibt hier zwei
 Größen: Bandbreite und Latenzzeit. Bandbreite ist die Datenmenge pro
 Zeiteinheit, die über das Protokoll übertragen wird; Latenzzeit ist die Zeit,
-bis die Antwort des entfernten Hosts beim Anfrager eintrifft. Je nachdem, was
-die Anwendung ist, ist das eine wichtiger als das andere. Wer Videos übertragen
-will, achtet auf Bandbreite. Wer ein Echtzeitmultiplayerspiel hat, den
-interessieren möglichst geringe Latenzzeiten.
+bis die Antwort des entfernten Hosts beim Anfrager eintrifft (*Round Trip Time*, RTT,
+"Ping"). Je nachdem, was die Anwendung ist, ist das eine wichtiger als das andere.
+Wer Videos übertragen will, achtet auf Bandbreite. Wer ein Echtzeitmultiplayerspiel
+hat, den interessieren möglichst geringe Latenzzeiten.
 
 Die folgenden Attribute sind jedoch am wichtigsten: Robustheit, Testbarkeit,
 Verständlichkeit und Portabilität. Ohne Robustheit und Portabilität kann ein
@@ -127,11 +130,11 @@ leicht falsche Implementierungen, die auf einer Vielzahl unterschiedlicher
 Architekturen und einer Vielzahl unterschiedlicher Betriebssysteme laufen. Ohne
 Testbarkeit ist es unmöglich, genau diese Robustheit zu testen. Ohne
 Verständnis für das Protokoll tappt der Entwickler im Dunkeln herum.
+Dokumentation ist der Mörtel, der diese Tugenden zusammenhält.
 
 Um das Protokoll korrekt implementieren zu können, muss es einfach sein, denn
 einfache Protokolle führen zu einfachen Implementierungen. Einfacher Code
 lässt sich vollständiger testen, ist wartbar und portierbar.
-
 
 ### 3.2 Ansätze
 
@@ -187,14 +190,43 @@ beschreibt.
 
 #### 3.2.2 NTP – Network Time Protocol
 
- - binär
- - drei Modi: Peer-to-Peer, Client/Server, Broadcast
- - Strata
- - Dynamic Server Discovery: Manycast-Clients senden Suchpakete aus; Manycast-Server im TTL-Bereich
-   antworten auf diese; TTL beginnt bei eins und wird inkrementiert, bis genug Assoziationen gefunden
-   wurden (3); es wird kontinuierlich nach genaueren Assoziationen gesucht. Wenn eine gefunden wird,
-   wird die ungenaueste ersetzt.
- - src: RFC 5905
+Wenngleich moderne Computer zumeist eine batteriebetriebene Echtzeituhr besitzen,
+muss diese mit genaueren Uhren synchronisiert werden, damit sie korrekt bleibt.
+Schon 1985 hatte das Network Time Protocol eine Referenzimplementierung und wurde
+in RFC 958 dokumentiert. In weiterentwickelter Form wird das Protokoll in fast
+allen internetfähigen Systemen verwendet.
+
+Die NTP-Hierarchie ist in sogenannte Strata eingeteilt: Stratum 1 bezeichnet die
+an genauen Zeitgebern angeschlossenen Computer (primäre Zeitserver). Generell greifen
+Stratum n-Rechner jeweils auf Stratum (n-1)-Rechner zu und gleichen sich zudem
+untereinander ab. Das System versucht, einen möglichst minimalen Baum an
+Verbindungen aufzubauen, um die Latenzzeiten zu Stratum 1 gering zu halten. Der
+restliche Fehler wird durch eine auf Statistiken basierenden Formel entfernt.
+
+Je nach Anwendung kommt eine der drei Betriebsmodi zum Einsatz: Client/Server,
+bei dem der Client vom Server pullt; der symmetrische Modus, bei dem sich zwei
+*Peers* gegenseitig synchronisieren; Broadcast, bei dem der Server an mehrere
+Clients Pakete sendet. Mit jedem Paket wird ein *Packet Mode*-Wert übertragen,
+der den Modus identifiziert. Es gibt drei Zeitformate: *Short*, *Timestamp*
+und *Date*. Wenn möglich, wird das Datumsformat verwendet [RC5905, 6], das aus
+einer *Era Number*, einem in Sekunden gemessenen *Era Offset* und einem Bruch
+besteht. Die *Era Number* bezeichnet den Bereich, in dem der 32-bit Offset nicht
+überläuft. Momentan sind wir in Era 0; ab dem 08. Februar 2036 werden wir in
+Era 1 sein. Das im Protokoll verwendete *Timestamp*-Format hat einen 32-bit
+Sekundenzähler und einen Bruch; das *Short*-Format ist ähnlich, hat aber nur
+16 Bit Präzision.
+
+TCP kann hier nicht verwendet werden, weil es verlorene Pakete wieder überträgt
+und dadurch die Zeitstempel in diesen verfälscht [citation needed], deswegen
+wird UDP auf Port 123 verwendet. NTP verwendet konventionelle binäre Pakete
+mit einem Header und einem aus vier Timestamps bestehenden Payload. Ein invalider
+Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket, mit welchem
+Kontrollcodes übertragen werden; diese sind Vier-Zeichen-ASCII-Strings an der
+Stelle, an der sonst die Referenz-ID des Zeitgebers steht (z.B. "GPS").
+
+XXX mehr Fokus auf Protokoll, weniger auf Umstände?
+
+ - src: RFC 5905, Wikipedia
 
 #### 3.2.3 FTP – File Transfer Protocol
 
@@ -203,6 +235,8 @@ beschreibt.
  - CAPSLOCK COMMANDS
  - eine Kontrollverbindung, mehrere Dateiverbindungen
  - active/passive mode
+
+ - src: RFC 959
 
 #### 3.2.4 HTTP/1.1 – Hypertext Transfer Protocol
 
