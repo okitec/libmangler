@@ -2,12 +2,18 @@ package de.csgin.libmangler;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -25,6 +31,7 @@ public class Req {
 	private static HashMap<Integer, Req> reqs;
 	private static Random r;
 	private static Context ctxt;
+	private static Executor networker;
 
 	private static String addr;
 	private static int port;
@@ -55,7 +62,13 @@ public class Req {
 
 	public void send() {
 		reqs.put(new Integer(tag), this);
-		pw.print(s + "\n"); // XXX still networking on main thread here	
+		networker.execute(new FutureTask<Void>(new Callable<Void>() {
+			public Void call() {
+				pw.println(tag + " " + s);
+				Log.e("derp", "just sent a Req");
+				return null;
+			}
+		}));
 	}
 
 	private static void recvloop(BufferedReader br) throws IOException {
@@ -71,6 +84,8 @@ public class Req {
 			if(line == null)
 				return;
 	
+			Log.e("derp", "just fetched a response");
+
 			hdr = line.split("( |\t)+");
 			if(hdr.length < 2)
 				return;
@@ -107,10 +122,13 @@ public class Req {
 			socket = new Socket(addr, port);
 			br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			pw = new PrintWriter(socket.getOutputStream());
+			Log.e("derp", "connected");
 		} catch(UnknownHostException uhe) {
 			// XXX how to call panic here?
+			Log.e("derp", "unknown host");
 		} catch(IOException ioe) {
 			// XXX and here?
+			Log.e("derp", "io exception");
 		}
 	}
 
@@ -121,16 +139,34 @@ public class Req {
 		Req.addr = addr;
 		Req.port = port;
 
-		new Thread(new Runnable() {
-			public void run() {
-				reconnect();
+		networker = Executors.newFixedThreadPool(1);
 
+		FutureTask<Void> netinit = new FutureTask<Void>(new Callable<Void>() {
+			public Void call() {
+				reconnect();
+				return null;
+			}
+		});
+		networker.execute(netinit);
+		try {
+			netinit.get(); // block until network is ready
+		} catch(InterruptedException ie) {
+		} catch(ExecutionException ee) {
+		}
+		Log.e("derp", "network should be inited now");
+
+		FutureTask<Void> recv = new FutureTask<Void>(new Callable<Void>() {
+			public Void call() {
 				try {
 					recvloop(br);
 				} catch(IOException ioe) {
-					// XXX ?
 				}
+
+				return null;
 			}
 		});
+		networker.execute(recv);
+
+		Log.e("derp", "all inited");
 	}
 }
