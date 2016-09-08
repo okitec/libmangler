@@ -148,7 +148,6 @@ der Rest ist textbasiert.
  - HTTP
  - IMAP
  - mpmp
- - Protokoll im Protokoll
 
 #### 3.2.1 9P
 
@@ -189,16 +188,16 @@ beschreibt.
 
 #### 3.2.2 NTP – Network Time Protocol
 
-Wenngleich moderne Computer zumeist eine batteriebetriebene Echtzeituhr besitzen,
-muss diese mit genaueren Uhren synchronisiert werden, damit sie korrekt bleibt.
-Schon 1985 hatte das Network Time Protocol eine Referenzimplementierung und wurde
-in RFC 958 dokumentiert. In weiterentwickelter Form wird das Protokoll in fast
-allen internetfähigen Systemen verwendet.
+Wenngleich moderne Computer zumeist eine batteriebetriebene Echtzeituhr
+besitzen, muss diese mit genaueren Uhren synchronisiert werden, damit sie
+korrekt bleibt. Schon 1985 hatte das Network Time Protocol eine
+Referenzimplementierung und wurde in RFC 958 dokumentiert. In weiterentwickelter
+Form wird das Protokoll in fast allen internetfähigen Systemen verwendet.
 
 Die NTP-Hierarchie ist in sogenannte Strata eingeteilt: Stratum 1 bezeichnet die
-an genauen Zeitgebern angeschlossenen Computer (primäre Zeitserver). Generell greifen
-Stratum n-Rechner jeweils auf Stratum (n-1)-Rechner zu und gleichen sich zudem
-untereinander ab. Das System versucht, einen möglichst minimalen Baum an
+an genauen Zeitgebern angeschlossenen Computer (primäre Zeitserver). Generell
+greifen Stratum n-Rechner jeweils auf Stratum (n-1)-Rechner zu und gleichen sich
+zudem untereinander ab. Das System versucht, einen möglichst minimalen Baum an
 Verbindungen aufzubauen, um die Latenzzeiten zu Stratum 1 gering zu halten. Der
 restliche Fehler wird durch eine auf Statistiken basierenden Formel entfernt.
 
@@ -206,8 +205,8 @@ Je nach Anwendung kommt eine der drei Betriebsmodi zum Einsatz: Client/Server,
 bei dem der Client vom Server pullt; der symmetrische Modus, bei dem sich zwei
 *Peers* gegenseitig synchronisieren; Broadcast, bei dem der Server an mehrere
 Clients Pakete sendet. Mit jedem Paket wird ein *Packet Mode*-Wert übertragen,
-der den Modus identifiziert. Es gibt drei Zeitformate: *Short*, *Timestamp*
-und *Date*. Wenn möglich, wird das Datumsformat verwendet [RC5905, 6], das aus
+der den Modus identifiziert. Es gibt drei Zeitformate: *Short*, *Timestamp* und
+*Date*. Wenn möglich, wird das Datumsformat verwendet [RC5905, 6], das aus
 einer *Era Number*, einem in Sekunden gemessenen *Era Offset* und einem Bruch
 besteht. Die *Era Number* bezeichnet den Bereich, in dem der 32-bit Offset nicht
 überläuft. Momentan sind wir in Era 0; ab dem 08. Februar 2036 werden wir in
@@ -215,13 +214,14 @@ Era 1 sein. Das im Protokoll verwendete *Timestamp*-Format hat einen 32-bit
 Sekundenzähler und einen Bruch; das *Short*-Format ist ähnlich, hat aber nur
 16 Bit Präzision.
 
-TCP kann hier nicht verwendet werden, weil es verlorene Pakete wieder überträgt
-und dadurch die Zeitstempel in diesen verfälscht [citation needed], deswegen
-wird UDP auf Port 123 verwendet. NTP verwendet konventionelle binäre Pakete
-mit einem Header und einem aus vier Timestamps bestehenden Payload. Ein invalider
-Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket, mit welchem
-Kontrollcodes übertragen werden; diese sind Vier-Zeichen-ASCII-Strings an der
-Stelle, an der sonst die Referenz-ID des Zeitgebers steht (z.B. "GPS").
+TCP kann hier nicht verwendet werden, weil es verlorene Pakete wieder
+überträgt und dadurch die Zeitstempel in diesen verfälscht [citation needed],
+deswegen wird UDP auf Port 123 verwendet. NTP verwendet konventionelle binäre
+Pakete mit einem Header und einem aus vier Timestamps bestehenden Payload. Ein
+invalider Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket, mit
+welchem Kontrollcodes übertragen werden; diese sind Vier-Zeichen-ASCII-Strings
+an der Stelle, an der sonst die Referenz-ID des Zeitgebers steht (z.B. "GPS").
+
 
 XXX mehr Fokus auf Protokoll, weniger auf Umstände?
 
@@ -229,11 +229,45 @@ XXX mehr Fokus auf Protokoll, weniger auf Umstände?
 
 #### 3.2.3 HTTP/1.1 – Hypertext Transfer Protocol
 
- - textbasiert
- - XYZ-Fehlercodes
- - eine Verbindung pro Datei, sofern nicht Keep Alive verwendet wird
- - zustandslos
- - octet-counting
+Das Web ist die *Killer application* des Internets, so wie die Glühbirne die
+*Killer application* der Elektrizität war. Viele Laien können heute die
+Begriffe "Web" und "Internet" nicht mehr auseinanderhalten. HTTP ist so
+erfolgreich, dass es als Transportprotokoll für alles gebraucht wird, obwohl es
+nicht auf generelle Kommunikation ausgerichtet ist.
+
+HTTP hat für Internetstandards typische Merkmale: es verwendet Textbefehle, hat
+dreistellige Statuscodes mit einem angefügten, menschenverständlichen Text
+(z.B. `404 File Not Found`) und hat ein Headerformat, bei dem jedes Feld die
+Form
+
+Feldname: Wert
+
+hat.
+
+Gemeinhin haben Clients die Initiative und senden `GET`- und `POST`- Requests.
+Traditionell wird für jeden Request eine neue Verbindung geöffnet; eine
+HTTP-Verbindung hat also keinen Zustand. Der Server beantwortet den Request und
+vergisst dann den Client.
+
+Im Kern ist HTTP ideal für die Aufgabe, nicht interaktive Webseiten und andere
+Dateien zu übertragen. Ein Client gibt den Dateipfad auf dem Server an, der
+Server sendet die Datei. Kürzer kann man diese Interaktion nicht gestalten;
+problematisch wird es, wenn eine Seite viele Assets von vielen Servern, z.B. von
+Tracking- und Ad-Servern einbindet. Newsseiten sind häufige Übeltäter.
+
+HTTP ist nicht für bidirektionale Kommunikation gedacht, da die
+Zustandslosigkeit im Weg steht. Cookies sind ein Hack, um diese zu umgehen, und
+niemand mag Cookies. Ein anderer Weg sind Parameter in der URL, die den ganzen
+Zustand übertragen und leicht zu manipulieren sind; mitunter wird grob
+fahrlässig ein verschlüsseltes Passwort übertragen [fahrenlernen max].
+
+Aufgrund der Nachteile von HTTP/1.1 wird gerade an einem neuen binären
+Standard, HTTP/2 [citation needed], gearbeitet, der zwar viele der Probleme von
+HTTP löst, aber durch die binäre Natur undurchsichtig ist. Eine andere
+Gruppierung hat stattdessen die *Vereinfachung* des Protokolls gefordert; ohne
+die Unterstützung großer Firmen wie Google lässt sich im Internet jedoch
+wenig bewegen.
+
 
 #### 3.2.4 IMAP – Internet Message Access Protocol
 
@@ -244,6 +278,8 @@ XXX mehr Fokus auf Protokoll, weniger auf Umstände?
 
 #### 3.2.5 mpmp
 
-
-#### 3.2.6 Protokoll im Protokoll
+ - textbasiert
+ - broadcast
+ - symmetrisch
+ - line-counted
 
