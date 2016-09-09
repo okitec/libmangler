@@ -269,7 +269,7 @@ von allen weit verwendeten Browsern unterstützt. Neben mehreren anderen
 wahrscheinlich sowieso eine Anfrage gestellt hätte; z.B. würden beim Aufruf
 einer Seite gleich die CSS-Dateien und etwaiger Javascript-Code neben dem
 HTML-Text gesendet. Anfang September 2016 verwendeten 9.8% der 10 Millionen
-meistbesuchten Websites HTTP/2 (src)[https://w3techs.com/technologies/details/ce-http2/all/all].
+meistbesuchten Websites HTTP/2 [src](https://w3techs.com/technologies/details/ce-http2/all/all).
 
 
 #### 3.2.4 IMAP – Internet Message Access Protocol
@@ -320,18 +320,18 @@ Protokoll einflossen.
 Der Server enthält den Spielzustand; die Clients cachen diesen, stellen ihn dar
 und senden Befehle an den Server, der Änderungen des Spielzustands allen
 Clients mitteilt. Client und Server werden aus demselben Code kompiliert und
-verwenden ein völlig symmetrisches Proptokollsystem. Sowohl Client als auch
-Server senden Befehle mit Argumenten aus und quittieren diese jeweils mit
-`+JAWOHL` oder `-NEIN`, gefolgt von einem Fehlerstring. Die Befehle, die allen
-Clients übermittelt werden, enden per Kobention in `-update`. Das Beispiel
-zeigt auch, dass einige der `+JAWOHL`s noch fehlen. Außerdem sieht man den
-einzigartigen `clientlist-update`-Befehl, der mehrere Zeilen Payload hat, deren
-Anzahl das erste Argument nennt, hier `1`.Durch einen Mitschnitt des Protokolls
-ab dem Beginn kann man den gesamten Verlauf des Spiels verfolgen.
+verwenden ein völlig symmetrisches Protokoll. Sowohl Clients als auch Server
+senden Befehle mit Argumenten aus und quittieren diese jeweils mit `+JAWOHL`
+oder `-NEIN`, gefolgt von einem Fehlerstring. Die Befehle, die allen Clients
+übermittelt werden, enden per Konvention in `-update`. Das Beispiel zeigt auch,
+dass einige der `+JAWOHL`s noch fehlen. Außerdem sieht man den einzigartigen
+`clientlist-update`-Befehl, der mehrere Zeilen Payload hat, deren Anzahl das
+erste Argument nennt, hier `1`. Durch einen Mitschnitt des Protokolls ab dem
+Beginn kann man den gesamten Verlauf des Spiels verfolgen.
 
 	S: +JAWOHL Willkommen, Genosse! Subscriben Sie!
 	C: subscribe player #0f0f0f oki
-	S: clientlist-update 1
+	S: playerlist-update 1
 	S: #0F0F0F: Player: oki
 	C: +JAWOHL
 	C: chat Dies ist Chat!
@@ -351,7 +351,7 @@ ab dem Beginn kann man den gesamten Verlauf des Spiels verfolgen.
 	S: show-transaction -4400 derp
 	S: plot-update 21 0 nohypothec oki
 	C: ragequit
-	S: clientlist-update 1
+	S: playerlist-update 1
 	S: #0F0F0F: Spectator: oki
 	C: +JAWOHL
 
