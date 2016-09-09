@@ -310,8 +310,48 @@ denselben Tag. Bei Antworten folgt dann `OK` (Erfolg), `NO` (Fehlschlag), oder
 
 #### 3.2.5 mpmp
 
- - textbasiert
- - broadcast
- - symmetrisch
- - line-counted
+*mpmp* ist kein Internetstandard. Es ist ein noch unfertiger Monopoly-Klon im
+Stil der Weimarer Republik, bei dem man über ein Netzwerk spielen kann. Es ist
+das Informatikprojekt der elften Klasse, das einige aus dem Seminar erstellt
+haben und nun von mir instandgehalten wird. Das Protokoll ist meine Schöpfung,
+weswegen ich über die speziellen Entscheidungen schreiben will, die in das
+Protokoll einflossen.
+
+Der Server enthält den Spielzustand; die Clients cachen diesen, stellen ihn dar
+und senden Befehle an den Server, der Änderungen des Spielzustands allen
+Clients mitteilt. Client und Server werden aus demselben Code kompiliert und
+verwenden ein völlig symmetrisches Proptokollsystem. Sowohl Client als auch
+Server senden Befehle mit Argumenten aus und quittieren diese jeweils mit
+`+JAWOHL` oder `-NEIN`, gefolgt von einem Fehlerstring. Die Befehle, die allen
+Clients übermittelt werden, enden per Kobention in `-update`. Das Beispiel
+zeigt auch, dass einige der `+JAWOHL`s noch fehlen. Außerdem sieht man den
+einzigartigen `clientlist-update`-Befehl, der mehrere Zeilen Payload hat, deren
+Anzahl das erste Argument nennt, hier `1`.Durch einen Mitschnitt des Protokolls
+ab dem Beginn kann man den gesamten Verlauf des Spiels verfolgen.
+
+	S: +JAWOHL Willkommen, Genosse! Subscriben Sie!
+	C: subscribe player #0f0f0f oki
+	S: clientlist-update 1
+	S: #0F0F0F: Player: oki
+	C: +JAWOHL
+	C: chat Dies ist Chat!
+	S: chat-update (oki) Dies ist Chat!
+	C: +JAWOHL
+	C: start-game
+	S: pos-update 12 oki
+	S: turn-update 12 1 oki
+	S: start-update
+	C: +JAWOHL
+	C: end-turn
+	S: pos-update 21 oki
+	S: turn-update 9 0 oki
+	C: +JAWOHL
+	C: buy-plot 21 oki
+	S: money-update 25600 oki
+	S: show-transaction -4400 derp
+	S: plot-update 21 0 nohypothec oki
+	C: ragequit
+	S: clientlist-update 1
+	S: #0F0F0F: Spectator: oki
+	C: +JAWOHL
 
