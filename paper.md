@@ -274,10 +274,39 @@ meistbesuchten Websites HTTP/2 (src)[https://w3techs.com/technologies/details/ce
 
 #### 3.2.4 IMAP – Internet Message Access Protocol
 
- - textbasiert
- - verwendet Tags
- - XYZ-Fehlercodes
- - hält einen Verzeichnisbaum mit Nachrichten instand
+Mailboxen lassen sich mit dem *Post Office Protocol* (POP), dem *Internet
+Message Access Protocol* (IMAP) oder via einem Webmail-Interface im Browser
+verwalten, falls man nicht selbst Admin eines Mailservers ist. Bei POP ist es
+Konvention, die Nachrichten auf dem Server nach dem Abrufen zu löschen; die
+Mails residieren auf dem Client, wie auch der Verzeichnisbaum mit dem
+Posteingang, dem Postausgang und nutzererzeugten Ordnern.
+
+IMAP ist eine neuere Entwicklung, um seine Nachrichtenordner auf dem Server zu
+verwalten; dadurch kann man von mehreren Geräten auf denselben Baum zugreifen.
+Der Client cacht die Mails nur; der Server hat die relevante Kopie.
+Verständlicherweise ist IMAP komplexer als POP3.
+
+Ich will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie auch das
+*libmangler*-Protokoll, und weil der Server von sich aus senden kann. Das
+folgende Exzerpt in [RFC 3501, Sektion 8] soll das nun verdeutlichen. Zeilen mit
+einem `*` werden vom Server in Eigeninitiative gesendet (Zeile 1), oder deuten
+die Kontinuation des Outputs an. Die vom Client generierten alphanumerischen
+Tags, hier `a001` und `a002`, müssen eindeutig sein; Anfrage und Antwort haben
+denselben Tag. Bei Antworten folgt dann `OK` (Erfolg), `NO` (Fehlschlag), oder
+`BAD` (formaler Fehler).
+
+	S:   * OK IMAP4rev1 Service Ready
+	C:   a001 login mrc secret
+	S:   a001 OK LOGIN completed
+	C:   a002 select inbox
+	S:   * 18 EXISTS
+	S:   * FLAGS (\Answered \Flagged \Deleted \Seen \Draft)
+	S:   * 2 RECENT
+	S:   * OK [UNSEEN 17] Message 17 is the first unseen message
+	S:   * OK [UIDVALIDITY 3857529045] UIDs valid
+	S:   a002 OK [READ-WRITE] SELECT completed
+
+	[...]
 
 #### 3.2.5 mpmp
 
