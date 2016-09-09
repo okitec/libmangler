@@ -227,46 +227,49 @@ XXX mehr Fokus auf Protokoll, weniger auf Umstände?
 
  - src: RFC 5905, Wikipedia
 
-#### 3.2.3 HTTP/1.1 – Hypertext Transfer Protocol
+#### 3.2.3 HTTP – Hypertext Transfer Protocol
 
 Das Web ist die *Killer application* des Internets, so wie die Glühbirne die
 *Killer application* der Elektrizität war. Viele Laien können heute die
-Begriffe "Web" und "Internet" nicht mehr auseinanderhalten. HTTP ist so
-erfolgreich, dass es als Transportprotokoll für alles gebraucht wird, obwohl es
-nicht auf generelle Kommunikation ausgerichtet ist.
+Begriffe "Web" und "Internet" nicht mehr auseinanderhalten. Das Hypertext
+Transfer Protocol ist so erfolgreich, dass es als Transportprotokoll für alles
+gebraucht wird, obwohl es nicht auf generelle Kommunikation ausgerichtet ist.
 
 HTTP hat für Internetstandards typische Merkmale: es verwendet Textbefehle, hat
 dreistellige Statuscodes mit einem angefügten, menschenverständlichen Text
 (z.B. `404 File Not Found`) und hat ein Headerformat, bei dem jedes Feld die
-Form
+Form 'Feldname: Wert' hat.
 
-Feldname: Wert
-
-hat.
-
-Gemeinhin haben Clients die Initiative und senden `GET`- und `POST`- Requests.
-Traditionell wird für jeden Request eine neue Verbindung geöffnet; eine
-HTTP-Verbindung hat also keinen Zustand. Der Server beantwortet den Request und
-vergisst dann den Client.
+Gemeinhin haben Clients die Initiative und senden hauptsächlich `GET`- und
+`POST`-Requests. Eine HTTP-Verbindung hat keinen Zustand. Der Server beantwortet
+den Request und vergisst dann den Client. In HTTP/1.0 wurde für jeden Request
+einen neue Verbindung geöffnet. Persistente Verbindungen, die der Normalzustand
+seit HTTP/1.1 sind, erlauben einen Request nach dem anderen in der Verbindung;
+die Latenzzeit durch das Verbindungsöffnen entfällt. *Pipelining*, d.h. das
+Senden mehrerer Requests auf einmal und das Empfangen der Antworten auf einmal,
+optimiert den Prozess weiter. Pipelining erwies sich als Fehlschlag auf
+Clientseite; nur Opera hat eine aktivierte und stabile Implementierung [citation needed].
 
 Im Kern ist HTTP ideal für die Aufgabe, nicht interaktive Webseiten und andere
 Dateien zu übertragen. Ein Client gibt den Dateipfad auf dem Server an, der
 Server sendet die Datei. Kürzer kann man diese Interaktion nicht gestalten;
 problematisch wird es, wenn eine Seite viele Assets von vielen Servern, z.B. von
-Tracking- und Ad-Servern einbindet. Newsseiten sind häufige Übeltäter.
+Tracking- und Ad-Servern einbindet, denn persistente Verbindungen helfen auch
+hier nicht. Newsseiten sind häufige Übeltäter.
 
 HTTP ist nicht für bidirektionale Kommunikation gedacht, da die
 Zustandslosigkeit im Weg steht. Cookies sind ein Hack, um diese zu umgehen, und
 niemand mag Cookies. Ein anderer Weg sind Parameter in der URL, die den ganzen
 Zustand übertragen und leicht zu manipulieren sind; mitunter wird grob
-fahrlässig ein verschlüsseltes Passwort übertragen [fahrenlernen max].
+fahrlässig ein verschlüsseltes Passwort übertragen [Fahrenlernen Max].
 
-Aufgrund der Nachteile von HTTP/1.1 wird gerade an einem neuen binären
-Standard, HTTP/2 [citation needed], gearbeitet, der zwar viele der Probleme von
-HTTP löst, aber durch die binäre Natur undurchsichtig ist. Eine andere
-Gruppierung hat stattdessen die *Vereinfachung* des Protokolls gefordert; ohne
-die Unterstützung großer Firmen wie Google lässt sich im Internet jedoch
-wenig bewegen.
+Ein neuer binärer Standard, HTTP/2, wurde inzwischen veröffentlicht und wird
+von allen weit verwendeten Browsern unterstützt. Neben mehreren anderen
+Änderunge kann der Server nun Dateien pushen, für die der Client
+wahrscheinlich sowieso eine Anfrage gestellt hätte; z.B. würden beim Aufruf
+einer Seite gleich die CSS-Dateien und etwaiger Javascript-Code neben dem
+HTML-Text gesendet. Anfang September 2016 verwendeten 9.8% der 10 Millionen
+meistbesuchten Websites HTTP/2 (src)[https://w3techs.com/technologies/details/ce-http2/all/all].
 
 
 #### 3.2.4 IMAP – Internet Message Access Protocol
