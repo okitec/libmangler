@@ -326,7 +326,7 @@ Server senden Befehle mit Argumenten aus und quittieren diese jeweils mit
 Clients übermittelt werden, enden per Kobention in `-update`. Das Beispiel
 zeigt auch, dass einige der `+JAWOHL`s noch fehlen. Außerdem sieht man den
 einzigartigen `clientlist-update`-Befehl, der mehrere Zeilen Payload hat, deren
-Anzahl das erste Argument nennt, hier `1`.Durch einen Mitschnitt des Protokolls
+Anzahl das erste Argument nennt, hier `1`. Durch einen Mitschnitt des Protokolls
 ab dem Beginn kann man den gesamten Verlauf des Spiels verfolgen.
 
 	S: +JAWOHL Willkommen, Genosse! Subscriben Sie!
@@ -348,10 +348,112 @@ ab dem Beginn kann man den gesamten Verlauf des Spiels verfolgen.
 	C: +JAWOHL
 	C: buy-plot 21 oki
 	S: money-update 25600 oki
-	S: show-transaction -4400 derp
-	S: plot-update 21 0 nohypothec oki
-	C: ragequit
-	S: clientlist-update 1
-	S: #0F0F0F: Spectator: oki
-	C: +JAWOHL
+S: show-transaction -4400 derp
+S: plot-update 21 0 nohypothec oki
+C: ragequit
+S: clientlist-update 1
+S: #0F0F0F: Spectator: oki
+C: +JAWOHL
+ 
 
+4. Das Protokoll
+----------------
+
+Das *libmangler*-Protokoll dient dem Zugriff auf Ansammlungen von Büchern, Copies, und
+Nutzern, also einer spezialisierten Datenbank. Insofern lässt es sich mit SQL vergleichen,
+ist jedoch weit simpler und nicht relational. Die Datenmengen, die verwaltet werden, sind
+gering, also ist die Bandbreitennutzung nie der Fokus gewesen. Vielmehr sollte das Protokoll
+auf möglichst simple und verständliche Weise möglichst generelle Mengen selektieren und auf
+diesen agieren können.
+
+Das Protokoll bestht aus einem Low-Level-Teil, der sich mit dem Taggen von Requests und dem
+Zählen der Payload-Zeilen beschäftigt, sowie der *kleinen Sprache*, in der die Anfragen gestellt
+werden. Um diese soll es vordergründig gehen. Dafür ist jedoch ein kleiner Exkurs vonnöten.
+
+### Die Anfragensprache
+
+Die Anfragensprache ist von den Kommandosprache des Unix-Editors `sam` inspiriert, der eine
+Weiterentwicklung von `ed` ist. Befehle sind einzelne Buchstaben. Die aktuelle Selektion,
+welche in `ed` zeilenweise und in `sam` zeichennweise Granularität hat, wird in einem Zwischenspeicher
+namens *Dot* gespeichert, der mithilfe eines Punktes (`.`) dargestellt wird. Befehle arbeiten
+entweder mit dem Inhalt von Dot oder setzen `Dot` zu einer neuen Selektion. In `sam` kann man
+auch mit der Maus Text selektieren und so *Dot* setzen.
+
+	x/^	/d
+
+Diese `sam`-Schleife führt den `d` (*delete*)-Befehl für jedes Vorkommen des regulären Ausdrucks
+`^	` in der Selektion aus; dieser Befehl entfernt ein Einrückungslevel. Dot ist zu Beginn der
+Operation die gesamte bisherige Selektion; dann wird Dot zu den jeweiligen Vorkommnissen des
+Ausdrucks gesetzt. Hier ist Dot am Ende leer, weil der Löschbefehl Dot löscht.
+
+Kommen wir nun zu libmanglers Befehlssprache und beginnen mit drei Beispielen.
+
+	B/978-0-201-07981-4/p
+
+	C/Hans, Max Mustermann/r
+	d
+
+	U/0, 405, 3050, /p
+
+libmangler verwendet folgendes Schema zur Selektion: Großbuchstaben selektieren ganze
+Mengen, welche durch die Kriterien zwischen den Schrägstrichen eingeschränkt werden.
+Alles zwischen den Slashes wird als *Selektionsargument* bezeichnet. Es können mehrere
+Teilargumente mit Komma getrennt angegeben werden; ein Element gilt als selektiert, wenn
+es eines der Teilargumente erfüllt. Zur einfacheren automatischen Generation kann ein
+Komma nach dem letzten Argument stehen.
+
+XXX labels are not implemented
+
+XXX explain Elemente
+
+Argumente sind ISBNs, Usernamen, IDs von Copies sowie Labels. Das erste Beispiel
+selektiert das eine Buch mit dieser ISBN und gibt alle Informationen darüber aus.
+Im zweiten Beispiel werden alle Copies selektiert, die die User `Hans` und `Max Mustermann`
+ausgeliehen haben; diese werden zurückgegeben und dann ganz aus dem System gelöscht,
+weil Hans und Max eine Bücherverbrennung veranstaltet haben. Das dritte Beispiel
+selektiert die Ausleiher der Copies mit den IDs `0`, `405` und `3050` und gibt alle
+Informationen zu ihnen aus. Diese zwei Beispiele zeigen, dass die Selektionsargumente
+kontextgemäß interpretiert werden. Es wird immer das selektiert, was man erwartet.
+
+### Low-level stuffs
+
+### Geschichte und Ausblick
+
+ - Versions
+ - Req Tag, Payload-Zeilen
+
+ - Geschichte
+ - Weiterentwicklung
+
+5. Detailbetrachtung des Servers und des Clients
+------------------------------------------------
+
+### Server
+
+ - Beschreibung *Bottom-Up*
+ - elem
+ - Book, Copy, User
+ - sel.go
+ - Hauptschleife und cmd.go
+
+### Client
+
+ - Komplexität
+ - Komplexität
+ - Komplexität
+
+6. Glossar
+----------
+
+ - Allg. Netzwerkbegriffe
+ - Book, Copy, User, Elem, Dot
+
+7. Danksagungen
+---------------
+
+ - Pabst
+ - Leander, Klaus
+ - StackOverflow
+ - IETF
+ - The Go Authors
+ - sam
