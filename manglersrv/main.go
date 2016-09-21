@@ -103,7 +103,7 @@ parse:
 		case 'p':
 			sret := ""
 			for _, e := range *dot {
-				sret += e.String() + "\n"
+				sret += e.Print() + "\n"
 			}
 
 			return sret
