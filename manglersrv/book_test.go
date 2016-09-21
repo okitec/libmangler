@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -32,6 +33,7 @@ func TestIsISBN13(t *testing.T) {
 
 func TestBook_String(t *testing.T) {
 	books = make(map[ISBN]*Book)
+
 	b := eNewBook(t, "978-0-201-07981-4", "The AWK Programming Language", nil)
 
 	if b.String() != string(b.isbn) {
@@ -60,12 +62,20 @@ func TestBook_Note(t *testing.T) {
 
 func TestBook_Delete(t *testing.T) {
 	books = make(map[ISBN]*Book)
+	copies = make(map[int64]*Copy)
 	b := eNewBook(t, "978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
 
-	// XXX Make sure books with copies don't get deleted.
-
-	b.Delete()
+	c, _ := NewCopy(b)
+	b.Delete() // XXX not called - what am I missing?
 	_, ok := books[ISBN("978-0-201-07981-4")]
+	if !ok {
+		t.Fatalf("Book.Delete: deleted even though copies exist\n")
+	}
+
+	c.Delete()
+	b.Delete() // XXX not called - what am I missing?
+	fmt.Println("after second b.Delete: books =", books)
+	b2, ok := books[ISBN("978-0-201-07981-4")]
 	if ok {
 		t.Fatalf("Book.Delete: still in books map after Delete\n")
 	}

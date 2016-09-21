@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"runtime/debug"
 	"strings"
 	"time"
 	"unicode"
@@ -55,7 +56,10 @@ func (b *Book) Delete() {
 		return
 	}
 
+	debug.PrintStack()
+	fmt.Printf("delete(%v, %v)\n", books, b.isbn)
 	delete(books, b.isbn)
+	fmt.Printf("delete(%v, %v)\n", books, b.isbn)
 }
 
 // NewBook adds a Book to the system.
