@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 
 public class Connection {
 	private static final int PORT = 40000;
-	private static final int VERS = 2;
+	private static final int VERS = 4;
 
 	/* protocol error strings */
 	private static final String LENDERR = "can't lend";

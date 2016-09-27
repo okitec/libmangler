@@ -17,7 +17,7 @@ import (
 
 // Protocol constants
 const (
-	protoVersion = -1
+	protoVersion = 4
 	protoPort    = 40000
 )
 
