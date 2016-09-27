@@ -90,6 +90,6 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			return s, err
 		}
 
-		return "", nil
+		return s, nil
 	},
 }

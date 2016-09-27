@@ -72,15 +72,13 @@ public class Connection {
 
 	/* version: get protocol version number */
 	private int version() {
-		int pos, pvers;
 		String s;
 
-		/* format: libmangler proto P build B */
+		/* format: libmangler proto P */
 		s = transact("v " + VERS);
-		pos = s.indexOf("proto");
-		pos += "proto ".length();
-		pvers = Integer.parseInt(s.substring(pos));
-		return pvers;
+
+		String args[] = s.split(" ");
+		return Integer.parseInt(args[2]);
 	}
 
 	/* transact: send request, return answer */
