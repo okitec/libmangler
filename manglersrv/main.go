@@ -170,11 +170,13 @@ func handle(rw io.ReadWriter) {
 	for {
 		n, err = rw.Read(buf)
 		s := string(buf[0:n])
+		log.Printf("[->proto] %q\n", s)
 		ret := interpret(s, &dot)
 		if ret == "quit" {
 			return
 		} else {
 			fmt.Fprint(rw, ret)
+			log.Printf("[proto->] %q\n", ret)
 		}
 	}
 
