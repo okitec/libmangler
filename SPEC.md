@@ -109,17 +109,8 @@ der Schreibweise `'.'` wid die Selektion *Dot* genannt.
 übersehen. (Ich tippe gerade dieses Dokument in `sam`. Ein sehr produktiver
 Plain-Text-Editor).
 
-Das Antwortformat sieht wie folgt aus:
-
-		tag lines \n
-		<payload>
-
-Der Tag gleicht dem des Requests, der diese Antwort veranlasst hat. Die Größe
-der eigentlichen Antwort wird in Zeilen angegeben.
-
 Wenn ein Command fehlerfrei funktioniert, sollte er keinen Output generieren
-(*Unix Rule of Silence*). In dem Fall wird ein leerer Payload gesendet, der
-jedoch noch Whitespace enthalten kann (kleines, etwas unschönes Artefakt).
+(*Unix Rule of Silence*).
 
 ### 4.2 Befehlsliste
 

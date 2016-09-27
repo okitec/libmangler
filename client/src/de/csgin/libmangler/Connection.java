@@ -1,109 +1,90 @@
 package de.csgin.libmangler;
 
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
-/**
- * Whereas the actual connection is managed in the Req class, the protocol lives
- * in Connection. When one of these routines is called, the proper request will be
- * assembled and sent to the server.
- *
- * XXX let caller decide on RespHandler (removes Context dependency)
- * XXX naming: not really a Connection any longer, more of a protocol
- * XXX could be totally static
- */
 public class Connection {
+	private static final int PORT = 40000;
 	private static final int VERS = 2;
 
 	/* protocol error strings */
 	private static final String LENDERR = "can't lend";
 
-	private Context ctxt;
-	private RespHandler nilHandler;
+	private Socket socket;
+	private BufferedReader in;
+	private PrintWriter out;
+	private String result;
 
-	public Connection(Context ctxt) {
+	/* just rethrow, we can't tell the user */
+	public Connection(String addr) throws UnknownHostException, IOException {
 		int vers;
 
-		this.ctxt = ctxt;
-		nilHandler = new RespHandler() {
-			public void onResponse(Req r, String resp) {}
-		};
+		socket = new Socket(addr, PORT);
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		out = new PrintWriter(socket.getOutputStream());
+
+		vers = version();
+		if(vers != VERS) {
+			quit("version mismatch (client " + VERS + "; server " + vers + ")");
+			System.exit(1);
+		}
 	}
 
-	public void print(long... id) {
-		new Req("C/" + mksel(id) + "/p", new RespHandler() {
-			public void onResponse(Req r, String resp) {
-				((MainActivity)ctxt).dispinfo(resp);
-			}
-		}).send();
+	public String print(long... id) {
+		return transact("C/" + mksel(id) + "/p");
 	}
 
 	public void delete(long... id) {
-		new Req("C/" + mksel(id) + "/d", nilHandler).send();
+		transact("C/" + mksel(id) + "/d");
 	}
 
 	public void note(String note, long... id) {
-		new Req("C/" + mksel(id) + "/n " + note, nilHandler).send();
+		transact("C/" + mksel(id) + "/n " + note);
 	}
 
-	/* lend: lend copy to user */
-	public void lend(String user, long... id) {
+	/* lend: lend copy to user; return false if any lend failed, true otherwise */
+	public boolean lend(String user, long... id) {
+		String s;
 
-		new Req("C/" + mksel(id) + "/l " + user, new RespHandler() {
-			public void onResponse(Req r, String resp) {
-				if(resp.contains(LENDERR)) {
-					Toast.makeText(ctxt, "error: " + resp, Toast.LENGTH_LONG).show();
-					return;
-				}
+		s = transact("C/" + mksel(id) + "/l " + user);
+		if(s.contains(LENDERR))
+			return false;
 
-				// XXX show success?
-			}
-		}).send();
+		return true;
 	}
 
 	public void returncopy(long... id) {
-		new Req("C/" + mksel(id) + "/r", nilHandler).send();
+		transact("C/" + mksel(id) + "/r");
 	}
 
 	public void retire(long... id) {
-		new Req("C/" + mksel(id) + "/R", nilHandler).send();
+		transact("C/" + mksel(id) + "/R");
 	}
 
 	public void quit(String reason) {
-		new Req("q " + reason, nilHandler).send();
+		transact("q " + reason);
 	}
 
-	/* version: see if server operates on same protocol version */
-	private void version() {
-		new Req("v " + VERS, new RespHandler() {
-			public void onResponse(Req r, String resp) {
-				String args[];
-				int pv = -42;
+	/* version: get protocol version number */
+	private int version() {
+		int pos, pvers;
+		String s;
 
-				args = resp.split("( |\t)+");
-				if(args.length < 3)
-					panic("server sends bogus answer");
-
-				try {
-					pv = Integer.parseInt(args[2]);
-				} catch(NumberFormatException nfe) {
-					panic("server sends bogus answer");
-				}
-
-				if(pv != VERS)
-					panic("protocol version mismatch");
-			}
-		}).send();
+		/* format: libmangler proto P build B */
+		s = transact("v " + VERS);
+		pos = s.indexOf("proto");
+		pos += "proto ".length();
+		pvers = Integer.parseInt(s.substring(pos));
+		return pvers;
 	}
 
-	/**
-	 * panic: display panic toast, log and quit
-	 */
-	public void panic(String s) {
-		Toast.makeText(ctxt, "panic: " + s, Toast.LENGTH_LONG).show();
-		Log.e("panic", s);
-		System.exit(1);
+	/* transact: send request, return answer */
+	private String transact(String req) {
+			return null;
 	}
 
 	/* mksel: generate selection string for a list of IDs */

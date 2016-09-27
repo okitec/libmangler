@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-// XXX handle pause/resume, reestablish connection
 public class MainActivity extends Activity {
 	/* ViewFlipper indexes */
 	private static final int MainLayout = 0;
@@ -33,8 +32,21 @@ public class MainActivity extends Activity {
 
 		initbuttons();
 
-		Req.init(this, SRVADDR, PORT);
-		conn = new Connection(this);
+		try {
+			conn = new Connection(SRVADDR);
+		} catch(UnknownHostException uhe) {
+			Toast.makeText(this, "Server nicht gefunden - Netzwerkfehler?", Toast.LENGTH_LONG).show();
+			Log.e("srv", "can't locate server at " + SRVADDR);
+			System.exit(1);
+		} catch(IOException ioe) {
+			Toast.makeText(this, "Verbindungsfehler", Toast.LENGTH_LONG).show();
+			Log.e("srv", "can't open socket to server " + SRVADDR);
+			System.exit(1);
+		} catch (android.os.NetworkOnMainThreadException netmain) {
+			Toast.makeText(this, "BUG OF DOOM", Toast.LENGTH_LONG).show();
+			Log.e("srv", "BUG OF DOOM " + SRVADDR);
+			System.exit(1);
+		}
 	}
 
 	private void initbuttons() {
@@ -139,7 +151,7 @@ public class MainActivity extends Activity {
 				String s = data.getStringExtra("SCAN_RESULT");
 				try {
 					id = Long.parseLong(s);
-					conn.print(id);
+					dispinfo(id);
 				} catch(NumberFormatException nfe) {
 					Toast.makeText(getBaseContext(), "QR code is not a valid copy ID", Toast.LENGTH_LONG).show();
 				}
@@ -148,10 +160,10 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	/* dispinfo: ATM, just display the string */
-	public void dispinfo(String s) {
+	/* dispinfo: go into detailed info layout for a copy of that id */
+	private void dispinfo(long id) {
 		TextView Tinfo = (TextView) findViewById(R.id.Tinfo);
-		Tinfo.setText("Fetched from server: " + s);
+		Tinfo.setText("Copy ID: " + id);
 
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
 		vf.setDisplayedChild(InfoLayout);
