@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
 
 				// XXX search for more than just id!
 				id = Long.parseLong(Esearch.getText().toString());
-				conn.print(id);
+				dispinfo(id);
 			}
 		});
 
@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
 	/* dispinfo: go into detailed info layout for a copy of that id */
 	private void dispinfo(long id) {
 		TextView Tinfo = (TextView) findViewById(R.id.Tinfo);
-		Tinfo.setText("Copy ID: " + id);
+		Tinfo.setText("The server says: " + conn.print(id));
 
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
 		vf.setDisplayedChild(InfoLayout);

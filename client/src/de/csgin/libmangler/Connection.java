@@ -103,7 +103,7 @@ public class Connection {
 
 		sel = "";
 		for(int i = 0; i < id.length; i++)
-			sel += "id, ";    /* trailing comma is fine */
+			sel += id[i] + ", ";    /* trailing comma is fine */
 
 		return sel;
 	}
