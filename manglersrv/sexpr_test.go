@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestTok(t *testing.T) {
 	var tests = []struct {
@@ -19,6 +22,7 @@ func TestTok(t *testing.T) {
 		{`"foo bar"`, `foo bar`, ``},   /* quoted string with whitespace */
 
 		{`ab"c d"e`, `ab`, `c d"e`},    /* embedded quote has no effect */
+		{`derp)`, `derp`, `)`},
 	}
 
 	for _, tt := range tests {
@@ -26,5 +30,22 @@ func TestTok(t *testing.T) {
 		if tok != tt.tok || tail != tt.tail {
 			t.Errorf("tok(%q): got (%q, %q), want (%q, %q)\n", tt.s, tok, tail, tt.tok, tt.tail)
 		}
+	}
+}
+
+func TestParse(t *testing.T) {
+	var tests = []string {
+		"derp",
+		"(derp)",
+		"(foo bar)",
+		"(foo (bar))",
+		"(foo bar quux derp)",
+		"(foo (bar (quux derp))))",
+	}
+
+	for _, tt := range tests {
+		sexpr := Parse(tt)
+		// can't really compare without normalising the output
+		fmt.Printf("Parse(%q): got %q\n", tt, sexpr)
 	}
 }
