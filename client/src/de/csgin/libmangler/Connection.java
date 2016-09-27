@@ -1,5 +1,7 @@
 package de.csgin.libmangler;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +19,6 @@ public class Connection {
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
-	private String result;
 
 	/* just rethrow, we can't tell the user */
 	public Connection(String addr) throws UnknownHostException, IOException {
@@ -84,7 +85,18 @@ public class Connection {
 
 	/* transact: send request, return answer */
 	private String transact(String req) {
-			return null;
+		out.println(req);
+		out.flush();
+		Log.e("libmangler-proto", "[proto->] " + req);
+
+		try {
+			String line = in.readLine();  // note the classic Java naming inconsistency
+			Log.e("libmangler-proto", "[->proto] " + line);
+			return line;
+		} catch(IOException ioe) {
+			Log.e("libmangler-proto", "IO EXCEPTION");
+			return "IO EXCEPTION";
+		}
 	}
 
 	/* mksel: generate selection string for a list of IDs */
