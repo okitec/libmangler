@@ -1,7 +1,5 @@
 /*
-Manglersrv implements the v, q, B, p, n, and d commands at the moment.
-Only Books are implemented; only ISBNs can be selected. Copies and Users
-don't yet exist. The specification is violated by the CSV Reader for command B.
+Manglersrv does stuff.
 */
 package main
 
@@ -13,7 +11,6 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"unicode"
 )
@@ -24,10 +21,10 @@ const (
 	protoPort    = 40000
 )
 
-// The function interpret executes the line and returnsa string that should be
+// The function interpret executes the line and returns a string that should be
 // sent to the client. This is also used by store(), which is why it was split off
 // handle in the first place.
-func interpret(s string, dot *[]elem, tag int) (ret string) {
+func interpret(s string, dot *[]elem) (ret string) {
 	var err error
 
 parse:
@@ -57,8 +54,7 @@ parse:
 				log.Printf("cmd %c: %v", r, err)
 			}
 
-			sret += "\n"
-			return fmt.Sprintf("%d %d\n%s", tag, strings.Count(sret, "\n"), sret)
+			return sret + "\n"
 		case 'B', 'C', 'U':
 			// B/.../, C/.../, U/.../ reset the selection.
 			*dot = nil
@@ -109,8 +105,8 @@ parse:
 			for _, e := range *dot {
 				sret += e.Print() + "\n"
 			}
-			return fmt.Sprintf("%d %d\n%s", tag, strings.Count(sret, "\n"), sret)
 
+			return sret
 		case 'n':
 			// The note is all text after "n" and before the EOL, whitespace-trimmed.
 			note := s[1:strings.IndexRune(s, '\n')]
@@ -138,7 +134,7 @@ parse:
 				c, ok := e.(*Copy)
 				if !ok {
 					log.Printf("tried to lend a non-Copy element")
-					return fmt.Sprintf("%d 1\nerror: can't lend: not a Copy\n", tag)
+					return "error: can't lend: not a Copy\n"
 					break
 				}
 
@@ -152,14 +148,12 @@ parse:
 				c, ok := e.(*Copy)
 				if !ok {
 					log.Printf("tried to return a non-Copy element")
-					return fmt.Sprintf("%d 1\nerror: can't return: not a Copy\n", tag)
+					return "error: can't return: not a Copy\n"
 					break
 				}
 
 				c.Return()
 			}
-
-			return ""
 		}
 	}
 
@@ -170,33 +164,13 @@ parse:
 func handle(rw io.ReadWriter) {
 	var dot []elem
 	var err error
+	var n int
 	buf := make([]byte, 128)
 
 	for {
-		n, err := rw.Read(buf)
-
-		req := string(buf[0:n])
-		args := strings.Split(req, " ")
-		if len(args) < 2 {
-			log.Printf("request without tag: %s", req)
-			fmt.Fprintf(rw, "error: request without tag: %s\n", req) // XXX breaks Java side
-			// XXX duplication, see end of handle()
-			if err != nil {
-				return
-			}
-			continue
-		}
-
-		tag, err := strconv.Atoi(args[0])
-		if err != nil {
-			log.Printf("non-numerical tag %s", args[0])
-			fmt.Fprintf(rw, "error: non-numerical tag %s\n", args[0]) // XXX breaks Java side
-			continue
-		}
-
-		// stitch rest of request back together, excluding tag
-		s := strings.Join(args[1:len(args)], " ")
-		ret := interpret(s, &dot, tag)
+		n, err = rw.Read(buf)
+		s := string(buf[0:n])
+		ret := interpret(s, &dot)
 		if ret == "quit" {
 			return
 		} else {

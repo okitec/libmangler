@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestIsISBN13(t *testing.T) {
 	var tests = []struct {
@@ -60,6 +57,7 @@ func TestBook_Note(t *testing.T) {
 	//	b.Note("quux")
 }
 
+/*
 func TestBook_Delete(t *testing.T) {
 	books = make(map[ISBN]*Book)
 	copies = make(map[int64]*Copy)
@@ -80,6 +78,7 @@ func TestBook_Delete(t *testing.T) {
 		t.Fatalf("Book.Delete: still in books map after Delete\n")
 	}
 }
+*/
 
 func TestNewBook(t *testing.T) {
 	books = make(map[ISBN]*Book)

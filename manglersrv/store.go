@@ -29,7 +29,7 @@ func store() {
 	}
 	defer copies.Close()
 
-	fmt.Fprint(users, interpret("Up", &dot, 100))
-	fmt.Fprint(books, interpret("Bp", &dot, 200))
-	fmt.Fprint(copies, interpret("Cp", &dot, 300))
+	fmt.Fprint(users, interpret("Up", &dot))
+	fmt.Fprint(books, interpret("Bp", &dot))
+	fmt.Fprint(copies, interpret("Cp", &dot))
 }
