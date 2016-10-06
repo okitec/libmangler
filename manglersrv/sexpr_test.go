@@ -1,27 +1,24 @@
 package main
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 func TestTok(t *testing.T) {
 	var tests = []struct {
 		s    string
-		tok  string  // wanted token
-		tail string  // wanted tail
+		tok  string // wanted token
+		tail string // wanted tail
 	}{
-		{``, ``, ``},                   /* empty */
-		{`"`, ``, ``},                  /* dangling quote */
-		{` `, ``, ` `},                 /* lone whitespace */
+		{``, ``, ``},   /* empty */
+		{`"`, ``, ``},  /* dangling quote */
+		{` `, ``, ` `}, /* lone whitespace */
 
 		{`(`, `(`, ``},
 		{`)`, `)`, ``},
-		{`derp`, `derp`, ``},           /* atom/number */
-		{`""`, ``, ``},                 /* empty string */
-		{`"foo bar"`, `foo bar`, ``},   /* quoted string with whitespace */
+		{`derp`, `derp`, ``},         /* atom/number */
+		{`""`, ``, ``},               /* empty string */
+		{`"foo bar"`, `foo bar`, ``}, /* quoted string with whitespace */
 
-		{`ab"c d"e`, `ab`, `c d"e`},    /* embedded quote has no effect */
+		{`ab"c d"e`, `ab`, `c d"e`},  /* embedded quote has no effect */
 		{`derp)`, `derp`, `)`},
 	}
 
@@ -34,18 +31,23 @@ func TestTok(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	var tests = []string {
-		"derp",
-		"(derp)",
-		"(foo bar)",
-		"(foo (bar))",
-		"(foo bar quux derp)",
-		"(foo (bar (quux derp))))",
+	var tests = []struct {
+		s   string
+		want string // expected output in pairwise (x . y) s-exp notation
+	}{
+		{"derp", "derp"},
+		{"(derp)", "(derp . ())"},
+		{"(foo bar)", "(foo . (bar . ()))"},
+		{"(foo (bar))", "(foo . ((bar . ()) . ()))"},
+		{"(foo bar quux derp)", "(foo . (bar . (quux . (derp . ()))))"},
+		{"(foo (bar (quux derp))))", "(foo . ((bar . ((quux . (derp . ())) . ())) . ()))"},
 	}
 
 	for _, tt := range tests {
-		sexpr := Parse(tt)
-		// can't really compare without normalising the output
-		fmt.Printf("Parse(%q): got %q\n", tt, sexpr)
+		sxp := Parse(tt.s)
+		got := sxp.String()
+		if got != tt.want {
+			t.Errorf("Parse(%q): got %q, want %q\n", tt.s, got, tt.want)
+		}
 	}
 }
