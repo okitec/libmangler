@@ -40,7 +40,7 @@ func TestParse(t *testing.T) {
 		{"(foo bar)", "(foo . (bar . ()))"},
 		{"(foo (bar))", "(foo . ((bar . ()) . ()))"},
 		{"(foo bar quux derp)", "(foo . (bar . (quux . (derp . ()))))"},
-		{"(foo (bar (quux derp))))", "(foo . ((bar . ((quux . (derp . ())) . ())) . ()))"},
+		{"(foo (bar\n(quux derp))))", "(foo . ((bar . ((quux . (derp . ())) . ())) . ()))"},
 	}
 
 	for _, tt := range tests {
