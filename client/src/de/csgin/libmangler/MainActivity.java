@@ -25,11 +25,15 @@ public class MainActivity extends Activity {
 	private static final int InfoLayout = 1;
 	private static final int SearchLayout = 2;
 
+	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
+
 	private static final String SRVADDR = "oquasinus.duckdns.org";
 	private static final int PORT = 40000;
 	private Connection conn;
-	private long id = -1;            /* id of last scanned copy */
+
+	/** currently investigated copy */
+	private long id = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,85 +46,20 @@ public class MainActivity extends Activity {
 		StrictMode.ThreadPolicy p = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(p); 
 
-		initbuttons();
+		initLayouts();
 
 		try {
 			conn = new Connection(SRVADDR);
 		} catch(UnknownHostException uhe) {
-			Toast.makeText(this, "Server nicht gefunden - Netzwerkfehler?", Toast.LENGTH_LONG).show();
+			toast("Server nicht gefunden - Netzwerkfehler?");
 			Log.e("srv", "can't locate server at " + SRVADDR);
-			System.exit(1);
 		} catch(IOException ioe) {
-			Toast.makeText(this, "Verbindungsfehler", Toast.LENGTH_LONG).show();
+			toast("Verbindungsfehler");
 			Log.e("srv", "can't open socket to server " + SRVADDR);
-			System.exit(1);
 		} catch (android.os.NetworkOnMainThreadException netmain) {
-			Toast.makeText(this, "BUG OF DOOM", Toast.LENGTH_LONG).show();
-			Log.e("srv", "BUG OF DOOM " + SRVADDR);
-			System.exit(1);
+			toast("NetworkOnMainThreadException - sollte nicht passieren");
+			Log.e("srv", "shouldn't happen - NetworkOnMainThreadException");
 		}
-	}
-
-	private void initbuttons() {
-		Button Bscan = (Button) findViewById(R.id.Bscan);
-		Bscan.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
-				try {
-					Intent i = new Intent("com.google.zxing.client.android.SCAN");
-					i.putExtra("SCAN_MODE", "QR_CODE_MODE");
-					i.putExtra("SAVE_HISTORY", false);
-					startActivityForResult(i, SCANREQ);
-				} catch(Exception e) {
-					// XXX handle specific exception
-					// XXX localisations
-					Toast.makeText(getBaseContext(), "Please install the ZXing Barcode scanner app.", Toast.LENGTH_LONG).show();
-					finish();
-				}
-			}
-		});
-
-		Button Bsearch = (Button) findViewById(R.id.Bsearch);
-		Bsearch.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
-				vf.setDisplayedChild(SearchLayout);
-			}
-		});
-
-		OnClickListener tomain = new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
-				vf.setDisplayedChild(MainLayout);
-			}
-		};
-		Button Btomain = (Button) findViewById(R.id.Btomain);
-		Button Btomain2 = (Button) findViewById(R.id.Btomain2);
-		Btomain.setOnClickListener(tomain);
-		Btomain2.setOnClickListener(tomain);
-
-		Button Bdosearch = (Button) findViewById(R.id.Bdosearch);
-		Bdosearch.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				EditText Esearch = (EditText) findViewById(R.id.Esearch);
-				long id;
-
-				// XXX search for more than just id!
-				id = Long.parseLong(Esearch.getText().toString());
-				dispinfo(id);
-			}
-		});
-
-		Button Blend = (Button) findViewById(R.id.Blend);
-		// XXX add listener when networking code works
-		Button Bretire = (Button) findViewById(R.id.Bretire);
-		// XXX add listener when networking code works
-		Button Bnote = (Button) findViewById(R.id.Bnote);
-		// XXX add listener when networking code works
 	}
 
 	@Override
@@ -165,19 +104,130 @@ public class MainActivity extends Activity {
 					id = Long.parseLong(s);
 					dispinfo(id);
 				} catch(NumberFormatException nfe) {
-					Toast.makeText(getBaseContext(), "QR code is not a valid copy ID", Toast.LENGTH_LONG).show();
+					toast("QR code is not a valid copy ID");
 				}
 			}
 			/* don't do anything on failure */
 		}
 	}
 
-	/* dispinfo: go into detailed info layout for a copy of that id */
+	/**
+	 * Initialise the buttons of the layouts.
+	 */
+	private void initLayouts() {
+		initMainLayout();
+		initInfoLayout();
+		initSearchLayout();
+	}
+
+	private void initMainLayout() {
+		Button Bscan;
+		Button Bsearch;
+
+		Bscan = (Button) findViewById(R.id.Bscan);
+		// I wish lambda expressions were available in Android.
+		Bscan.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
+				try {
+					Intent i = new Intent("com.google.zxing.client.android.SCAN");
+					i.putExtra("SCAN_MODE", "QR_CODE_MODE");
+					i.putExtra("SAVE_HISTORY", false);
+					startActivityForResult(i, SCANREQ);
+				} catch(Exception e) {
+					// XXX handle specific exception
+					// XXX localisations
+					toast("Please install the ZXing Barcode scanner app.");
+					finish();
+				}
+			}
+		});
+
+		Bsearch = (Button) findViewById(R.id.Bsearch);
+		Bsearch.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(SearchLayout);
+			}
+		});
+	}
+
+	private void initInfoLayout() {
+		Button Btomain = (Button) findViewById(R.id.Btomain);
+		Button Blend = (Button) findViewById(R.id.Blend);
+		Button Bretire = (Button) findViewById(R.id.Bretire);
+		Button Bnote = (Button) findViewById(R.id.Bnote);
+
+		Btomain.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+
+		Blend.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				// XXX Query for lendee name
+			}
+		});
+
+		//Button Bretire = (Button) findViewById(R.id.Bretire);
+		//Button Bnote = (Button) findViewById(R.id.Bnote);
+	}
+
+	private void initSearchLayout() {
+		Button Btomain2 = (Button) findViewById(R.id.Btomain2);
+		Button Bdosearch = (Button) findViewById(R.id.Bdosearch);
+
+		Btomain2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+
+		Bdosearch.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				EditText Esearch = (EditText) findViewById(R.id.Esearch);
+				long id;
+
+				// XXX search for more than just id!
+				id = Long.parseLong(Esearch.getText().toString());
+				dispinfo(id);
+			}
+		});
+	}
+
+	/**
+	 * Fetch info about a Copy and show it in the InfoLayout.
+	 */
 	private void dispinfo(long id) {
+		if(id == -1)
+			return;
+
 		TextView Tinfo = (TextView) findViewById(R.id.Tinfo);
 		Tinfo.setText("The server says: " + conn.print(id));
+		flipView(InfoLayout);
+	}
 
+	/**
+	 * Flip to a linear layout. See indexes at the top of MainActivity.
+	 */
+	private void flipView(int layout) {
 		ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
-		vf.setDisplayedChild(InfoLayout);
+		vf.setDisplayedChild(layout);
+	}
+
+	/**
+	 * Makea long toast.
+	 */
+	private void toast(String s) {
+		Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
 	}
 }

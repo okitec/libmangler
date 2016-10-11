@@ -7,7 +7,7 @@
 	<string name="tomain">Zurück</string>
 	<string name="lend">Entleihen</string>
 	<string name="returncopy">Zurückgeben</string>
-	<string name="retire">ENTFERNEN</string>
+	<string name="retire">Beiseitestellen</string>
 	<string name="note">Notiz hinzufügen</string>
 	<string name="dosearch">Suchen!</string>
 </resources>
