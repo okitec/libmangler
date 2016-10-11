@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
 	private static final int MainLayout = 0;
 	private static final int InfoLayout = 1;
 	private static final int SearchLayout = 2;
+	private static final int PanicLayout = 3;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -51,15 +52,17 @@ public class MainActivity extends Activity {
 		try {
 			conn = new Connection(SRVADDR);
 		} catch(UnknownHostException uhe) {
-			toast("Server nicht gefunden - Netzwerkfehler?");
-			Log.e("srv", "can't locate server at " + SRVADDR);
+			panic("Server '" + SRVADDR + "' nicht gefunden");
 		} catch(IOException ioe) {
-			toast("Verbindungsfehler");
-			Log.e("srv", "can't open socket to server " + SRVADDR);
+			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
 		} catch (android.os.NetworkOnMainThreadException netmain) {
-			toast("NetworkOnMainThreadException - sollte nicht passieren");
-			Log.e("srv", "shouldn't happen - NetworkOnMainThreadException");
+			panic("NetworkOnMainThreadException - sollte nicht passieren");
 		}
+
+		if(conn == null)
+			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
+		if(conn != null && !conn.isProperVersion())
+			panic("Inkompatibles Protokoll zwischen Client und Server!");
 	}
 
 	@Override
@@ -118,6 +121,7 @@ public class MainActivity extends Activity {
 		initMainLayout();
 		initInfoLayout();
 		initSearchLayout();
+		// PanicLayout needs no initialisation, as it has no buttons.
 	}
 
 	private void initMainLayout() {
@@ -138,8 +142,7 @@ public class MainActivity extends Activity {
 				} catch(Exception e) {
 					// XXX handle specific exception
 					// XXX localisations
-					toast("Please install the ZXing Barcode scanner app.");
-					finish();
+					panic("ZXing Barcode scanner app not installed. Please install it to scan QR codes.");
 				}
 			}
 		});
@@ -225,9 +228,20 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * Makea long toast.
+	 * Make a long toast.
 	 */
 	private void toast(String s) {
 		Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
+	}
+
+	/**
+	 * Go into a layout which displays the error and offers no way back.
+	 * Bug: Does return; can't reasonably loop here.
+	 */
+	private void panic(String s) {
+		Log.e("libmangler", "panic: " + s);
+		TextView Tpanic = (TextView) findViewById(R.id.Tpanic);
+		Tpanic.setText("Fataler Fehler: " + s);
+		flipView(PanicLayout);
 	}
 }

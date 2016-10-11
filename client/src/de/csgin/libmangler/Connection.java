@@ -23,17 +23,9 @@ public class Connection {
 
 	/* just rethrow, we can't tell the user */
 	public Connection(String addr) throws UnknownHostException, IOException {
-		int vers;
-
 		socket = new Socket(addr, PORT);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream());
-
-		vers = version();
-		if(vers != VERS) {
-			quit("version mismatch (client " + VERS + "; server " + vers + ")");
-			System.exit(1);
-		}
 	}
 
 	public String print(long... id) {
@@ -69,6 +61,19 @@ public class Connection {
 
 	public void quit(String reason) {
 		transact("q " + reason);
+	}
+
+	/**
+	 * isProperVersion: test whether the protocol versions of client and server match. 
+	 */
+	public boolean isProperVersion() {
+		int vers = version();
+		if(vers != VERS) {
+			quit("version mismatch (client " + VERS + "; server " + vers + ")");
+			return false;
+		}
+
+		return true;
 	}
 
 	/* version: get protocol version number */
