@@ -10,8 +10,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Connection {
-	private static final int PORT = 40000;
-	private static final int VERS = 4;
+	private static final int PORT         = 40000;
+	private static final int VERS         = 6;
+	private static final String ENDMARKER = "---";
 
 	/* protocol error strings */
 	private static final String LENDERR = "can't lend";
@@ -81,16 +82,23 @@ public class Connection {
 		return Integer.parseInt(args[2]);
 	}
 
-	/* transact: send request, return answer */
+	/* transact: send request line, return multi-line answer */
 	private String transact(String req) {
 		out.println(req);
 		out.flush();
 		Log.e("libmangler-proto", "[proto->] " + req);
 
 		try {
-			String line = in.readLine();  // note the classic Java naming inconsistency
-			Log.e("libmangler-proto", "[->proto] " + line);
-			return line;
+			StringBuilder answer = new StringBuilder();
+			String line;
+
+			// note the classic Java naming inconsistency (readLine vs println)
+			while(!(line = in.readLine()).equals(ENDMARKER)) {
+				Log.e("libmangler-proto", "[->proto] " + answer);
+				answer.append(line);
+			}
+
+			return answer.toString();
 		} catch(IOException ioe) {
 			Log.e("libmangler-proto", "IO EXCEPTION");
 			return "IO EXCEPTION";

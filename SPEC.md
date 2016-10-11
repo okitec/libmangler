@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 4
+Version: Protokollversion 6
 
 0. Index
 --------
@@ -45,9 +45,8 @@ irgendwelche Dateien direkt lauffähig ist.
 3. Architektur und Implementierungssprachen
 -------------------------------------------
 
-Die Bibliotheksverwaltung ist eine Ansammlung von Programmen. Die App ist einer
-der zwei Clients. Sie verfügt über Fähigkeiten wie
-
+Die Bibliotheksverwaltung besteht aus einem Android-Client und einem Server.
+Die Android-App verfügt über Fähigkeiten wie
 
  - QR-Code lesen
  - Infos zum Buch anzeigen
@@ -58,27 +57,15 @@ Aktionen bittet. Sie wird in Java geschrieben. Die UI wird semi-dynamisch
 generiert; vorgefertigte Layouts werden mithilfe eines `ViewFlipper`s ein- und
 ausgeblendet, um der unnötigen Komplexität zu vieler Activities zu entgehen.
 
-Der zweite Client ist ein Desktopprogramm, das zwar keine QR-Codes lesen kann
-und somit nicht zur Interaktion mit den physikalischen Büchern da ist, jedoch
-der einfachen Verwaltung der Bücher und Büchertypen gewidmet ist; dafür ist
-ein großer Bildschirm und eine Tastatur hilfreicher als ein Smartphone. Das
-Programm ist auch dasjenige, welches QR-Codes für neue Bücher generiert. Die
-Implementierungssprache ist Java, Go oder Python.
-
-Beide Clients interagieren mit einem Server, der nicht den Umweg über HTTP
-geht; Pakete werden direkt zwischen Client und Server über einen TCP-Stream
-ausgetauscht. Die Programmiersprache des Servers ist Go.
-
-
 4. Operationen/Protokoll
 ------------------------
 
 ### 4.1 Allgemeines
 
-Das Client-Server-Protokoll muss über einen zuverlässigen (und evtl.
-Reihenfolge einhaltenden) Stream übertragen werden. Dies kann durch TCP
-gewährleistet werden. Zudem sollte er durch TLS verschlüsselt sein. Die
-Portnummer ist 40000.
+Das Client-Server-Protokoll muss über einen zuverlässigen Stream übertragen
+werden. Dies kann durch TCP gewährleistet werden. Zudem sollte er durch TLS
+verschlüsselt sein, was jedoch wohl nicht implementiert wird. Die Portnummer
+ist 40000.
 
 Das Protokoll ist ein UTF-8-basiertes Textprotokoll. IMHO ist es nicht nötig,
 dem Semi-Standard zu folgen und alles über HTTP zu machen; ich preferiere es,
@@ -93,9 +80,9 @@ Generelles Request-Format:
 
 		selector cmd parameters \n
 
-Das Antwortformat des Servers ist von den ausgeführten Kommandos
-abhängig. Wenn ein Command fehlerfrei funktioniert, sollte er
-üblicherweise keinen Output generieren (*Unix Rule of Silence*).
+Das Antwortformat des Servers ist von den ausgeführten Kommandos abhängig,
+endet jedoch auf jeden Fall mit einer Endmarkierungszeile aus drei
+Bindestrichen (`---`).
 
 ### 4.2 Befehlsliste
 
@@ -244,8 +231,7 @@ werden, User mit ausgeliehenen Copies auch nicht.
 
 *Beschreibung*
 
-Erzeugt ein neues Buch, das diese ISBN hat. Weitere Informationen werden, falls
-möglich, aus dem Internet gefetcht.
+Erzeugt ein neues Buch, das diese ISBN hat.
 
 #### `a` - add copy of a book
 
@@ -319,12 +305,12 @@ durch die ISBN eindeutig identifiziert. Die App sollte nichts groß speichern,
 nur evtl. cachen.
 
 Die Ausleiher eines Buches werden durch einen String identifiziert, dessen Form
-frei wählbar ist, sofern das ganze System ein einheitliches Format verwendet
-und man Ausleiher wieder finden kann.
+frei wählbar ist; der Verwalter der Bibliothek tut gut daran, ein einheitliches
+Schema zu verwenden.
 
 Gespeichert werden die Daten in drei Dateien: `users`, `books` und `copies`.
-Das Format gleicht jeweils dem Output von `Up`, `Bp` und `Cp`, inklusive einer
-ersten Zeile aus Tag und Anzahlder Zeilen; diese sollte ignoriert werden.
+Das Format gleicht jeweils dem Output von `Up`, `Bp` und `Cp`, inklusive der
+Endmarkierung (`---`) am Dateiende.
 
 6. Referenzen
 -------------

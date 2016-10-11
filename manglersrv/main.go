@@ -17,8 +17,9 @@ import (
 
 // Protocol constants
 const (
-	protoVersion = 4
-	protoPort    = 40000
+	protoVersion   = 6
+	protoPort      = 40000
+	protoEndMarker = "---\n" // for determining end-of-response
 )
 
 // The function interpret executes the line and returns a string that should be
@@ -170,13 +171,12 @@ func handle(rw io.ReadWriter) {
 	for {
 		n, err = rw.Read(buf)
 		s := string(buf[0:n])
-		log.Printf("[->proto] %q\n", s)
 		ret := interpret(s, &dot)
 		if ret == "quit" {
 			return
 		} else {
 			fmt.Fprint(rw, ret)
-			log.Printf("[proto->] %q\n", ret)
+			fmt.Fprint(rw, protoEndMarker)
 		}
 	}
 
