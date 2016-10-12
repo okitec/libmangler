@@ -286,14 +286,14 @@ verwalten; dadurch kann man von mehreren Geräten auf denselben Baum zugreifen.
 Der Client cacht die Mails nur; der Server hat die relevante Kopie.
 Verständlicherweise ist IMAP komplexer als POP3.
 
-Ich will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie auch das
-*libmangler*-Protokoll, und weil der Server von sich aus senden kann. Das
-folgende Exzerpt in [RFC 3501, Sektion 8] soll das nun verdeutlichen. Zeilen mit
-einem `*` werden vom Server in Eigeninitiative gesendet (Zeile 1), oder deuten
-die Kontinuation des Outputs an. Die vom Client generierten alphanumerischen
-Tags, hier `a001` und `a002`, müssen eindeutig sein; Anfrage und Antwort haben
-denselben Tag. Bei Antworten folgt dann `OK` (Erfolg), `NO` (Fehlschlag), oder
-`BAD` (formaler Fehler).
+Ich will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie es auch das
+*libmangler*-Protokoll zeitweise getan hat, und weil der Server von sich aus
+senden kann. Das folgende Exzerpt in [RFC 3501, Sektion 8] soll das nun
+verdeutlichen. Zeilen mit einem `*` werden vom Server in Eigeninitiative
+gesendet (Zeile 1), oder deuten die Kontinuation des Outputs an. Die vom Client
+generierten alphanumerischen Tags, hier `a001` und `a002`, müssen eindeutig
+sein; Anfrage und Antwort haben denselben Tag. Bei Antworten folgt dann `OK`
+(Erfolg), `NO` (Fehlschlag), oder `BAD` (formaler Fehler).
 
 	S:   * OK IMAP4rev1 Service Ready
 	C:   a001 login mrc secret
@@ -367,10 +367,10 @@ nie der Fokus gewesen. Vielmehr sollte das Protokoll auf möglichst simple und
 verständliche Weise möglichst generelle Mengen selektieren und auf diesen
 agieren können.
 
-Das Protokoll bestht aus einem Low-Level-Teil, der sich mit dem Taggen von
-Requests und dem Zählen der Payload-Zeilen beschäftigt, sowie der *kleinen
-Sprache*, in der die Anfragen gestellt werden. Um diese soll es vordergründig
-gehen. Dafür ist jedoch ein kleiner Exkurs vonnöten.
+Das Protokoll bestht aus einem Low-Level-Teil, der sich mit dem Übertragen der
+eigentlichen Informationen beschäftigt, sowie der *kleinen Sprache*, in der die
+Anfragen gestellt werden. Um diese soll es vordergründig gehen. Dafür ist
+jedoch ein kleiner Exkurs vonnöten.
 
 ### Die Anfragensprache
 
@@ -405,28 +405,90 @@ eingeschränkt werden. Alles zwischen den Slashes wird als *Selektionsargument*
 bezeichnet. Es können mehrere Teilargumente mit Komma getrennt angegeben
 werden; ein Element gilt als selektiert, wenn es eines der Teilargumente
 erfüllt. Zur einfacheren automatischen Generation kann ein Komma nach dem
-letzten Argument stehen.
+letzten Argument stehen (siehe Beispiel 3).
 
-XXX labels are not implemented
+XXX tags are not implemented
 
-XXX explain Elemente
-
-Argumente sind ISBNs, Usernamen, IDs von Copies sowie Labels. Das erste Beispiel
+Eine Menge besteht aus Elementen vom selben Typ: Bücher, Copies oder User.
+Argumente sind ISBNs, Usernamen, IDs von Copies sowie Tags. Das erste Beispiel
 selektiert das eine Buch mit dieser ISBN und gibt alle Informationen darüber
 aus. Im zweiten Beispiel werden alle Copies selektiert, die die User `Hans` und
-`Max Mustermann` ausgeliehen haben; diese werden zurückgegeben und dann ganz
-aus dem System gelöscht, weil Hans und Max eine Bücherverbrennung veranstaltet
-haben. Das dritte Beispiel selektiert die Ausleiher der Copies mit den IDs `0`,
-`405` und `3050` und gibt alle Informationen zu ihnen aus. Diese zwei Beispiele
-zeigen, dass die Selektionsargumente kontextgemäß interpretiert werden. Es
-wird immer das selektiert, was man erwartet.
+`Max Mustermann` ausgeliehen haben; diese werden zurückgegeben (`r`) und dann
+ganz aus dem System gelöscht (`d`), weil Hans und Max eine Bücherverbrennung
+veranstaltet haben. Das dritte Beispiel selektiert die Ausleiher der Copies mit
+den IDs `0`, `405` und `3050` und gibt alle Informationen zu ihnen aus. Diese
+zwei Beispiele zeigen, dass die Selektionsargumente kontextgemäß interpretiert
+werden. Es wird immer das selektiert, was man erwartet.
+
+Dokumentiert ist die Sprache in der Spezifikation (`SPEC.md`); zum Testen kann
+man einfach einen Server starten und eine Verbindung mit `netcat` [citation needed]
+aufbauen. So konnte ich schnell die Funktionalität testen; automatisiertes Testen
+kann über unkomplizierte Skripte und Testdateien von außen angebaut werden. 
 
 ### Low-level stuffs
+
+Viel hat sich im "niedrigen" Teil des Protokolls verändert, bis es zu einer
+adäquaten Lösung kam. Es gibt zwei Probleme: die Antworten müssen den Anfragen
+zugeordnet werden und die Größen mehrzeiliger Antworten mössen bekanntgemacht
+werden.
+
+Die Zuordnung ist in einem zustandsbasierten synchronen Protokoll ein
+Nonproblem. Ein solches Protokoll war ursprünglich vorgesehen und ist am
+optimalsten für die Anwendung geeignet, da es insbesondere auf Serverseite sehr
+einfach umzusetzen ist [vague] und logisch auch mehr Sinn ergibt. Während man
+auf die Informationen wartet, die vom Server geholt werden, kann der App-Nutzer
+nichts tun. Da Android verständlicherweise Netzwerkverbindungen im UI-Thread
+verhindern will, weil diese potentiell lange dauern, ist es schwer, ein
+synchrones Protokoll zu implementieren. Es gab in Protokollversion 5 folgenden
+Ansatz: Vom Client frei wählbare *Tags* wie in 9P und IMAP werden vor jedem
+Request angefügt. Die Serverantwort enthält denselben Tag. Der Client sollte
+beim Empfang einer Antwort die im Voraus für diesen Tag bestimmte
+Handlerfunktion ausführen. Da sich dies massiv auf die Komplexität der App
+auswirte und obendrein nie funktionsfähig war, ignorierte der Autor Androids
+Warnung, nicht im UI-Thread zu netzwerken, und vereinfachte den Client wieder.
+Jetzt funktioniert er, wenngleich Wartezeiten bei einer schlechten Verbindung
+auftreten könnten.
+
+Protokolltransaktionen arbeiten auf Zeilenbasi, wobei eine Zeile durch ein
+Newline (`\n`) begrenzt wird. Die Requests des Clients sind immer einzeilig; die
+Antworten des Servers mitunter auch mehrzeilig. Das kann man mit jeder
+beliebigen Shell vergleichen. Es stellt sich die Frage, wie die Größe einer
+Nachricht kommuniziert werden soll; dieses Problem nennt sich *Framing*. Es gibt
+bei der Konstruktion von Anwendungsprotokollen mehrere Denkweisen, um eine
+Nachricht "einzuboxen" [vgl. RFC 3117]:
+
+1. Alle Pakete gleich groß machen.
+
+2. *octet-stuffing*: eine Zeichensequenz auf einer eigenen Zeile am Ende der
+   Nachricht, zumeist ein Punkt (SMTP). Diese Zeichensequenz darf nicht in der
+   Nachricht vorkommen und wird durch Escapen oder Duplikation verhindert
+   (z.B. ist `.\n` unterscheidbar von `..\n`).
+
+3. *octet-counting*: man zählt die Gesamtgröße in Byte und sendet sie zu Beginn (HTTP).
+
+4. *line-counting*: man zählt zeilenweise statt byteweise (mpmp, libmangler v5).
+   Diese Variante scheint nicht sehr weit verbreitet zu sein, aber ich halte
+   es für sinnvoll, sie zu erwähnen.
+
+5. *connection-blasting*: man öffnet eine neue Verbindung, sendet die Nachricht
+   und schließt die Verbindung wieder (FTP). Heutzutage nicht weit verbreitet,
+   weil es *sehr* ineffizient ist, viele neue TCP-Streams zu öffnen und zu
+   schließen.
+
+Das aktuelle libmangler-Protokoll verwendet eine Variante des *octet-stuffing*:
+drei Bindestriche auf der letzten Zeile signalisieren das Ende der Antwort. Da
+diese Sequenz im Payload nicht vorkommen kann, ist es nie nötig, diese zu
+escapen.
 
 ### Geschichte und Ausblick
 
  - Versions
+ - Zu Beginn: regex-basiert
  - Req Tag, Payload-Zeilen
+ - Entfernung von Tags
+ - Endmarkierungen statt Payload-Zeilenzählung
+
+ - Tags → labels und labels → tags
 
  - Geschichte
  - Weiterentwicklung
@@ -445,8 +507,13 @@ wird immer das selektiert, was man erwartet.
 ### Client
 
  - Komplexität
- - Komplexität
- - Komplexität
+ - Vermeidung der Komplexität durch synchrones Netzwerken
+ - ViewFlipper statt Activities
+ - Verwendung von ZXing
+ - Panic-Screen
+ - Rationale für synchrones Netzwerken: man kann sowieso nichts anderes machen,
+   während eine Anfrage gestellt wird; da es kein Pollen gibt, wird die Verbindung
+   nur zu vorhersehbaren Zeitpunkten benutzt.
 
 6. Glossar
 ----------
@@ -457,7 +524,6 @@ wird immer das selektiert, was man erwartet.
 7. Danksagungen
 ---------------
 
- - Pabst
  - Leander, Klaus
  - StackOverflow
  - IETF
