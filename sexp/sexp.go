@@ -1,6 +1,6 @@
-package main
+package sexp
 
-// XXX put into separate package
+// XXX move into separate Git repo (github.com/okitec/sexp)
 
 import (
 	"fmt"
@@ -11,18 +11,18 @@ import (
 // s-exp := (x . y) where x and y are s-exps
 // To access information, walk the tree and interpret the
 // leaves' string values.
-type sxp interface {
+type Sexp interface {
 	fmt.Stringer
-	Car() sxp
-	Cdr() sxp
+	Car() Sexp
+	Cdr() Sexp
 }
 
 // So-called cons cell, represented as (car . cdr) where car and cdr
 // are also cons cells. car and cdr are the common and archaic names
 // for these. Don't question them; they will become natural.
 type cell struct {
-	car sxp
-	cdr sxp
+	car Sexp
+	cdr Sexp
 }
 
 // Atoms are non-nested symbols, strings, numbers, etc.
@@ -48,11 +48,11 @@ func (cp *cell) String() string {
 	return fmt.Sprintf("(%s . %s)", scar, scdr)
 }
 
-func (cp *cell) Car() sxp {
+func (cp *cell) Car() Sexp {
 	return cp.car
 }
 
-func (cp *cell) Cdr() sxp {
+func (cp *cell) Cdr() Sexp {
 	return cp.cdr
 }
 
@@ -60,15 +60,15 @@ func (ap *atom) String() string {
 	return string(*ap)
 }
 
-func (ap *atom) Car() sxp {
+func (ap *atom) Car() Sexp {
 	return ap
 }
 
-func (ap *atom) Cdr() sxp {
+func (ap *atom) Cdr() Sexp {
 	return nil
 }
 
-func cons(car, cdr sxp) *cell {
+func cons(car, cdr Sexp) *cell {
 	return &cell{car, cdr}
 }
 
@@ -77,23 +77,23 @@ func mkatom(s string) *atom {
 	return &a
 }
 
-func Parse(s string) sxp {
-	sxp, _ := sexpr(s)
-	return sxp
+func Parse(s string) Sexp {
+	sexp, _ := sexpr(s)
+	return sexp
 }
 
 // sexpr → atom | ( sexprlist )
-func sexpr(s string) (sxp sxp, tail string) {
+func sexpr(s string) (sexp Sexp, tail string) {
 	t, tail := tok(s)
 	switch t {
 	case "(":
-		sxp, tail = sexprlist(tail)
+		sexp, tail = sexprlist(tail)
 		t, tail := tok(tail)
 		if t != ")" {
 			fmt.Println("missing ')'") // XXX return an error
 		}
 
-		return sxp, tail
+		return sexp, tail
 
 	case ")":
 		fmt.Println("unexpected ')'") // XXX return an error
@@ -105,7 +105,7 @@ func sexpr(s string) (sxp sxp, tail string) {
 }
 
 // sexprlist → | sexpr sexprlist
-func sexprlist(s string) (sxp sxp, tail string) {
+func sexprlist(s string) (sexp Sexp, tail string) {
 	t, tail := tok(s)
 	if t == "" {
 		return mkatom(t), tail
