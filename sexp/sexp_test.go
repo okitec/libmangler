@@ -44,6 +44,14 @@ func TestParse(t *testing.T) {
 		{"(foo bar) (quux)", "(foo . (bar . ()))"},  // two sexp; parse only one at a time
 		{`"herp derp"`, `"herp derp"`},
 		{`("Ἡρόδοτος Ἁλικαρνησσέος")`, `("Ἡρόδοτος Ἁλικαρνησσέος" . ())`},
+		{`(copy 594
+			(user "Dominik Okwieka")
+			(book "978..."
+				(authors "herp")
+				(title "derp")
+			)
+			(notes "foo")
+		)`, `(copy . ((user . "Dominik Okwieka") . ((book . (978... . ((authors . (herp . ())) . (title . (derp . ()))))) . (notes . (foo . ())))))`},
 	}
 
 	for _, tt := range tests {

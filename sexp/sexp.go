@@ -74,10 +74,12 @@ func (ap *atom) Cdr() Sexp {
 }
 
 func cons(car, cdr Sexp) *cell {
+	fmt.Printf("cons(%v, %v)\n", car, cdr)
 	return &cell{car, cdr}
 }
 
 func mkatom(s string) *atom {
+	fmt.Printf("mkatom(%q)\n", s)
 	a := atom(s)
 	return &a
 }
@@ -95,8 +97,9 @@ func sexpr(s string) (sexp Sexp, tail string) {
 	case "(":
 		sexp, tail = sexprlist(tail)
 		t, tail := tok(tail)
-		if t != ")" {
-			fmt.Println("missing ')'") // XXX return an error
+
+		if t != ")" && t != "" {
+			fmt.Printf("missing ')' %q %q %v", s, t, sexp) // XXX return an error
 		}
 
 		return sexp, tail
