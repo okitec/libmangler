@@ -4,6 +4,7 @@ package sexp
 
 import (
 	"fmt"
+	"strings"
 	"unicode"
 )
 
@@ -57,7 +58,11 @@ func (cp *cell) Cdr() Sexp {
 }
 
 func (ap *atom) String() string {
-	return string(*ap)
+	s := string(*ap)
+	if strings.ContainsAny(s, " \t") {
+		return fmt.Sprintf("%q", s)
+	}
+	return s
 }
 
 func (ap *atom) Car() Sexp {
@@ -142,7 +147,7 @@ func tok(s string) (tok string, tail string) {
 			if !str && start < 0 {
 				str = true
 				start = i + 1
-			} else {
+			} else if str {
 				return s[start:i], s[i+1:]
 			}
 
@@ -166,5 +171,10 @@ func tok(s string) (tok string, tail string) {
 }
 
 func untok(s string, tail string) string {
+	// Need to re-add quotes or else we have nuclear fission, which is wrong.
+	// BAD:  "foo bar") -> foo bar)
+	if strings.ContainsAny(s, " \t") {
+		return fmt.Sprintf("%q", s) + tail
+	}
 	return s + tail
 }

@@ -18,7 +18,7 @@ func TestTok(t *testing.T) {
 		{`""`, ``, ``},               /* empty string */
 		{`"foo bar"`, `foo bar`, ``}, /* quoted string with whitespace */
 
-		{`ab"c d"e`, `ab`, `c d"e`},  /* embedded quote has no effect */
+		{`ab"c d"e`, `ab"c`, ` d"e`},  /* embedded quote is auto-escaped */
 		{`derp)`, `derp`, `)`},
 	}
 
@@ -42,6 +42,8 @@ func TestParse(t *testing.T) {
 		{"(foo bar quux derp)", "(foo . (bar . (quux . (derp . ()))))"},
 		{"(foo (bar\n(quux derp))))", "(foo . ((bar . ((quux . (derp . ())) . ())) . ()))"},
 		{"(foo bar) (quux)", "(foo . (bar . ()))"},  // two sexp; parse only one at a time
+		{`"herp derp"`, `"herp derp"`},
+		{`("Ἡρόδοτος Ἁλικαρνησσέος")`, `("Ἡρόδοτος Ἁλικαρνησσέος" . ())`},
 	}
 
 	for _, tt := range tests {
