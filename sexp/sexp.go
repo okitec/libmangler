@@ -77,6 +77,7 @@ func mkatom(s string) *atom {
 	return &a
 }
 
+// Parse parses the first s-expression in the string.
 func Parse(s string) Sexp {
 	sexp, _ := sexpr(s)
 	return sexp

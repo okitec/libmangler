@@ -41,6 +41,7 @@ func TestParse(t *testing.T) {
 		{"(foo (bar))", "(foo . ((bar . ()) . ()))"},
 		{"(foo bar quux derp)", "(foo . (bar . (quux . (derp . ()))))"},
 		{"(foo (bar\n(quux derp))))", "(foo . ((bar . ((quux . (derp . ())) . ())) . ()))"},
+		{"(foo bar) (quux)", "(foo . (bar . ()))"},  // two sexp; parse only one at a time
 	}
 
 	for _, tt := range tests {
