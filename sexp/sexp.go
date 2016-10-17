@@ -14,6 +14,7 @@ import (
 // leaves' string values.
 type Sexp interface {
 	fmt.Stringer
+	Print() string  // for pretty-printing; like String(), but puts quotes around atoms with spaces
 	Car() Sexp
 	Cdr() Sexp
 }
@@ -31,19 +32,25 @@ type cell struct {
 // by the user.
 type atom string
 
+// Return pretty-printed s-expression; defined to be equal to Print.
 func (cp *cell) String() string {
+	return cp.Print()
+}
+
+// Return pretty-printed s-expression.
+func (cp *cell) Print() string {
 	var scar, scdr string
 
 	if cp.car == nil {
 		scar = "()"
 	} else {
-		scar = cp.car.String()
+		scar = cp.car.Print()
 	}
 
 	if cp.cdr == nil {
 		scdr = "()"
 	} else {
-		scdr = cp.cdr.String()
+		scdr = cp.cdr.Print()
 	}
 
 	return fmt.Sprintf("(%s . %s)", scar, scdr)
@@ -57,7 +64,15 @@ func (cp *cell) Cdr() Sexp {
 	return cp.cdr
 }
 
+// Return raw atom; even if there are spaces, nothing is quoted.
+// The lib user accesses data solely via this function; having
+// quotes there would be a hassle.
 func (ap *atom) String() string {
+	return string(*ap)
+}
+
+// Return possibly quoted atom.
+func (ap *atom) Print() string {
 	s := string(*ap)
 	if strings.ContainsAny(s, " \t") {
 		return fmt.Sprintf("%q", s)
@@ -74,12 +89,10 @@ func (ap *atom) Cdr() Sexp {
 }
 
 func cons(car, cdr Sexp) *cell {
-	fmt.Printf("cons(%v, %v)\n", car, cdr)
 	return &cell{car, cdr}
 }
 
 func mkatom(s string) *atom {
-	fmt.Printf("mkatom(%q)\n", s)
 	a := atom(s)
 	return &a
 }
@@ -99,7 +112,7 @@ func sexpr(s string) (sexp Sexp, tail string) {
 		t, tail := tok(tail)
 
 		if t != ")" && t != "" {
-			fmt.Printf("missing ')' %q %q %v", s, t, sexp) // XXX return an error
+			fmt.Printf("missing ')'") // XXX return an error
 		}
 
 		return sexp, tail
@@ -175,8 +188,10 @@ func tok(s string) (tok string, tail string) {
 
 func untok(s string, tail string) string {
 	// Need to re-add quotes or else we have nuclear fission, which is wrong.
+	// (Issue #26) However, don't do that if there are braces in there; they
+	// are part of the syntax structure.
 	// BAD:  "foo bar") -> foo bar)
-	if strings.ContainsAny(s, " \t") {
+	if strings.ContainsAny(s, " \t") && !strings.ContainsAny(s, "()") {
 		return fmt.Sprintf("%q", s) + tail
 	}
 	return s + tail

@@ -44,6 +44,8 @@ func TestParse(t *testing.T) {
 		{"(foo bar) (quux)", "(foo . (bar . ()))"},  // two sexp; parse only one at a time
 		{`"herp derp"`, `"herp derp"`},
 		{`("Ἡρόδοτος Ἁλικαρνησσέος")`, `("Ἡρόδοτος Ἁλικαρνησσέος" . ())`},
+		{"(* 2 (+ 3 4))", "(* . (2 . ((+ . (3 . (4 . ()))) . ())))"}, // cf. Wikipedia
+		{"(A (B C) (D E))", "(A . ((B . (C . ())) . ((D . (E . ())) . ())))"},
 		{`(copy 594
 			(user "Dominik Okwieka")
 			(book "978..."
@@ -51,12 +53,12 @@ func TestParse(t *testing.T) {
 				(title "derp")
 			)
 			(notes "foo")
-		)`, `(copy . ((user . "Dominik Okwieka") . ((book . (978... . ((authors . (herp . ())) . (title . (derp . ()))))) . (notes . (foo . ())))))`},
+		)`, `(copy . (594 . ((user . ("Dominik Okwieka" . ())) . ((book . (978... . ((authors . (herp . ())) . ((title . (derp . ())) . ())))) . ((notes . (foo . ())) . ())))))`},
 	}
 
 	for _, tt := range tests {
 		sxp := Parse(tt.s)
-		got := sxp.String()
+		got := sxp.Print()
 		if got != tt.want {
 			t.Errorf("Parse(%q): got %q, want %q\n", tt.s, got, tt.want)
 		}
