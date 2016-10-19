@@ -1,6 +1,6 @@
-package sexp
+package sexps
 
-// XXX move into separate Git repo (github.com/okitec/sexp)
+// XXX move into separate Git repo (github.com/okitec/sexps)
 
 import (
 	"fmt"
@@ -81,7 +81,7 @@ func (ap *atom) Print() string {
 }
 
 func (ap *atom) Car() Sexp {
-	return ap
+	return nil
 }
 
 func (ap *atom) Cdr() Sexp {
@@ -95,6 +95,11 @@ func cons(car, cdr Sexp) *cell {
 func mkatom(s string) *atom {
 	a := atom(s)
 	return &a
+}
+
+// IsAtom returns true when sexp is an atom, i.e. is a leaf node.
+func IsAtom(sexp Sexp) bool {
+	return sexp.Car() == nil && sexp.Cdr() == nil
 }
 
 // Parse parses the first s-expression in the string.

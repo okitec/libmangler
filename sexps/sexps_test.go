@@ -1,4 +1,4 @@
-package sexp
+package sexps
 
 import "testing"
 
