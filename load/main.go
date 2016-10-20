@@ -203,17 +203,14 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		u.state = ""
 
 	case "copies":
-		scopies := sexps.List(parent)
-		for _, s := range scopies {
-			i, err := strconv.ParseInt(s, 10, 64)
-			if err != nil {
-				u.state = "err"
-			}
-
-			u.copies = append(u.copies, i)
+		var err error
+		u.copies, err = copies(parent)
+		if err != nil {
+			u.state = "err"
+		} else {
+			u.copiesFilled = true
+			u.state = ""
 		}
-		u.copiesFilled = true
-		u.state = ""
 
 	case "end":
 		return
@@ -274,6 +271,7 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		} else {
 			b.state = ""
 		}
+
 	case "title":
 		b.title = atom.String()
 		b.titleFilled = true
@@ -288,19 +286,15 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		b.notesFilled = true
 		b.state = ""
 
-	// XXX copied from handleUser
 	case "copies":
-		scopies := sexps.List(parent)
-		for _, s := range scopies {
-			i, err := strconv.ParseInt(s, 10, 64)
-			if err != nil {
-				b.state = "err"
-			}
-
-			b.copies = append(b.copies, i)
+		var err error
+		b.copies, err = copies(parent)
+		if err != nil {
+			b.state = "err"
+		} else {
+			b.copiesFilled = true
+			b.state = ""
 		}
-		b.copiesFilled = true
-		b.state = ""
 
 	case "end":
 		return
@@ -309,6 +303,20 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	default:
 		fmt.Println("bad state: " + b.state)
 	}
+}
+
+// copies puts an s-expr (copies 405 4959 ...) into []int64{405, 4959, ...}.
+func copies(sexp sexps.Sexp) (ls []int64, err error) {
+	scopies := sexps.List(sexp)
+	for _, s := range scopies {
+		i, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return ls, err
+		}
+			ls = append(ls, i)
+	}
+
+	return ls, nil
 }
 
 func main() {
