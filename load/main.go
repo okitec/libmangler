@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -10,7 +9,7 @@ import (
 	"github.com/okitec/libmangler/sexps"
 )
 
-type context struct {
+type copyctx struct {
 	state         string
 
 	idFilled      bool
@@ -28,134 +27,219 @@ type context struct {
 	notes   []string
 }
 
-func (ctx context) String() string {
+type userctx struct {
+	state string
+	nameFilled bool
+	notesFilled bool
+	copiesFilled bool
+
+	name string
+	notes []string
+	copies []int64
+}
+
+func (c copyctx) String() string {
 	s :=  fmt.Sprintf("id: %v\nuser: %s\nisbn: %s\nauthors: %v\ntitle: %s\nnotes:\n",
-		ctx.id, ctx.user, ctx.isbn, ctx.authors, ctx.title)
-	for _, n := range ctx.notes {
+		c.id, c.user, c.isbn, c.authors, c.title)
+	for _, n := range c.notes {
 		s += "\t" + n + "\n"
 	}
 	return s
 }
 
-func handle(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
-	ctx := data.(*context)
+func (u userctx) String() string {
+	s :=  fmt.Sprintf("name: %s\nnotes:\n", u.name)
+	for _, n := range u.notes {
+		s += "\t" + n + "\n"
+	}
+	s += fmt.Sprintf("copies: %v\n", u.copies)
+	return s
+}
 
-	switch ctx.state {
+func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
+	c := data.(*copyctx)
+
+	switch c.state {
 	case "":
-		if ctx.idFilled && ctx.userFilled && ctx.isbnFilled && ctx.authorsFilled && ctx.titleFilled && ctx.notesFilled {
-			ctx.state = "end"
+		if c.idFilled && c.userFilled && c.isbnFilled && c.authorsFilled && c.titleFilled && c.notesFilled {
+			c.state = "end"
 			break
 		}
 
 		switch atom.String() {
 		case "copy":
-			ctx.state = "copy"
+			c.state = "copy"
 		case "user":
-			ctx.state = "user"
+			c.state = "user"
 		case "book":
-			ctx.state = "book"
+			c.state = "book"
 		case "notes":
-			ctx.state = "notes"
+			c.state = "notes"
 		default:
-			ctx.state = "err"
+			c.state = "err"
 		}
 
 	case "copy":
-		ctx.id, _ = strconv.ParseInt(atom.String(), 10, 64)
-		ctx.idFilled = true
-		ctx.state = ""
+		var err error
+		c.id, err = strconv.ParseInt(atom.String(), 10, 64)
+		if err != nil {
+			c.state = "err"
+		}
+
+		c.idFilled = true
+		c.state = ""
 
 	case "user":
-		ctx.user = atom.String()
-		ctx.userFilled = true
-		ctx.state = ""
+		c.user = atom.String()
+		c.userFilled = true
+		c.state = ""
 
 	case "book":
-		ctx.isbn = atom.String()
-		ctx.isbnFilled = true
-		ctx.state = "book2"
+		c.isbn = atom.String()
+		c.isbnFilled = true
+		c.state = "book2"
 
 	case "book2":
-		if ctx.authorsFilled && ctx.titleFilled {
-			ctx.state = ""
+		if c.authorsFilled && c.titleFilled {
+			c.state = ""
 			break
 		}
 
 		switch atom.String() {
 		case "authors":
-			ctx.state = "authors"
+			c.state = "authors"
 		case "title":
-			ctx.state = "title"
+			c.state = "title"
 		default:
 			// do nothing; the authors match here
 		}
 
 	case "authors":
-		ctx.authors = sexps.List(parent)
-		ctx.authorsFilled = true
-		if !ctx.titleFilled {
-			ctx.state = "book2"
+		c.authors = sexps.List(parent)
+		c.authorsFilled = true
+		if !c.titleFilled {
+			c.state = "book2"
 		} else {
-			ctx.state = ""
+			c.state = ""
 		}
 	case "title":
-		ctx.title = atom.String()
-		ctx.titleFilled = true
-		if !ctx.authorsFilled {
-			ctx.state = "book2"
+		c.title = atom.String()
+		c.titleFilled = true
+		if !c.authorsFilled {
+			c.state = "book2"
 		} else {
-			ctx.state = ""
+			c.state = ""
 		}
 
 	case "notes":
-		ctx.notes = sexps.List(parent)
-		ctx.notesFilled = true
-		ctx.state = ""
+		c.notes = sexps.List(parent)
+		c.notesFilled = true
+		c.state = ""
 
 	case "end":
 		return
 
 	case "err":
 	default:
-		fmt.Println("bad state: " + ctx.state)
+		fmt.Println("bad state: " + c.state)
+	}
+}
+
+func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
+	u := data.(*userctx)
+
+	switch u.state {
+	case "":
+		if u.nameFilled && u.notesFilled && u.copiesFilled {
+			u.state = "end"
+			break
+		}
+
+		switch atom.String() {
+		case "user":
+			u.state = "user"
+		case "notes":
+			u.state = "notes"
+		case "copies":
+			u.state = "copies"
+		default:
+			u.state = "err"
+		}
+
+	case "user":
+		u.name = atom.String()
+		u.nameFilled = true
+		u.state = ""
+
+	case "notes":
+		// In this state, we are at the atom "notes". sexps.List(parent)
+		// would include "notes" as an item of the list.
+		u.notes = sexps.List(parent.Cdr())
+		u.notesFilled = true
+		u.state = ""
+
+	case "copies":
+		scopies := sexps.List(parent)
+		for _, s := range scopies {
+			i, err := strconv.ParseInt(s, 10, 64)
+			if err != nil {
+				u.state = "err"
+			}
+
+			u.copies = append(u.copies, i)
+		}
+		u.copiesFilled = true
+		u.state = ""
+
+	case "end":
+		return
+
+	case "err":
+	default:
+		fmt.Println("bad state: " + u.state)
 	}
 }
 
 func main() {
-	var input io.ReadCloser
+	fnames := []string{"copies", "users"}
 
-	fname := "copies"
-	if len(os.Args) >= 2 {
-		fname = os.Args[1]
-	}
-
-	input, err := os.Open(fname)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// slurp whole file
-	buf, err := ioutil.ReadAll(input)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	tail := string(buf)
-	for len(tail) > 0 {
-		ctx := context{}
-		var sexp sexps.Sexp
-		var err error
-		sexp, tail, err = sexps.Parse(tail)
+	for _, fname := range fnames {
+		input, err := os.Open(fname)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+	
+		// slurp whole file
+		buf, err := ioutil.ReadAll(input)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		input.Close()
+	
+		tail := string(buf)
+		for len(tail) > 1 { // there's a lonely newline never parsed
+			var sexp sexps.Sexp
+			var err error
+			sexp, tail, err = sexps.Parse(tail)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+	
+			fmt.Println(len(tail))
 
-		fmt.Println(len(tail))
-
-		sexps.PreOrder(sexp, handle, &ctx)
-		fmt.Println(ctx)
+			switch fname {
+			case "copies":
+				c := copyctx{}
+				sexps.Apply(sexp, handleCopy, &c)
+				fmt.Println(c)
+			case "users":
+				u := userctx{}
+				sexps.Apply(sexp, handleUser, &u)
+				fmt.Println(u)
+			}
+		}
 	}
 }
