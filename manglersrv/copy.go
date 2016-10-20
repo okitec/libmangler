@@ -34,8 +34,22 @@ func (c *Copy) Print() string {
 	)
 )`
 
-	return fmt.Sprintf(fmtstr, c.id, c.user, c.book, strings.Join(c.book.authors, `" "`),
+	// To fix issue #9: the string for no user should be "", not the "<nil>"
+	// generated when *printf encounters a nil object. So make a dummy.
+	var usernil bool
+	if c.user == nil {
+		usernil = true
+		c.user = &User{"", nil, nil}
+	}
+
+	s := fmt.Sprintf(fmtstr, c.id, c.user, c.book, strings.Join(c.book.authors, `" "`),
 		c.book.title, strings.Join(c.notes, "\"\n\t\t\""))
+
+	if usernil {
+		c.user = nil
+	}
+
+	return s
 }
 
 func (c *Copy) Note(note string) {
