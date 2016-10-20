@@ -409,6 +409,8 @@ letzten Argument stehen (siehe Beispiel 3).
 
 XXX tags are not implemented
 
+XXX show answers to the examples
+
 Eine Menge besteht aus Elementen vom selben Typ: Bücher, Copies oder User.
 Argumente sind ISBNs, Usernamen, IDs von Copies sowie Tags. Das erste Beispiel
 selektiert das eine Buch mit dieser ISBN und gibt alle Informationen darüber

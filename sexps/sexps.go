@@ -132,7 +132,7 @@ func preorder(sexp Sexp, parent Sexp, fn AppliedFn, data interface{}) {
 }
 
 // Iterate along the cdr and return the content of the encountered car-expressions,
-// which are atoms in many use cases.
+// which are atoms in many use cases. If a car is nil, an empty string is included.
 func List(sexp Sexp) (ls []string) {
 	for {
 		if sexp.Car() == nil {
