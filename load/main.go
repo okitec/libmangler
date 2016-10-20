@@ -37,30 +37,6 @@ func (ctx context) String() string {
 	return s
 }
 
-func preorder(sexp sexps.Sexp, parent sexps.Sexp, fn func(sexps.Sexp, sexps.Sexp, interface{}), data interface{}) {
-	if sexps.IsAtom(sexp) {
-		fn(sexp, parent, data)
-	}
-
-	if sexp.Car() != nil {
-		preorder(sexp.Car(), sexp, fn, data)
-	}
-
-	if sexp.Cdr() != nil {
-		preorder(sexp.Cdr(), sexp, fn, data)
-	}
-}
-
-func list(sexp sexps.Sexp) (ls []string) {
-	for {
-		ls = append(ls, sexp.Car().String())
-		sexp = sexp.Cdr()
-		if sexp == nil {
-			return ls
-		}
-	}
-}
-
 func handle(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	ctx := data.(*context)
 
@@ -115,7 +91,7 @@ func handle(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		}
 
 	case "authors":
-		ctx.authors = list(parent)
+		ctx.authors = sexps.List(parent)
 		ctx.authorsFilled = true
 		if !ctx.titleFilled {
 			ctx.state = "book2"
@@ -132,7 +108,7 @@ func handle(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		}
 
 	case "notes":
-		ctx.notes = list(parent)
+		ctx.notes = sexps.List(parent)
 		ctx.notesFilled = true
 		ctx.state = ""
 
@@ -168,16 +144,6 @@ func main() {
 
 	ctx := context{}
 	sexp := sexps.Parse(string(buf))
-	preorder(sexp, nil, handle, &ctx)
+	sexps.PreOrder(sexp, handle, &ctx)
 	fmt.Println(ctx)
-
-	/*	book := user.Cdr()
-		fmt.Println("isbn: " + book.Car().Cdr().Car().String())
-			authors := book.Car().Cdr().Cdr()
-			fmt.Printf("authors: %q\n", list(authors.Car().Cdr()))
-			title := book.Car().Cdr().Cdr().Cdr()
-			fmt.Println("title: " + title.Car().Cdr().Car().String())
-		notes := book.Cdr()
-		fmt.Printf("notes: %q\n", list(notes.Car().Cdr()))
-	*/
 }

@@ -97,10 +97,48 @@ func mkatom(s string) *atom {
 	return &a
 }
 
+/** UTILITY FUNCTIONS **/
+
 // IsAtom returns true when sexp is an atom, i.e. is a leaf node.
 func IsAtom(sexp Sexp) bool {
 	return sexp.Car() == nil && sexp.Cdr() == nil
 }
+
+// For every atom from left to right, PreOrder calls fn(atom, parent, data).
+// The parent is needed for List() and other functions requiring more than
+// just the atom string.
+func PreOrder(sexp Sexp, fn func(Sexp, Sexp, interface{}), data interface{})  {
+	preorder(sexp, nil, fn, data)
+}
+
+func preorder(sexp Sexp, parent Sexp, fn func(Sexp, Sexp, interface{}), data interface{}) {
+	if IsAtom(sexp) {
+		fn(sexp, parent, data)
+	}
+
+	if sexp.Car() != nil {
+		preorder(sexp.Car(), sexp, fn, data)
+	}
+
+	if sexp.Cdr() != nil {
+		preorder(sexp.Cdr(), sexp, fn, data)
+	}
+}
+
+// Iterate along the cdr and return the content of the encountered car-expressions,
+// which are atoms in many use cases.
+func List(sexp Sexp) (ls []string) {
+	for {
+		ls = append(ls, sexp.Car().String())
+		sexp = sexp.Cdr()
+		if sexp == nil {
+			return ls
+		}
+	}
+}
+
+
+/** PARSER **/
 
 // Parse parses the first s-expression in the string.
 func Parse(s string) Sexp {
