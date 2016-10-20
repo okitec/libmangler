@@ -142,8 +142,20 @@ func main() {
 		return
 	}
 
-	ctx := context{}
-	sexp := sexps.Parse(string(buf))
-	sexps.PreOrder(sexp, handle, &ctx)
-	fmt.Println(ctx)
+	tail := string(buf)
+	for len(tail) > 0 {
+		ctx := context{}
+		var sexp sexps.Sexp
+		var err error
+		sexp, tail, err = sexps.Parse(tail)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Println(len(tail))
+
+		sexps.PreOrder(sexp, handle, &ctx)
+		fmt.Println(ctx)
+	}
 }
