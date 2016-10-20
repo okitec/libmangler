@@ -11,7 +11,6 @@ import (
 
 type copyctx struct {
 	state         string
-
 	idFilled      bool
 	userFilled    bool
 	isbnFilled    bool
@@ -28,18 +27,33 @@ type copyctx struct {
 }
 
 type userctx struct {
-	state string
-	nameFilled bool
-	notesFilled bool
+	state        string
+	nameFilled   bool
+	notesFilled  bool
 	copiesFilled bool
 
-	name string
-	notes []string
+	name   string
+	notes  []string
 	copies []int64
 }
 
+type bookctx struct {
+	state         string
+	isbnFilled    bool
+	authorsFilled bool
+	titleFilled   bool
+	notesFilled   bool
+	copiesFilled  bool
+
+	isbn    string
+	authors []string
+	title   string
+	notes   []string
+	copies  []int64
+}
+
 func (c copyctx) String() string {
-	s :=  fmt.Sprintf("id: %v\nuser: %s\nisbn: %s\nauthors: %v\ntitle: %s\nnotes:\n",
+	s := fmt.Sprintf("id: %v\nuser: %s\nisbn: %s\nauthors: %v\ntitle: %s\nnotes:\n",
 		c.id, c.user, c.isbn, c.authors, c.title)
 	for _, n := range c.notes {
 		s += "\t" + n + "\n"
@@ -48,11 +62,21 @@ func (c copyctx) String() string {
 }
 
 func (u userctx) String() string {
-	s :=  fmt.Sprintf("name: %s\nnotes:\n", u.name)
+	s := fmt.Sprintf("name: %s\nnotes:\n", u.name)
 	for _, n := range u.notes {
 		s += "\t" + n + "\n"
 	}
 	s += fmt.Sprintf("copies: %v\n", u.copies)
+	return s
+}
+
+func (b bookctx) String() string {
+	s := fmt.Sprintf("isbn: %s\nauthors: %v\ntitle: %s\nnotes:\n",
+		b.isbn, b.authors, b.title)
+	for _, n := range b.notes {
+		s += "\t" + n + "\n"
+	}
+	s += fmt.Sprintf("copies: %v\n", b.copies)
 	return s
 }
 
@@ -200,8 +224,95 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	}
 }
 
+// XXX heavily duplicated from handleCopy
+func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
+	b := data.(*bookctx)
+
+	switch b.state {
+	case "":
+		if b.isbnFilled && b.authorsFilled && b.titleFilled && b.notesFilled && b.copiesFilled {
+			b.state = "end"
+			break
+		}
+
+		switch atom.String() {
+		case "book":
+			b.state = "book"
+		case "notes":
+			b.state = "notes"
+		case "copies":
+			b.state = "copies"
+		default:
+			b.state = "err"
+		}
+
+	case "book":
+		b.isbn = atom.String()
+		b.isbnFilled = true
+		b.state = "book2"
+
+	case "book2":
+		if b.authorsFilled && b.titleFilled {
+			b.state = ""
+			break
+		}
+
+		switch atom.String() {
+		case "authors":
+			b.state = "authors"
+		case "title":
+			b.state = "title"
+		default:
+			// do nothing; the authors match here
+		}
+
+	case "authors":
+		b.authors = sexps.List(parent)
+		b.authorsFilled = true
+		if !b.titleFilled {
+			b.state = "book2"
+		} else {
+			b.state = ""
+		}
+	case "title":
+		b.title = atom.String()
+		b.titleFilled = true
+		if !b.authorsFilled {
+			b.state = "book2"
+		} else {
+			b.state = ""
+		}
+
+	case "notes":
+		b.notes = sexps.List(parent)
+		b.notesFilled = true
+		b.state = ""
+
+	// XXX copied from handleUser
+	case "copies":
+		scopies := sexps.List(parent)
+		for _, s := range scopies {
+			i, err := strconv.ParseInt(s, 10, 64)
+			if err != nil {
+				b.state = "err"
+			}
+
+			b.copies = append(b.copies, i)
+		}
+		b.copiesFilled = true
+		b.state = ""
+
+	case "end":
+		return
+
+	case "err":
+	default:
+		fmt.Println("bad state: " + b.state)
+	}
+}
+
 func main() {
-	fnames := []string{"copies", "users"}
+	fnames := []string{"copies", "users", "books"}
 
 	for _, fname := range fnames {
 		input, err := os.Open(fname)
@@ -209,7 +320,7 @@ func main() {
 			fmt.Println(err)
 			return
 		}
-	
+
 		// slurp whole file
 		buf, err := ioutil.ReadAll(input)
 		if err != nil {
@@ -217,7 +328,7 @@ func main() {
 			return
 		}
 		input.Close()
-	
+
 		tail := string(buf)
 		for len(tail) > 1 { // there's a lonely newline never parsed
 			var sexp sexps.Sexp
@@ -227,7 +338,7 @@ func main() {
 				fmt.Println(err)
 				return
 			}
-	
+
 			fmt.Println(len(tail))
 
 			switch fname {
@@ -239,6 +350,10 @@ func main() {
 				u := userctx{}
 				sexps.Apply(sexp, handleUser, &u)
 				fmt.Println(u)
+			case "books":
+				b := bookctx{}
+				sexps.Apply(sexp, handleBook, &b)
+				fmt.Println(b)
 			}
 		}
 	}
