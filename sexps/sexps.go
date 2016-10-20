@@ -105,14 +105,19 @@ func IsAtom(sexp Sexp) bool {
 	return sexp.Car() == nil && sexp.Cdr() == nil
 }
 
+// Called by Apply for each atom with fn(atom, parent, data).
+type AppliedFn func(Sexp, Sexp, interface{})
+
 // For every atom from left to right, PreOrder calls fn(atom, parent, data).
 // The parent is needed for List() and other functions requiring more than
-// just the atom string.
-func PreOrder(sexp Sexp, fn func(Sexp, Sexp, interface{}), data interface{}) {
+// just the atom string. This operation is similar to a Map operation, but
+// works with an entire tree, not a list.
+func Apply(sexp Sexp, fn AppliedFn, data interface{}) {
 	preorder(sexp, nil, fn, data)
 }
 
-func preorder(sexp Sexp, parent Sexp, fn func(Sexp, Sexp, interface{}), data interface{}) {
+// Apply internally iterates the tree in pre-order fashion.
+func preorder(sexp Sexp, parent Sexp, fn AppliedFn, data interface{}) {
 	if IsAtom(sexp) {
 		fn(sexp, parent, data)
 	}
@@ -130,7 +135,12 @@ func preorder(sexp Sexp, parent Sexp, fn func(Sexp, Sexp, interface{}), data int
 // which are atoms in many use cases.
 func List(sexp Sexp) (ls []string) {
 	for {
-		ls = append(ls, sexp.Car().String())
+		if sexp.Car() == nil {
+			ls = append(ls, "")
+		} else {
+			ls = append(ls, sexp.Car().String())
+		}
+
 		sexp = sexp.Cdr()
 		if sexp == nil {
 			return ls
