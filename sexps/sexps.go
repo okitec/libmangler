@@ -3,6 +3,7 @@ package sexps
 // XXX move into separate Git repo (github.com/okitec/sexps)
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"unicode"
@@ -14,7 +15,7 @@ import (
 // leaves' string values.
 type Sexp interface {
 	fmt.Stringer
-	Print() string  // for pretty-printing; like String(), but puts quotes around atoms with spaces
+	Print() string // for pretty-printing; like String(), but puts quotes around atoms with spaces
 	Car() Sexp
 	Cdr() Sexp
 }
@@ -107,7 +108,7 @@ func IsAtom(sexp Sexp) bool {
 // For every atom from left to right, PreOrder calls fn(atom, parent, data).
 // The parent is needed for List() and other functions requiring more than
 // just the atom string.
-func PreOrder(sexp Sexp, fn func(Sexp, Sexp, interface{}), data interface{})  {
+func PreOrder(sexp Sexp, fn func(Sexp, Sexp, interface{}), data interface{}) {
 	preorder(sexp, nil, fn, data)
 }
 
@@ -137,52 +138,58 @@ func List(sexp Sexp) (ls []string) {
 	}
 }
 
-
 /** PARSER **/
 
 // Parse parses the first s-expression in the string.
-func Parse(s string) Sexp {
-	sexp, _ := sexpr(s)
-	return sexp
+func Parse(s string) (sexp Sexp, tail string, err error) {
+	return sexpr(s)
 }
 
 // sexpr → atom | ( sexprlist )
-func sexpr(s string) (sexp Sexp, tail string) {
+func sexpr(s string) (sexp Sexp, tail string, err error) {
 	t, tail := tok(s)
 	switch t {
 	case "(":
-		sexp, tail = sexprlist(tail)
+		sexp, tail, err = sexprlist(tail)
+		if err != nil {
+			return sexp, tail, err
+		}
+
 		t, tail := tok(tail)
 
 		if t != ")" && t != "" {
-			fmt.Printf("missing ')'") // XXX return an error
+			return sexp, tail, errors.New("sexpr: missing ')'")
 		}
 
-		return sexp, tail
+		return sexp, tail, nil
 
 	case ")":
-		fmt.Println("unexpected ')'") // XXX return an error
-		return nil, tail
+		return nil, tail, errors.New("sexpr: unexpected ')'")
 
 	default:
-		return mkatom(t), tail
+		return mkatom(t), tail, nil
 	}
 }
 
 // sexprlist → | sexpr sexprlist
-func sexprlist(s string) (sexp Sexp, tail string) {
+func sexprlist(s string) (sexp Sexp, tail string, err error) {
 	t, tail := tok(s)
 	if t == "" {
-		return mkatom(t), tail
+		return mkatom(t), tail, nil
 	}
 
 	if t == ")" {
-		return nil, untok(s, tail)
+		return nil, untok(s, tail), nil
 	}
 
-	car, tail := sexpr(untok(t, tail))
-	cdr, tail := sexprlist(tail)
-	return cons(car, cdr), tail
+	car, tail, err := sexpr(untok(t, tail))
+	if err != nil {
+		return car, tail, err
+	}
+
+	// Ignore any error, just pass it to the caller.
+	cdr, tail, err := sexprlist(tail)
+	return cons(car, cdr), tail, err
 }
 
 // token types: "(", ")", atom, quoted atom (string)

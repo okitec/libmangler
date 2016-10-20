@@ -54,10 +54,16 @@ func TestParse(t *testing.T) {
 			)
 			(notes "foo")
 		)`, `(copy . (594 . ((user . ("Dominik Okwieka" . ())) . ((book . (978... . ((authors . (herp . ())) . ((title . (derp . ())) . ())))) . ((notes . (foo . ())) . ())))))`},
+
+		// XXX add failure cases (dangling braces, ...)
 	}
 
 	for _, tt := range tests {
-		sxp := Parse(tt.s)
+		sxp, tail, err := Parse(tt.s)
+		if err != nil {
+			t.Errorf("Parse(%q): %v (tail = %s)", tt.s, err, tail)
+		}
+
 		got := sxp.Print()
 		if got != tt.want {
 			t.Errorf("Parse(%q): got %q, want %q\n", tt.s, got, tt.want)
