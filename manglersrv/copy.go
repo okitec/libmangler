@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 )
@@ -123,9 +122,17 @@ resized:
 	c.Note(fmt.Sprintf("returned from %s", u))
 }
 
-func NewCopy(b *Book) (*Copy, error) {
-	// XXX collisions may happen; FIX!
-	c := Copy{int64(rand.Int()), nil, b, nil}
+func NewCopy(id int64, b *Book) (*Copy, error) {
+	c := Copy{id, nil, b, nil}
+
+	if b == nil {
+		return nil, fmt.Errorf("NewCopy: book doesn't exist")
+	}
+
+	if copies[id] != nil {
+		return copies[id], fmt.Errorf("NewCopy: copy %v already exists", id)
+	}
+
 	b.copies = append(b.copies, &c)
 	copies[c.id] = &c
 	return &c, nil

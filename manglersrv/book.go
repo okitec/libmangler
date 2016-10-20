@@ -49,7 +49,6 @@ func (b *Book) Note(note string) {
 }
 
 func (b *Book) Delete() {
-	// XXX delete from disk
 	// XXX should this return an error?
 
 	if len(b.copies) > 0 {
@@ -63,7 +62,6 @@ func (b *Book) Delete() {
 }
 
 // NewBook adds a Book to the system.
-// XXX worldcat automated metadata fetching would be nice
 func NewBook(isbn, title string, authors []string) (*Book, error) {
 	// XXX check whether Book already exists
 	if !isISBN13(isbn) {

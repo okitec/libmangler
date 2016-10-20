@@ -201,20 +201,8 @@ func main() {
 	users = make(map[string]*User)
 	copies = make(map[int64]*Copy)
 
-	// debugging examples
-	NewBook("978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
-	NewBook("978-0-141-03614-4", "Nineteen Eighty-Four", []string{"George Orwell"})
-	u1, _ := NewUser("Florian the Florist from Florida")
-	u2, _ := NewUser("Gaius Valerius Catullus")
-	u3, _ := NewUser("Drago Mafloy")
-	c1, _ := NewCopy(books["978-0-201-07981-4"])
-	c2, _ := NewCopy(books["978-0-201-07981-4"])
-	c3, _ := NewCopy(books["978-0-141-03614-4"])
-	c4, _ := NewCopy(books["978-0-141-03614-4"])
-	c1.Lend(u1)
-	c2.Lend(u2)
-	c3.Lend(u2)
-	c4.Lend(u3)
+	nbooks, nusers, ncopies := load()
+	log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)
 
 	//cf. https://golang.org/pkg/os/signal/#Notify
 	//cf. http://stackoverflow.com/questions/11268943/golang-is-it-possible-to-capture-a-ctrlc-signal-and-run-a-cleanup-function-in

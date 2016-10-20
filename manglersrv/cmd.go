@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -51,7 +52,13 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 		}
 
 		for i := 0; i < n; i++ {
-			NewCopy(b)
+			var id int64
+
+			// Skip used ids
+			for id = rand.Int63(); copies[id] != nil; id = rand.Int63() {
+			}
+
+			NewCopy(id, b)
 		}
 
 		return "", err
