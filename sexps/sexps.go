@@ -179,7 +179,7 @@ func sexprlist(s string) (sexp Sexp, tail string, err error) {
 	}
 
 	if t == ")" {
-		return nil, untok(s, tail), nil
+		return nil, untok(t, tail), nil
 	}
 
 	car, tail, err := sexpr(untok(t, tail))
