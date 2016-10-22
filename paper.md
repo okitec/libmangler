@@ -112,7 +112,7 @@ IP-Adressen dient. Das DNS-Protokoll verwendet UDP (User Datagram Protocol), die
 verbindungslose Alternative zu TCP. Bei UDP werden einzelne Pakete übertragen, von
 denen man nicht weiß, ob und in welcher Reihenfolge sie ankommen. Die Pakete werden
 auch *Datagramme* genannt, daher der Protokollname. DNS verwendet UDP, um die
-Kosten des Three-Way-Handshake zu vermeiden;; zudem muss der DNS-Server sich nicht
+Kosten des Three-Way-Handshake zu vermeiden; zudem muss der DNS-Server sich nicht
 um offene Verbindungen sorgen [citation needed].
 
 Viele Protokolle haben also Performanceanforderungen. Es gibt hier zwei
@@ -214,6 +214,8 @@ Era 1 sein. Das im Protokoll verwendete *Timestamp*-Format hat einen 32-bit
 Sekundenzähler und einen Bruch; das *Short*-Format ist ähnlich, hat aber nur
 16 Bit Präzision.
 
+XXX Absatz präzisieren; siehe Beispielcode-Datendefinitionen in RFC 5905.
+
 TCP kann hier nicht verwendet werden, weil es verlorene Pakete wieder
 überträgt und dadurch die Zeitstempel in diesen verfälscht [citation needed],
 deswegen wird UDP auf Port 123 verwendet. NTP verwendet konventionelle binäre
@@ -221,9 +223,6 @@ Pakete mit einem Header und einem aus vier Timestamps bestehenden Payload. Ein
 invalider Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket, mit
 welchem Kontrollcodes übertragen werden; diese sind Vier-Zeichen-ASCII-Strings
 an der Stelle, an der sonst die Referenz-ID des Zeitgebers steht (z.B. "GPS").
-
-
-XXX mehr Fokus auf Protokoll, weniger auf Umstände?
 
  - src: RFC 5905, Wikipedia
 
@@ -316,6 +315,8 @@ das Informatikprojekt der elften Klasse, das einige aus dem Seminar erstellt
 haben und nun von mir instandgehalten wird. Das Protokoll ist meine Schöpfung,
 weswegen ich über die speziellen Entscheidungen schreiben will, die in das
 Protokoll einflossen.
+
+XXX doppeltes "Es ist"
 
 Der Server enthält den Spielzustand; die Clients cachen diesen, stellen ihn dar
 und senden Befehle an den Server, der Änderungen des Spielzustands allen
@@ -446,12 +447,12 @@ Ansatz: Vom Client frei wählbare *Tags* wie in 9P und IMAP werden vor jedem
 Request angefügt. Die Serverantwort enthält denselben Tag. Der Client sollte
 beim Empfang einer Antwort die im Voraus für diesen Tag bestimmte
 Handlerfunktion ausführen. Da sich dies massiv auf die Komplexität der App
-auswirte und obendrein nie funktionsfähig war, ignorierte der Autor Androids
+auswirkte und obendrein nie funktionsfähig war, ignorierte der Autor Androids
 Warnung, nicht im UI-Thread zu netzwerken, und vereinfachte den Client wieder.
 Jetzt funktioniert er, wenngleich Wartezeiten bei einer schlechten Verbindung
 auftreten könnten.
 
-Protokolltransaktionen arbeiten auf Zeilenbasi, wobei eine Zeile durch ein
+Protokolltransaktionen arbeiten auf Zeilenbasis, wobei eine Zeile durch ein
 Newline (`\n`) begrenzt wird. Die Requests des Clients sind immer einzeilig; die
 Antworten des Servers mitunter auch mehrzeilig. Das kann man mit jeder
 beliebigen Shell vergleichen. Es stellt sich die Frage, wie die Größe einer
