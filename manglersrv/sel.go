@@ -57,6 +57,14 @@ var seltab = map[rune]selFn{
 						}
 					}
 				}
+			} else if s[0] == '#' {
+				for _, b := range books {
+					for _, t := range b.tags {
+						if t == s {
+							rsel = append(rsel, b)
+						}
+					}
+				}
 			} else {
 				for _, b := range books {
 					for _, c := range b.copies {
@@ -101,6 +109,14 @@ var seltab = map[rune]selFn{
 						rsel = append(rsel, c)
 					}
 				}
+			} else if s[0] == '#' {
+				for _, c := range copies {
+					for _, t := range c.tags {
+						if t == s {
+							rsel = append(rsel, c)
+						}
+					}
+				}
 			} else {
 				for _, u := range users {
 					if u.name == s {
@@ -143,6 +159,14 @@ var seltab = map[rune]selFn{
 				for _, u := range users {
 					for _, c := range u.copies {
 						if c.id == id {
+							rsel = append(rsel, u)
+						}
+					}
+				}
+			} else if s[0] == '#' {
+				for _, u := range users {
+					for _, t := range u.tags {
+						if t == s {
 							rsel = append(rsel, u)
 						}
 					}
