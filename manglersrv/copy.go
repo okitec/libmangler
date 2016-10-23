@@ -12,6 +12,7 @@ type Copy struct {
 	user  *User
 	book  *Book
 	notes []string
+	tags  []string
 }
 
 // The map copies holds pointers to all copies indexed by id.
@@ -24,13 +25,14 @@ func (c *Copy) String() string {
 func (c *Copy) Print() string {
 	const fmtstr = `(copy %v
 	(user %q)
-	(book %q
+	(book %s
 		(authors "%s")
 		(title %q)
 	)
 	(notes
 		"%s"
 	)
+	(tags %s)
 )`
 
 	// To fix issue #9: the string for no user should be "", not the "<nil>"
@@ -38,11 +40,11 @@ func (c *Copy) Print() string {
 	var usernil bool
 	if c.user == nil {
 		usernil = true
-		c.user = &User{"", nil, nil}
+		c.user = &User{"", nil, nil, nil}
 	}
 
 	s := fmt.Sprintf(fmtstr, c.id, c.user, c.book, strings.Join(c.book.authors, `" "`),
-		c.book.title, strings.Join(c.notes, "\"\n\t\t\""))
+		c.book.title, strings.Join(c.notes, "\"\n\t\t\""), sTags(c.tags))
 
 	if usernil {
 		c.user = nil
@@ -123,7 +125,7 @@ resized:
 }
 
 func NewCopy(id int64, b *Book) (*Copy, error) {
-	c := Copy{id, nil, b, nil}
+	c := Copy{id, nil, b, nil, nil}
 
 	if b == nil {
 		return nil, fmt.Errorf("NewCopy: book doesn't exist")
@@ -148,4 +150,12 @@ func sCopies(copies []*Copy) string {
 	}
 
 	return buf.String()
+}
+
+func sTags(tags []string) string {
+	if tags == nil {
+		return `""`  // if no tags, display as empty string
+	} else {
+		return strings.Join(tags, " ")
+	}
 }

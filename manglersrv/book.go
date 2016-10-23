@@ -17,6 +17,7 @@ type Book struct {
 	title   string
 	authors []string
 	notes   []string
+	tags    []string
 	copies  []*Copy
 }
 
@@ -30,17 +31,18 @@ func (b *Book) String() string {
 // The Print method prints information about the book, including a list of copies,
 // in beautifully formatted and indented s-exps.
 func (b *Book) Print() string {
-	const fmtstr = `(book %q
+	const fmtstr = `(book %s
 	(authors "%s")
 	(title %q)
 	(notes
 		"%s"
 	)
+	(tags %s)
 	(copies %v)
 )`
 
 	return fmt.Sprintf(fmtstr, b.isbn, strings.Join(b.authors, `" "`), b.title,
-		strings.Join(b.notes, "\"\n\t\t\""), sCopies(b.copies))
+		strings.Join(b.notes, "\"\n\t\t\""), sTags(b.tags), sCopies(b.copies))
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.
@@ -65,10 +67,10 @@ func (b *Book) Delete() {
 func NewBook(isbn, title string, authors []string) (*Book, error) {
 	// XXX check whether Book already exists
 	if !isISBN13(isbn) {
-		return nil, fmt.Errorf("NewBook: %q is not a ISBN-13")
+		return nil, fmt.Errorf("NewBook: %q is not a ISBN-13", isbn)
 	}
 
-	b := Book{ISBN(isbn), title, authors, nil, nil}
+	b := Book{ISBN(isbn), title, authors, nil, nil, nil}
 	books[ISBN(isbn)] = &b
 	b.Note("added to the system")
 	return &b, nil

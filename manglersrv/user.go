@@ -9,6 +9,7 @@ import (
 type User struct {
 	name   string
 	notes  []string
+	tags   []string
 	copies []*Copy
 }
 
@@ -23,10 +24,11 @@ func (u *User) Print() string {
 	(notes
 		"%s"
 	)
+	(tags %s)
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, u.name, strings.Join(u.notes, "\"\n\t\t\""), sCopies(u.copies))
+	return fmt.Sprintf(fmtstr, u.name, strings.Join(u.notes, "\"\n\t\t\""), sTags(u.tags), sCopies(u.copies))
 }
 
 func (u *User) Note(note string) {
@@ -44,7 +46,7 @@ func NewUser(name string) (*User, error) {
 		return users[name], fmt.Errorf("NewUser: user %q already exists", name)
 	}
 
-	u := User{name, nil, nil}
+	u := User{name, nil, nil, nil}
 	users[name] = &u
 	return &u, nil
 }
