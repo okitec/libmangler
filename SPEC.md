@@ -153,7 +153,7 @@ verwendet:
 
 		(user "")
 
-Ebenso, wenn keine Tags vergeben sind, wird das durch den leeren String gezeigt.
+Wenn keine Tags vergeben sind, wird das durch den leeren String gezeigt.
 
 		(tags "")
 
@@ -198,15 +198,15 @@ bis zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im
 ISO 8601-Format mitprotokolliert. Die Notizen eines Objekts werden bei einem
 `p`-Befehl mitausgegeben.
 
-#### '#' - add or remove tag
+#### 't' - add or remove tag
 
 *Synopsis*
 
-		# tag +|-
+		t +|- tag
 
 *Beschreibung*
 
-Fügt einen Tag allen Elementen der Selektion hinzu bzw. entfernt es.
+Fügt allen Elementen der Selektion einen Tag hinzu bzw. entfernt ihn.
 
 #### `T` - list tags
 
@@ -254,6 +254,8 @@ werden, User mit ausgeliehenen Copies auch nicht.
 *Beschreibung*
 
 Erzeugt ein neues Buch, das diese ISBN hat.
+
+XXX Titel, *Autoren* (wie abgrenzen?)
 
 #### `a` - add copy of a book
 
