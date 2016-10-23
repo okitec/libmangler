@@ -17,7 +17,7 @@ import (
 
 // Protocol constants
 const (
-	protoVersion   = 6
+	protoVersion   = 7
 	protoPort      = 40000
 	protoEndMarker = "---\n" // for determining end-of-response
 )

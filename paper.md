@@ -310,13 +310,11 @@ sein; Anfrage und Antwort haben denselben Tag. Bei Antworten folgt dann `OK`
 #### 3.2.5 mpmp
 
 *mpmp* ist kein Internetstandard. Es ist ein noch unfertiger Monopoly-Klon im
-Stil der Weimarer Republik, bei dem man über ein Netzwerk spielen kann. Es ist
-das Informatikprojekt der elften Klasse, das einige aus dem Seminar erstellt
-haben und nun von mir instandgehalten wird. Das Protokoll ist meine Schöpfung,
+Stil der Weimarer Republik, bei dem man über ein Netzwerk spielen kann. Entstanden
+als Informatikprojekt der elften Klasse, das einige aus dem Seminar erstellt
+haben, wird es nun von mir instandgehalten. Das Protokoll ist meine Schöpfung,
 weswegen ich über die speziellen Entscheidungen schreiben will, die in das
 Protokoll einflossen.
-
-XXX doppeltes "Es ist"
 
 Der Server enthält den Spielzustand; die Clients cachen diesen, stellen ihn dar
 und senden Befehle an den Server, der Änderungen des Spielzustands allen
@@ -328,7 +326,7 @@ oder `-NEIN`, gefolgt von einem Fehlerstring. Die Befehle, die allen Clients
 dass einige der `+JAWOHL`s noch fehlen. Außerdem sieht man den einzigartigen
 `clientlist-update`-Befehl, der mehrere Zeilen Payload hat, deren Anzahl das
 erste Argument nennt, hier `1`. Durch einen Mitschnitt des Protokolls ab dem
-Beginn kann man den gesamten Verlauf des Spiels verfolgen.
+Beginn kann man den gesamten Verlauf des Spiels nachvollziehen.
 
 	S: +JAWOHL Willkommen, Genosse! Subscriben Sie!
 	C: subscribe player #0f0f0f oki
@@ -408,8 +406,6 @@ werden; ein Element gilt als selektiert, wenn es eines der Teilargumente
 erfüllt. Zur einfacheren automatischen Generation kann ein Komma nach dem
 letzten Argument stehen (siehe Beispiel 3).
 
-XXX tags are not implemented
-
 XXX show answers to the examples
 
 Eine Menge besteht aus Elementen vom selben Typ: Bücher, Copies oder User.
@@ -481,15 +477,31 @@ Nachricht "einzuboxen" [vgl. RFC 3117]:
 Das aktuelle libmangler-Protokoll verwendet eine Variante des *octet-stuffing*:
 drei Bindestriche auf der letzten Zeile signalisieren das Ende der Antwort. Da
 diese Sequenz im Payload nicht vorkommen kann, ist es nie nötig, diese zu
-escapen.
+escapen. In Protokollversion 5 wurden Tags in Kombination mit Zeilenzählung
+implementiert; der Code auf Serverseite zählte die Newlines der ausgehenden
+Strings. Der Client war zu dem Zeitpunkt unfähig, überhaupt etwas zu empfangen.
+Diese Zeilenzählung wurde mit den Tags auch wieder entfernt und mit der
+`---`-Sequenz ersetzt, was auf Clientseite sehr einfach und robust funktioniert
+(`Connection:transact`):
+
+	while(!(line = in.readLine()).equals(ENDMARKER)) {
+		Log.e("libmangler-proto", "[->proto] " + answer);
+		answer.append(line);
+	}
+
+Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
+
+	fmt.Fprint(rw, ret)
+	fmt.Fprint(rw, protoEndMarker)
 
 ### Geschichte und Ausblick
 
  - Versions
+ - v1: regex-basiert
+ - v5: Tags, Payload-Zeilen
+ - v6: End of answer markers
+ - v7: #tags
  - Zu Beginn: regex-basiert
- - Req Tag, Payload-Zeilen
- - Entfernung von Tags
- - Endmarkierungen statt Payload-Zeilenzählung
 
  - Tags → labels und labels → tags
 
