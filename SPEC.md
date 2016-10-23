@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 6
+Version: Protokollversion 7
 
 0. Index
 --------
@@ -97,7 +97,7 @@ Bindestrichen (`---`).
 		/isbn/  Selektiert etwas mit dieser ISBN (Bücher, Copies, User)
 		/id/    Selektiert etwas mit dieser ID
 		/name/  Selektiert etwas mit diesem Namen
-		/@tag/  Selektiert etwas mit diesem Tag
+		/#tag/  Selektiert etwas mit diesem Tag
 
 Im Selektionsargument (/.../) lassen sich mehrere Kriterien durch ein Komma
 kombinieren; ein abschließendes Komma ist erlaubt.
@@ -129,6 +129,7 @@ Copies:
 				(title "The AWK Programming Language")
 			)
 			(notes "2016-03-24T11:01+01:00 <- ISO 8601-Date" "...")
+			(tags #derp #foo)
 		)
 Bücher:
 
@@ -136,20 +137,25 @@ Bücher:
 			(authors "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
 			(title "The AWK Programming Language")
 			(notes "2016-04-26T18:16+02:00 excellent read")
+			(tags "")
 			(copies 594 405 406)
 		)
 User:
 
 		(user "Dominik Okwieka"
 			(notes "2016-04-10T22:26+01:00 dag gummit")
+			(tags #derp)
 			(copies 594)
 		)
 
 Wenn eine Copy nicht an einen User verliehen ist, wird der leere String
 verwendet:
 
-
 		(user "")
+
+Ebenso, wenn keine Tags vergeben sind, wird das durch den leeren String gezeigt.
+
+		(tags "")
 
 #### `r` - return
 
@@ -192,15 +198,29 @@ bis zum Zeilenende; Anführungszeichen sind nicht erlaubt. Der Zeitpunkt wird im
 ISO 8601-Format mitprotokolliert. Die Notizen eines Objekts werden bei einem
 `p`-Befehl mitausgegeben.
 
-#### '@' - add or remove label
+#### '#' - add or remove tag
 
 *Synopsis*
 
-		@ label +|-
+		# tag +|-
 
 *Beschreibung*
 
-Fügt ein Label zu allen Elementen der Selektion hinzu bzw. entfernt es.
+Fügt einen Tag allen Elementen der Selektion hinzu bzw. entfernt es.
+
+#### `T` - list tags
+
+*Synopsis*
+
+		T
+
+*Beschreibung*
+
+Listet zeilenweise alle Tags auf.
+
+		#hello
+		#derp
+		#retired
 
 #### `R` - retire
 
@@ -211,6 +231,8 @@ Fügt ein Label zu allen Elementen der Selektion hinzu bzw. entfernt es.
 *Beschreibung*
 
 Zieht alle Copies der Selektion aus dem Verkehr.
+
+XXX einfach #retired-Tag hinzufügen – ist dann dieser Command nötig?
 
 #### `d` - delete
 
