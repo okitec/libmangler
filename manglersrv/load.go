@@ -18,6 +18,7 @@ type copyctx struct {
 	authorsFilled bool
 	titleFilled   bool
 	notesFilled   bool
+	tagsFilled    bool
 
 	id      int64
 	user    string
@@ -25,16 +26,19 @@ type copyctx struct {
 	authors []string
 	title   string
 	notes   []string
+	tags    []string
 }
 
 type userctx struct {
 	state        string
 	nameFilled   bool
 	notesFilled  bool
+	tagsFilled   bool
 	copiesFilled bool
 
 	name   string
 	notes  []string
+	tags   []string
 	copies []int64
 }
 
@@ -44,41 +48,15 @@ type bookctx struct {
 	authorsFilled bool
 	titleFilled   bool
 	notesFilled   bool
+	tagsFilled    bool
 	copiesFilled  bool
 
 	isbn    string
 	authors []string
 	title   string
 	notes   []string
+	tags    []string
 	copies  []int64
-}
-
-func (c copyctx) String() string {
-	s := fmt.Sprintf("id: %v\nuser: %s\nisbn: %s\nauthors: %v\ntitle: %s\nnotes:\n",
-		c.id, c.user, c.isbn, c.authors, c.title)
-	for _, n := range c.notes {
-		s += "\t" + n + "\n"
-	}
-	return s
-}
-
-func (u userctx) String() string {
-	s := fmt.Sprintf("name: %s\nnotes:\n", u.name)
-	for _, n := range u.notes {
-		s += "\t" + n + "\n"
-	}
-	s += fmt.Sprintf("copies: %v\n", u.copies)
-	return s
-}
-
-func (b bookctx) String() string {
-	s := fmt.Sprintf("isbn: %s\nauthors: %v\ntitle: %s\nnotes:\n",
-		b.isbn, b.authors, b.title)
-	for _, n := range b.notes {
-		s += "\t" + n + "\n"
-	}
-	s += fmt.Sprintf("copies: %v\n", b.copies)
-	return s
 }
 
 func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
@@ -86,7 +64,7 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 
 	switch c.state {
 	case "":
-		if c.idFilled && c.userFilled && c.isbnFilled && c.authorsFilled && c.titleFilled && c.notesFilled {
+		if c.idFilled && c.userFilled && c.isbnFilled && c.authorsFilled && c.titleFilled && c.notesFilled && c.tagsFilled {
 			c.state = "end"
 			break
 		}
@@ -100,6 +78,8 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 			c.state = "book"
 		case "notes":
 			c.state = "notes"
+		case "tags":
+			c.state = "tags"
 		default:
 			c.state = "err"
 		}
@@ -147,6 +127,7 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		} else {
 			c.state = ""
 		}
+
 	case "title":
 		c.title = atom.String()
 		c.titleFilled = true
@@ -159,6 +140,11 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	case "notes":
 		c.notes = sexps.List(parent)
 		c.notesFilled = true
+		c.state = ""
+
+	case "tags":
+		c.tags = sexps.List(parent)
+		c.tagsFilled = true
 		c.state = ""
 
 	case "end":
@@ -175,7 +161,7 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 
 	switch u.state {
 	case "":
-		if u.nameFilled && u.notesFilled && u.copiesFilled {
+		if u.nameFilled && u.notesFilled && u.tagsFilled && u.copiesFilled {
 			u.state = "end"
 			break
 		}
@@ -187,6 +173,8 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 			u.state = "notes"
 		case "copies":
 			u.state = "copies"
+		case "tags":
+			u.state = "tags"
 		default:
 			u.state = "err"
 		}
@@ -201,6 +189,11 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		// would include "notes" as an item of the list.
 		u.notes = sexps.List(parent.Cdr())
 		u.notesFilled = true
+		u.state = ""
+
+	case "tags":
+		u.tags = sexps.List(parent)
+		u.tagsFilled = true
 		u.state = ""
 
 	case "copies":
@@ -228,7 +221,7 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 
 	switch b.state {
 	case "":
-		if b.isbnFilled && b.authorsFilled && b.titleFilled && b.notesFilled && b.copiesFilled {
+		if b.isbnFilled && b.authorsFilled && b.titleFilled && b.notesFilled && b.tagsFilled && b.copiesFilled {
 			b.state = "end"
 			break
 		}
@@ -238,6 +231,8 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 			b.state = "book"
 		case "notes":
 			b.state = "notes"
+		case "tags":
+			b.state = "tags"
 		case "copies":
 			b.state = "copies"
 		default:
@@ -285,6 +280,11 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	case "notes":
 		b.notes = sexps.List(parent)
 		b.notesFilled = true
+		b.state = ""
+
+	case "tags":
+		b.tags = sexps.List(parent)
+		b.tagsFilled = true
 		b.state = ""
 
 	case "copies":
@@ -361,6 +361,7 @@ func load() (nbooks, nusers, ncopies int) {
 
 				// Must be last, clears any notes produced by NewBook.
 				bp.notes = b.notes
+				bp.tags = b.tags
 
 				nbooks++
 
@@ -375,6 +376,7 @@ func load() (nbooks, nusers, ncopies int) {
 
 				// Must be last, clears any notes produced by NewUser.
 				up.notes = u.notes
+				up.tags = u.tags
 
 				nusers++
 
@@ -397,6 +399,7 @@ func load() (nbooks, nusers, ncopies int) {
 
 				// Must be last, clears any notes produced by NewCopy and Lend.
 				cp.notes = c.notes
+				cp.tags = c.tags
 
 				ncopies++
 			}
