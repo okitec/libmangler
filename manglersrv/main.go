@@ -150,11 +150,31 @@ parse:
 				if !ok {
 					log.Printf("tried to return a non-Copy element")
 					return "error: can't return: not a Copy\n"
-					break
 				}
 
 				c.Return()
 			}
+
+		case 't':
+			var add bool
+
+			args := strings.Fields(s)
+			if len(args) < 2 {
+				log.Printf("")
+				return "usage: t +|- tag"
+			}
+
+			if args[1] == "+" {
+				add = true
+			} else { // just assume it's a minus ('-')
+				add = false
+			}
+
+			for _, e := range *dot {
+				e.Tag(add, args[2])
+			}
+
+			return ""
 		}
 	}
 

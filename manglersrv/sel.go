@@ -15,10 +15,11 @@ type selFn func(sel []elem, args []string) ([]elem, error)
 // Interface elem is implemented by books, copies and users and
 // contains methods applicable to all of them.
 type elem interface {
-	fmt.Stringer      // returns the id (copies), ISBN (books) or name (users)
-	Print() string    // cmd p (all info)
-	Note(note string) // cmd n  // XXX make fmt-like
-	Delete()          // cmd d
+	fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
+	Print() string            // cmd p (all info)
+	Note(note string)         // cmd n  // XXX make fmt-like
+	Delete()                  // cmd d
+	Tag(add bool, tag string) // cmd t
 }
 
 // XXX Write a script that generates this from a table. This is too mechanical.

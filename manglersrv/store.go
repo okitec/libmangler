@@ -9,7 +9,7 @@ import (
 // store: save all data in three files, one for users, one for books, one for copies
 // in the same s-expr format as in the protocol. The files are truncated at the beginning.
 func store() {
-	var dot []elem  // dummy
+	var dot []elem // dummy
 
 	users, err := os.Create("users")
 	if err != nil {

@@ -63,6 +63,10 @@ func (b *Book) Delete() {
 	fmt.Printf("delete(%v, %v)\n", books, b.isbn)
 }
 
+func (b *Book) Tag(add bool, tag string) {
+	b.tags = addToTags(b.tags, add, tag)
+}
+
 // NewBook adds a Book to the system.
 func NewBook(isbn, title string, authors []string) (*Book, error) {
 	// XXX check whether Book already exists

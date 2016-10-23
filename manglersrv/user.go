@@ -39,6 +39,10 @@ func (u *User) Delete() {
 	delete(users, u.name)
 }
 
+func (u *User) Tag(add bool, tag string) {
+	u.tags = addToTags(u.tags, add, tag)
+}
+
 // The function NewUser adds a User. If a User of that name already exists,
 // it will be returned with an non-nil error.
 func NewUser(name string) (*User, error) {

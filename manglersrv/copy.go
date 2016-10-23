@@ -85,6 +85,10 @@ resized1:
 	}
 }
 
+func (c *Copy) Tag(add bool, tag string) {
+	c.tags = addToTags(c.tags, add, tag)
+}
+
 // The method Lend lends a Copy to a User. An error is returned if the Copy is already lent or
 // u is nil.
 func (c *Copy) Lend(u *User) error {
@@ -139,6 +143,33 @@ func NewCopy(id int64, b *Book) (*Copy, error) {
 	copies[c.id] = &c
 	return &c, nil
 }
+
+// addToTags adds or removes a tag given without initial hash symbol and returns the new
+// tags array.
+func addToTags(tags []string, add bool, tag string) []string {
+	tag = "#" + tag
+
+	if add {
+		for _, s := range tags {
+			if tag == s {
+				return tags // tag already exists; do nothing
+			}
+		}
+
+		tags = append(tags, tag)
+	} else {
+		for i, s := range tags {
+			if tag == s {
+				tags[i] = tags[len(tags)-1]
+				tags[len(tags)-1] = ""
+				return tags
+			}
+		}
+	}
+
+	return tags
+}
+
 
 // Function sCopies takes an array of string and concatenates it to a space-separated list string.
 func sCopies(copies []*Copy) string {
