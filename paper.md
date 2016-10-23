@@ -513,6 +513,65 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 
 ### Server
 
+Der Server basiert maßgeblich auf dem Protokoll. Zentral ist das Interface `elem`,
+welches ein selektierbares Element repräsentiert und die auf alle anwendbaren
+Methoden enthält.
+
+	type elem interface {
+		fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
+		Print() string            // cmd p (all info)
+		Note(note string)         // cmd n  // XXX make fmt-like
+		Delete()                  // cmd d
+		Tag(add bool, tag string) // cmd t
+	}
+
+Die erste Zeile, `fmt.Stringer`, bettet das Interface `fmt.Stringer` in `elem` ein,
+wodurch alle Methoden, die in `fmt.Stringer` sind, nun auch durch `elem` gefordert
+werden. Wie viele Go-Interfaces, enthält `fmt.Stringer` nur eine einzige Methode
+`String() string`, welche also einen String zurückgibt; es ist das Equivalent zu
+Javas `toString`. Der Name solcher Ein-Methoden-Interfaces ist der Methodenname
+plus ein `er`-Suffix (vgl. `io.Reader`, `io.Writer`). Die Implementierungen von
+`elem` liefern als String nur die indentifizierenden Informationen zurück, so die
+ID, die ISBN oder der Nutzername.
+
+`Print` liefert die S-Expression zurück, die alle Informationen zu dem Element
+enthält; der `p`-Befehl im Protokoll sendet die S-Expressions jedes Elements in
+*Dot*. Für die anderen Methoden in `elem` gibt es ebenso Protokollbefehle, wie
+man in den Kommentaren nach den Methoden lesen kann.
+
+Die drei Implementationen von `elem` sind `*Book`, `*Copy` und `*User`. Auf die
+Sterne (`*`) kommen wir noch zurück. Betrachten wir Bücher als Beispiel. Das ist
+die Definition eines `Book`s:
+
+	type Book struct {
+		isbn    ISBN
+		title   string
+		authors []string
+		notes   []string
+		tags    []string
+		copies  []*Copy
+	}
+
+Die Felder `authors`, `notes` und `tags` sind *Slices* vom Typ `string`. Slices
+sind Arrays ähnlich, lassen sich jedoch vergrößern und werden als Referenzen
+übergeben, im Gegensatz zu Go-Arrays, welche eine fixe, im Typ enthaltene Größe
+haben (`[3]int` und `[4]int` sind grundlegend verschiedene Typen) und direkt
+übergebene Werte sind. `copies` ist eine Slice aus Pointer zu Copies.
+
+Eine Methode sieht in Go folgendermaßen aus:
+
+	func (b *Book) String() string {
+		return string(b.isbn)
+	}
+
+Der `(b *Book)`-Teil nennt sich *Receiver* und gibt an, auf welchen Typ eine
+Methode definiert ist (hier `*Book`) und wie die Instanz benannt wird, auf der
+die Methode ausgeführt wird (hier `b`). Es ist einfach ein spezieller Parameter.
+Man kann Methoden auf den Grundtyp definieren (`Book`), dann bekommt man aufgrund
+eine Kopie der Instanz, weil Go *Pass-by-Value* bei Parametern nutzt. Wenn man
+also die Instanz *modifizieren* will, muss man die Methode auf einen Pointer
+definieren (`*Book`). Das nennt man dann einen *Pointer Receiver*.
+
  - Beschreibung *Bottom-Up*
  - elem
  - Book, Copy, User
