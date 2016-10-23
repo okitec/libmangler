@@ -175,6 +175,33 @@ parse:
 			}
 
 			return ""
+
+		case 'T':
+			tags := make(map[string]int)
+
+			for _, b := range books {
+				for _, t := range b.tags {
+					tags[t]++
+				}
+			}
+
+			for _, c := range copies {
+				for _, t := range c.tags {
+					tags[t]++
+				}
+			}
+
+			for _, u := range users {
+				for _, t := range u.tags {
+					tags[t]++
+				}
+			}
+
+			s := ""
+			for t, _ := range tags {
+				s += t + "\n"
+			}
+			return s
 		}
 	}
 
