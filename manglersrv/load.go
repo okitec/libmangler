@@ -191,6 +191,7 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		u.notesFilled = true
 		u.state = ""
 
+	// XXX doesn't work - maybe because we never enter this state. Test!
 	case "tags":
 		u.tags = sexps.List(parent)
 		u.tagsFilled = true

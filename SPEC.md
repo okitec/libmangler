@@ -206,7 +206,8 @@ ISO 8601-Format mitprotokolliert. Die Notizen eines Objekts werden bei einem
 
 *Beschreibung*
 
-Fügt allen Elementen der Selektion einen Tag hinzu bzw. entfernt ihn.
+Fügt allen Elementen der Selektion einen Tag hinzu bzw. entfernt ihn. Der
+Tag darf kein Hash-Symbol (`#`) am Anfang haben.
 
 #### `T` - list tags
 
