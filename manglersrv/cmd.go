@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+
+	"github.com/okitec/libmangler/elems"
 )
 
 // simpleCmdFn describes a 'simple' command that does not work on selections.
@@ -26,11 +28,11 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			return s, err
 		}
 
-		_, err = NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
+		_, err = elems.NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
 		return "", err
 	},
 	'a': func(args []string) (s string, err error) {
-		var b *Book
+		var b *elems.Book
 		var n int
 		var ok bool
 
@@ -40,7 +42,7 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			return s, err
 		}
 
-		if b, ok = books[ISBN(args[1])]; !ok {
+		if b, ok = elems.Books[elems.ISBN(args[1])]; !ok {
 			s = "book doesn't exist"
 			err = errors.New(s)
 			return s, err
@@ -55,10 +57,10 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			var id int64
 
 			// Skip used ids
-			for id = rand.Int63(); copies[id] != nil; id = rand.Int63() {
+			for id = rand.Int63(); elems.Copies[id] != nil; id = rand.Int63() {
 			}
 
-			NewCopy(id, b)
+			elems.NewCopy(id, b)
 		}
 
 		return "", err
@@ -72,7 +74,7 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 
 		// args[1:]: skip first element "u"
 		name := strings.Join(args[1:], " ")
-		_, err = NewUser(name)
+		_, err = elems.NewUser(name)
 		return "", err
 	},
 	'v': func(args []string) (s string, err error) {

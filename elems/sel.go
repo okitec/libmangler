@@ -1,4 +1,4 @@
-package main
+package elems
 
 import (
 	"fmt"
@@ -10,32 +10,41 @@ import (
 // selFn describes a selector command (one of .0BCU) which selects a subset of sel.
 // The subset is the union of elements that match one of the args.
 // XXX Define matching in detail (see offline chart).
-type selFn func(sel []elem, args []string) ([]elem, error)
+type selFn func(sel []Elem, args []string) ([]Elem, error)
 
-// Interface elem is implemented by books, copies and users and
+// Interface elem is implemented by Books, Copies and Users and
 // contains methods applicable to all of them.
-type elem interface {
-	fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
+type Elem interface {
+	fmt.Stringer              // returns the id (Copies), ISBN (Books) or name (Users)
 	Print() string            // cmd p (all info)
 	Note(note string)         // cmd n  // XXX make fmt-like
 	Delete()                  // cmd d
 	Tag(add bool, tag string) // cmd t
 }
 
+func Select(r rune, sel []Elem, args []string) ([]Elem, error) {
+	fn := seltab[r]
+	if fn == nil {
+		return sel, fmt.Errorf("invalid selector %q", r)
+	}
+
+	return fn(sel, args)
+}
+
 // XXX Write a script that generates this from a table. This is too mechanical.
 var seltab = map[rune]selFn{
-	'.': func(sel []elem, args []string) ([]elem, error) {
+	'.': func(sel []Elem, args []string) ([]Elem, error) {
 		return sel, nil
 	},
-	'0': func(sel []elem, args []string) ([]elem, error) {
+	'0': func(sel []Elem, args []string) ([]Elem, error) {
 		return nil, nil
 	},
-	'B': func(sel []elem, args []string) ([]elem, error) {
-		var rsel []elem // returned selection
+	'B': func(sel []Elem, args []string) ([]Elem, error) {
+		var rsel []Elem // returned selection
 
 		// Select all if no constraints given.
 		if args == nil {
-			for _, b := range books {
+			for _, b := range Books {
 				rsel = append(rsel, b)
 			}
 
@@ -44,31 +53,31 @@ var seltab = map[rune]selFn{
 
 		for _, s := range args {
 			if isISBN13(s) {
-				for _, b := range books {
-					if s == string(b.isbn) {
+				for _, b := range Books {
+					if s == string(b.ISBN) {
 						rsel = append(rsel, b)
 					}
 				}
 			} else if id, err := strconv.ParseInt(s, 10, 64); err == nil {
-				for _, b := range books {
-					for _, c := range b.copies {
-						if c.id == id {
+				for _, b := range Books {
+					for _, c := range b.Copies {
+						if c.ID == id {
 							rsel = append(rsel, b)
 						}
 					}
 				}
 			} else if s[0] == '#' {
-				for _, b := range books {
-					for _, t := range b.tags {
+				for _, b := range Books {
+					for _, t := range b.Tags {
 						if t == s {
 							rsel = append(rsel, b)
 						}
 					}
 				}
 			} else {
-				for _, b := range books {
-					for _, c := range b.copies {
-						if c.user.name == s {
+				for _, b := range Books {
+					for _, c := range b.Copies {
+						if c.User.Name == s {
 							rsel = append(rsel, b)
 						}
 					}
@@ -79,12 +88,12 @@ var seltab = map[rune]selFn{
 
 		return rsel, nil
 	},
-	'C': func(sel []elem, args []string) ([]elem, error) {
-		var rsel []elem
+	'C': func(sel []Elem, args []string) ([]Elem, error) {
+		var rsel []Elem
 
 		// Select all if no constraints given.
 		if args == nil {
-			for _, c := range copies {
+			for _, c := range Copies {
 				rsel = append(rsel, c)
 			}
 
@@ -93,36 +102,36 @@ var seltab = map[rune]selFn{
 
 		for _, s := range args {
 			if isISBN13(s) {
-				for _, b := range books {
-					if s == string(b.isbn) {
-						// Convert from []*Copy to []elem
-						var cs []elem
-						for _, c := range b.copies {
+				for _, b := range Books {
+					if s == string(b.ISBN) {
+						// Convert from []*Copy to []Elem
+						var cs []Elem
+						for _, c := range b.Copies {
 							cs = append(cs, c)
 						}
 						rsel = append(rsel, cs...)
 					}
 				}
 			} else if id, err := strconv.ParseInt(s, 10, 64); err == nil {
-				for _, c := range copies {
-					if c.id == id {
+				for _, c := range Copies {
+					if c.ID == id {
 						rsel = append(rsel, c)
 					}
 				}
 			} else if s[0] == '#' {
-				for _, c := range copies {
-					for _, t := range c.tags {
+				for _, c := range Copies {
+					for _, t := range c.Tags {
 						if t == s {
 							rsel = append(rsel, c)
 						}
 					}
 				}
 			} else {
-				for _, u := range users {
-					if u.name == s {
-						// Convert from []*Copy to []elem
-						var cs []elem
-						for _, c := range u.copies {
+				for _, u := range Users {
+					if u.Name == s {
+						// Convert from []*Copy to []Elem
+						var cs []Elem
+						for _, c := range u.Copies {
 							cs = append(cs, c)
 						}
 						rsel = append(rsel, cs...)
@@ -133,12 +142,12 @@ var seltab = map[rune]selFn{
 
 		return rsel, nil
 	},
-	'U': func(sel []elem, args []string) ([]elem, error) {
-		var rsel []elem
+	'U': func(sel []Elem, args []string) ([]Elem, error) {
+		var rsel []Elem
 
 		// Select all if no constraints given.
 		if args == nil {
-			for _, u := range users {
+			for _, u := range Users {
 				rsel = append(rsel, u)
 			}
 
@@ -147,33 +156,33 @@ var seltab = map[rune]selFn{
 
 		for _, s := range args {
 			if isISBN13(s) {
-				// Do it this way around to avoid duplicate users.
-				for _, u := range users {
-					for _, c := range u.copies {
-						if s == string(c.book.isbn) {
+				// Do it this way around to avoid duplicate Users.
+				for _, u := range Users {
+					for _, c := range u.Copies {
+						if s == string(c.Book.ISBN) {
 							rsel = append(rsel, u)
 						}
 					}
 				}
 			} else if id, err := strconv.ParseInt(s, 10, 64); err == nil {
-				for _, u := range users {
-					for _, c := range u.copies {
-						if c.id == id {
+				for _, u := range Users {
+					for _, c := range u.Copies {
+						if c.ID == id {
 							rsel = append(rsel, u)
 						}
 					}
 				}
 			} else if s[0] == '#' {
-				for _, u := range users {
-					for _, t := range u.tags {
+				for _, u := range Users {
+					for _, t := range u.Tags {
 						if t == s {
 							rsel = append(rsel, u)
 						}
 					}
 				}
 			} else {
-				for _, u := range users {
-					if s == u.name {
+				for _, u := range Users {
+					if s == u.Name {
 						rsel = append(rsel, u)
 					}
 				}

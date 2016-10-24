@@ -40,7 +40,7 @@ func (u *User) Delete() {
 }
 
 func (u *User) Tag(add bool, tag string) {
-	u.tags = addToTags(u.tags, add, tag)
+	u.Tags = addToTags(u.Tags, add, tag)
 }
 
 // The function NewUser adds a User. If a User of that name already exists,

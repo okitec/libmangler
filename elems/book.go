@@ -60,7 +60,7 @@ func (b *Book) Delete() {
 }
 
 func (b *Book) Tag(add bool, tag string) {
-	b.tags = addToTags(b.tags, add, tag)
+	b.Tags = addToTags(b.Tags, add, tag)
 }
 
 // NewBook adds a Book to the system.
@@ -70,7 +70,7 @@ func NewBook(isbn, title string, authors []string) (*Book, error) {
 		return nil, fmt.Errorf("NewBook: %s is not a ISBN-13", isbn)
 	}
 
-	b := Book{ISBN(isbn), title, authors, nil, nil}
+	b := Book{ISBN(isbn), title, authors, nil, nil, nil}
 	Books[ISBN(isbn)] = &b
 	b.Note("added to the system")
 	return &b, nil

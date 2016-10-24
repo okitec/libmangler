@@ -40,7 +40,7 @@ func (c *Copy) Print() string {
 	var usernil bool
 	if c.User == nil {
 		usernil = true
-		c.User = &User{"", nil, nil}
+		c.User = &User{"", nil, nil, nil}
 	}
 
 	s := fmt.Sprintf(fmtstr, c.ID, c.User, c.Book, strings.Join(c.Book.Authors, `" "`),
@@ -88,7 +88,7 @@ resized1:
 }
 
 func (c *Copy) Tag(add bool, tag string) {
-	c.tags = addToTags(c.tags, add, tag)
+	c.Tags = addToTags(c.Tags, add, tag)
 }
 
 // The method Lend lends a Copy to a User. An error is returned if the Copy is already lent or

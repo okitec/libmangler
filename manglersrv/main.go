@@ -13,6 +13,8 @@ import (
 	"os/signal"
 	"strings"
 	"unicode"
+
+	"github.com/okitec/libmangler/elems"
 )
 
 // Protocol constants
@@ -25,7 +27,7 @@ const (
 // The function interpret executes the line and returns a string that should be
 // sent to the client. This is also used by store(), which is why it was split off
 // handle in the first place.
-func interpret(s string, dot *[]elem) (ret string) {
+func interpret(s string, dot *[]elems.Elem) (ret string) {
 	var err error
 
 parse:
@@ -86,9 +88,8 @@ parse:
 				args[i] = strings.TrimSpace(args[i])
 			}
 
-			fn := seltab[r]
 			// Do not use := here, it would redefine dot. Subtle.
-			*dot, err = fn(*dot, args)
+			*dot, err = elems.Select(r, *dot, args)
 			if err != nil {
 				log.Printf("cmd %c: %v", r, err)
 			}
@@ -129,10 +130,10 @@ parse:
 		case 'l':
 			name := s[1:strings.IndexRune(s, '\n')]
 			name = strings.TrimSpace(name)
-			u := users[name]
+			u := elems.Users[name]
 
 			for _, e := range *dot {
-				c, ok := e.(*Copy)
+				c, ok := e.(*elems.Copy)
 				if !ok {
 					log.Printf("tried to lend a non-Copy element")
 					return "error: can't lend: not a Copy\n"
@@ -146,7 +147,7 @@ parse:
 
 		case 'r':
 			for _, e := range *dot {
-				c, ok := e.(*Copy)
+				c, ok := e.(*elems.Copy)
 				if !ok {
 					log.Printf("tried to return a non-Copy element")
 					return "error: can't return: not a Copy\n"
@@ -179,20 +180,20 @@ parse:
 		case 'T':
 			tags := make(map[string]int)
 
-			for _, b := range books {
-				for _, t := range b.tags {
+			for _, b := range elems.Books {
+				for _, t := range b.Tags {
 					tags[t]++
 				}
 			}
 
-			for _, c := range copies {
-				for _, t := range c.tags {
+			for _, c := range elems.Copies {
+				for _, t := range c.Tags {
 					tags[t]++
 				}
 			}
 
-			for _, u := range users {
-				for _, t := range u.tags {
+			for _, u := range elems.Users {
+				for _, t := range u.Tags {
 					tags[t]++
 				}
 			}
@@ -210,7 +211,7 @@ parse:
 
 // The function handle communicates with a client, resolving its requests via interpret().
 func handle(rw io.ReadWriter) {
-	var dot []elem
+	var dot []elems.Elem
 	var err error
 	var n int
 	buf := make([]byte, 128)
@@ -244,9 +245,9 @@ func main() {
 		log.Panicln("net.Listen failed:", err)
 	}
 
-	books = make(map[ISBN]*Book)
-	users = make(map[string]*User)
-	copies = make(map[int64]*Copy)
+	elems.Books = make(map[elems.ISBN]*elems.Book)
+	elems.Users = make(map[string]*elems.User)
+	elems.Copies = make(map[int64]*elems.Copy)
 
 	nbooks, nusers, ncopies := load()
 	log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)
