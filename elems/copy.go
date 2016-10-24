@@ -1,4 +1,4 @@
-package main
+package elems
 
 import (
 	"bytes"
@@ -8,18 +8,18 @@ import (
 )
 
 type Copy struct {
-	id    int64
-	user  *User
-	book  *Book
-	notes []string
-	tags  []string
+	ID    int64
+	User  *User
+	Book  *Book
+	Notes []string
+	Tags  []string
 }
 
-// The map copies holds pointers to all copies indexed by id.
-var copies map[int64]*Copy
+// The map Copies holds pointers to all copies indexed by id.
+var Copies map[int64]*Copy
 
 func (c *Copy) String() string {
-	return fmt.Sprint(c.id)
+	return fmt.Sprint(c.ID)
 }
 
 func (c *Copy) Print() string {
@@ -38,48 +38,50 @@ func (c *Copy) Print() string {
 	// To fix issue #9: the string for no user should be "", not the "<nil>"
 	// generated when *printf encounters a nil object. So make a dummy.
 	var usernil bool
-	if c.user == nil {
+	if c.User == nil {
 		usernil = true
-		c.user = &User{"", nil, nil, nil}
+		c.User = &User{"", nil, nil}
 	}
 
-	s := fmt.Sprintf(fmtstr, c.id, c.user, c.book, strings.Join(c.book.authors, `" "`),
-		c.book.title, strings.Join(c.notes, "\"\n\t\t\""), sTags(c.tags))
+	s := fmt.Sprintf(fmtstr, c.ID, c.User, c.Book, strings.Join(c.Book.Authors, `" "`),
+		c.Book.Title, strings.Join(c.Notes, "\"\n\t\t\""), sTags(c.Tags))
 
 	if usernil {
-		c.user = nil
+		c.User = nil
 	}
 
 	return s
 }
 
 func (c *Copy) Note(note string) {
-	c.notes = append(c.notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
+	c.Notes = append(c.Notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
 }
 
 func (c *Copy) Delete() {
-	delete(copies, c.id)
+	delete(Copies, c.ID)
 
 resized0:
-	for i := range c.user.copies {
-		if c.user.copies[i] == c {
-			// See https://github.com/golang/go/wiki/SliceTricks
-			n := len(c.user.copies)
-			c.user.copies[i] = c.user.copies[n-1]
-			c.user.copies[n-1] = nil
-			c.user.copies = c.user.copies[:n-1]
-			// reset range loop because slice is shorter
-			goto resized0
+	if c.User != nil {
+		for i := range c.User.Copies {
+			if c.User.Copies[i] == c {
+				// See https://github.com/golang/go/wiki/SliceTricks
+				n := len(c.User.Copies)
+				c.User.Copies[i] = c.User.Copies[n-1]
+				c.User.Copies[n-1] = nil
+				c.User.Copies = c.User.Copies[:n-1]
+				// reset range loop because slice is shorter
+				goto resized0
+			}
 		}
 	}
 
 resized1:
-	for i := range c.book.copies {
-		if c.book.copies[i] == c {
-			n := len(c.user.copies)
-			c.user.copies[i] = c.user.copies[n-1]
-			c.user.copies[n-1] = nil
-			c.user.copies = c.user.copies[:n-1]
+	for i := range c.Book.Copies {
+		if c.Book.Copies[i] == c {
+			n := len(c.Book.Copies)
+			c.Book.Copies[i] = c.Book.Copies[n-1]
+			c.Book.Copies[n-1] = nil
+			c.Book.Copies = c.Book.Copies[:n-1]
 			goto resized1
 		}
 	}
@@ -92,7 +94,7 @@ func (c *Copy) Tag(add bool, tag string) {
 // The method Lend lends a Copy to a User. An error is returned if the Copy is already lent or
 // u is nil.
 func (c *Copy) Lend(u *User) error {
-	if c.user != nil {
+	if c.User != nil {
 		return fmt.Errorf("can't lend %v: already lent", c)
 	}
 
@@ -100,31 +102,31 @@ func (c *Copy) Lend(u *User) error {
 		return fmt.Errorf("can't lend %v: no user specified", c)
 	}
 
-	c.user = u
-	u.copies = append(u.copies, c)
+	c.User = u
+	u.Copies = append(u.Copies, c)
 	c.Note(fmt.Sprintf("lent to %s", u))
 	return nil
 }
 
 // The method Return returns a Copy that was lent to an user.
 func (c *Copy) Return() {
-	u := c.user
-	if c.user == nil {
+	u := c.User
+	if c.User == nil {
 		return
 	}
 
 resized:
-	for i := range c.user.copies {
-		if c.user.copies[i] == c {
-			n := len(c.user.copies)
-			c.user.copies[i] = c.user.copies[n-1]
-			c.user.copies[n-1] = nil
-			c.user.copies = c.user.copies[:n-1]
+	for i := range c.User.Copies {
+		if c.User.Copies[i] == c {
+			n := len(c.User.Copies)
+			c.User.Copies[i] = c.User.Copies[n-1]
+			c.User.Copies[n-1] = nil
+			c.User.Copies = c.User.Copies[:n-1]
 			goto resized
 		}
 	}
 
-	c.user = nil
+	c.User = nil
 	c.Note(fmt.Sprintf("returned from %s", u))
 }
 
@@ -135,12 +137,12 @@ func NewCopy(id int64, b *Book) (*Copy, error) {
 		return nil, fmt.Errorf("NewCopy: book doesn't exist")
 	}
 
-	if copies[id] != nil {
-		return copies[id], fmt.Errorf("NewCopy: copy %v already exists", id)
+	if Copies[id] != nil {
+		return Copies[id], fmt.Errorf("NewCopy: copy %v already exists", id)
 	}
 
-	b.copies = append(b.copies, &c)
-	copies[c.id] = &c
+	b.Copies = append(b.Copies, &c)
+	Copies[c.ID] = &c
 	return &c, nil
 }
 

@@ -1,8 +1,7 @@
-package main
+package elems
 
 import (
 	"fmt"
-	"runtime/debug"
 	"strings"
 	"time"
 	"unicode"
@@ -13,19 +12,19 @@ type ISBN string
 // Struct Book stores information about books. The physical manifestations of the
 // book are called Copies. Books are identified by their unique ISBN.
 type Book struct {
-	isbn    ISBN
-	title   string
-	authors []string
-	notes   []string
-	tags    []string
-	copies  []*Copy
+	ISBN    ISBN
+	Title   string
+	Authors []string
+	Notes   []string
+	Tags    []string
+	Copies  []*Copy
 }
 
-// books contains all book structs.
-var books map[ISBN]*Book
+// Books contains all book structs.
+var Books map[ISBN]*Book
 
 func (b *Book) String() string {
-	return string(b.isbn)
+	return string(b.ISBN)
 }
 
 // The Print method prints information about the book, including a list of copies,
@@ -41,26 +40,23 @@ func (b *Book) Print() string {
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, b.isbn, strings.Join(b.authors, `" "`), b.title,
-		strings.Join(b.notes, "\"\n\t\t\""), sTags(b.tags), sCopies(b.copies))
+	return fmt.Sprintf(fmtstr, b.ISBN, strings.Join(b.Authors, `" "`), b.Title,
+		strings.Join(b.Notes, "\"\n\t\t\""), sTags(b.Tags), sCopies(b.Copies))
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.
 func (b *Book) Note(note string) {
-	b.notes = append(b.notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
+	b.Notes = append(b.Notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
 }
 
 func (b *Book) Delete() {
 	// XXX should this return an error?
 
-	if len(b.copies) > 0 {
+	if len(b.Copies) > 0 {
 		return
 	}
 
-	debug.PrintStack()
-	fmt.Printf("delete(%v, %v)\n", books, b.isbn)
-	delete(books, b.isbn)
-	fmt.Printf("delete(%v, %v)\n", books, b.isbn)
+	delete(Books, b.ISBN)
 }
 
 func (b *Book) Tag(add bool, tag string) {
@@ -71,11 +67,11 @@ func (b *Book) Tag(add bool, tag string) {
 func NewBook(isbn, title string, authors []string) (*Book, error) {
 	// XXX check whether Book already exists
 	if !isISBN13(isbn) {
-		return nil, fmt.Errorf("NewBook: %q is not a ISBN-13", isbn)
+		return nil, fmt.Errorf("NewBook: %s is not a ISBN-13", isbn)
 	}
 
-	b := Book{ISBN(isbn), title, authors, nil, nil, nil}
-	books[ISBN(isbn)] = &b
+	b := Book{ISBN(isbn), title, authors, nil, nil}
+	Books[ISBN(isbn)] = &b
 	b.Note("added to the system")
 	return &b, nil
 }

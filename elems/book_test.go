@@ -1,4 +1,4 @@
-package main
+package elems
 
 import "testing"
 
@@ -29,12 +29,12 @@ func TestIsISBN13(t *testing.T) {
 }
 
 func TestBook_String(t *testing.T) {
-	books = make(map[ISBN]*Book)
+	Books = make(map[ISBN]*Book)
 
 	b := eNewBook(t, "978-0-201-07981-4", "The AWK Programming Language", nil)
 
-	if b.String() != string(b.isbn) {
-		t.Errorf("Book.String: got %v, want %v\n", b.String(), string(b.isbn))
+	if b.String() != string(b.ISBN) {
+		t.Errorf("Book.String: got %v, want %v\n", b.String(), string(b.ISBN))
 	}
 
 	b.Delete()
@@ -57,42 +57,39 @@ func TestBook_Note(t *testing.T) {
 	//	b.Note("quux")
 }
 
-/*
 func TestBook_Delete(t *testing.T) {
-	books = make(map[ISBN]*Book)
-	copies = make(map[int64]*Copy)
+	Books = make(map[ISBN]*Book)
+	Copies = make(map[int64]*Copy)
 	b := eNewBook(t, "978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
 
-	c, _ := NewCopy(b)
-	b.Delete() // XXX not called - what am I missing?
-	_, ok := books[ISBN("978-0-201-07981-4")]
+	c, _ := NewCopy(0, b)
+	b.Delete()
+	_, ok := Books[ISBN("978-0-201-07981-4")]
 	if !ok {
 		t.Fatalf("Book.Delete: deleted even though copies exist\n")
 	}
 
 	c.Delete()
-	b.Delete() // XXX not called - what am I missing?
-	fmt.Println("after second b.Delete: books =", books)
-	b2, ok := books[ISBN("978-0-201-07981-4")]
+	b.Delete()
+	_, ok = Books[ISBN("978-0-201-07981-4")]
 	if ok {
 		t.Fatalf("Book.Delete: still in books map after Delete\n")
 	}
 }
-*/
 
 func TestNewBook(t *testing.T) {
-	books = make(map[ISBN]*Book)
+	Books = make(map[ISBN]*Book)
 	b := eNewBook(t, "978-0-201-07981-4", "The AWK Programming Language", []string{"Alfred V. Aho", "Brian W. Kernighan", "Peter J. Weinberger"})
 
 	if b == nil {
 		t.Fatalf("TestNewBook: b is nil!\n")
 	}
 
-	if books[ISBN("978-0-201-07981-4")] != b {
+	if Books[ISBN("978-0-201-07981-4")] != b {
 		t.Fatalf("TestNewBook: books[ISBN(\"978-0-201-07981-4\")] is not equal to b\n")
 	}
 
-	if b.isbn != ISBN("978-0-201-07981-4") || b.title != "The AWK Programming Language" {
+	if b.ISBN != ISBN("978-0-201-07981-4") || b.Title != "The AWK Programming Language" {
 		t.Fatalf("TestNewBook: mangled ISBN or title\n")
 	}
 
