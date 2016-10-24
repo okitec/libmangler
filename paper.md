@@ -513,11 +513,11 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 
 ### Server
 
-Der Server basiert maßgeblich auf dem Protokoll. Zentral ist das Interface `elem`,
+Der Server basiert maßgeblich auf dem Protokoll. Zentral ist das Interface `Elem`,
 welches ein selektierbares Element repräsentiert und die auf alle anwendbaren
 Methoden enthält.
 
-	type elem interface {
+	type Elem interface {
 		fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
 		Print() string            // cmd p (all info)
 		Note(note string)         // cmd n  // XXX make fmt-like
@@ -525,34 +525,34 @@ Methoden enthält.
 		Tag(add bool, tag string) // cmd t
 	}
 
-Die erste Zeile, `fmt.Stringer`, bettet das Interface `fmt.Stringer` in `elem` ein,
-wodurch alle Methoden, die in `fmt.Stringer` sind, nun auch durch `elem` gefordert
+Die erste Zeile, `fmt.Stringer`, bettet das Interface `fmt.Stringer` in `Elem` ein,
+wodurch alle Methoden, die in `fmt.Stringer` sind, nun auch durch `Elem` gefordert
 werden. Wie viele Go-Interfaces, enthält `fmt.Stringer` nur eine einzige Methode
 `String() string`, welche also einen String zurückgibt; es ist das Equivalent zu
 Javas `toString`. Der Name solcher Ein-Methoden-Interfaces ist der Methodenname
 plus ein `er`-Suffix (vgl. `io.Reader`, `io.Writer`). Die Implementierungen von
-`elem` liefern als String nur die indentifizierenden Informationen zurück, so die
+`Elem` liefern als String nur die identifizierenden Informationen zurück, so die
 ID, die ISBN oder der Nutzername.
 
 `Print` liefert die S-Expression zurück, die alle Informationen zu dem Element
 enthält; der `p`-Befehl im Protokoll sendet die S-Expressions jedes Elements in
-*Dot*. Für die anderen Methoden in `elem` gibt es ebenso Protokollbefehle, wie
+*Dot*. Für die anderen Methoden in `Elem` gibt es ebenso Protokollbefehle, wie
 man in den Kommentaren nach den Methoden lesen kann.
 
-Die drei Implementationen von `elem` sind `*Book`, `*Copy` und `*User`. Auf die
+Die drei Implementationen von `Elem` sind `*Book`, `*Copy` und `*User`. Auf die
 Sterne (`*`) kommen wir noch zurück. Betrachten wir Bücher als Beispiel. Das ist
 die Definition eines `Book`s:
 
 	type Book struct {
-		isbn    ISBN
-		title   string
-		authors []string
-		notes   []string
-		tags    []string
-		copies  []*Copy
+		ISBN    ISBN
+		Title   string
+		Authors []string
+		Notes   []string
+		Tags    []string
+		cCopies  []*Copy
 	}
 
-Die Felder `authors`, `notes` und `tags` sind *Slices* vom Typ `string`. Slices
+Die Felder `Authors`, `Notes` und `Tags` sind *Slices* vom Typ `string`. Slices
 sind Arrays ähnlich, lassen sich jedoch vergrößern und werden als Referenzen
 übergeben, im Gegensatz zu Go-Arrays, welche eine fixe, im Typ enthaltene Größe
 haben (`[3]int` und `[4]int` sind grundlegend verschiedene Typen) und direkt
@@ -561,7 +561,7 @@ haben (`[3]int` und `[4]int` sind grundlegend verschiedene Typen) und direkt
 Eine Methode sieht in Go folgendermaßen aus:
 
 	func (b *Book) String() string {
-		return string(b.isbn)
+		return string(b.ISBN)
 	}
 
 Der `(b *Book)`-Teil nennt sich *Receiver* und gibt an, auf welchen Typ eine
@@ -573,7 +573,7 @@ also die Instanz *modifizieren* will, muss man die Methode auf einen Pointer
 definieren (`*Book`). Das nennt man dann einen *Pointer Receiver*.
 
  - Beschreibung *Bottom-Up*
- - elem
+ - Elem
  - Book, Copy, User
  - sel.go
  - Hauptschleife und cmd.go
