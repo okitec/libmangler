@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/okitec/libmangler/elems"
+	"github.com/okitec/libmangler/elem"
 )
 
 // simpleCmdFn describes a 'simple' command that does not work on selections.
@@ -28,11 +28,11 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			return s, err
 		}
 
-		_, err = elems.NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
+		_, err = elem.NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
 		return "", err
 	},
 	'a': func(args []string) (s string, err error) {
-		var b *elems.Book
+		var b *elem.Book
 		var n int
 		var ok bool
 
@@ -42,7 +42,7 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			return s, err
 		}
 
-		if b, ok = elems.Books[elems.ISBN(args[1])]; !ok {
+		if b, ok = elem.Books[elem.ISBN(args[1])]; !ok {
 			s = "book doesn't exist"
 			err = errors.New(s)
 			return s, err
@@ -57,10 +57,10 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 			var id int64
 
 			// Skip used ids
-			for id = rand.Int63(); elems.Copies[id] != nil; id = rand.Int63() {
+			for id = rand.Int63(); elem.Copies[id] != nil; id = rand.Int63() {
 			}
 
-			elems.NewCopy(id, b)
+			elem.NewCopy(id, b)
 		}
 
 		return "", err
@@ -74,7 +74,7 @@ var simpleCmdtab = map[rune]simpleCmdFn{
 
 		// args[1:]: skip first element "u"
 		name := strings.Join(args[1:], " ")
-		_, err = elems.NewUser(name)
+		_, err = elem.NewUser(name)
 		return "", err
 	},
 	'v': func(args []string) (s string, err error) {

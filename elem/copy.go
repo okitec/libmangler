@@ -1,4 +1,4 @@
-package elems
+package elem
 
 import (
 	"bytes"

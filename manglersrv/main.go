@@ -14,7 +14,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/okitec/libmangler/elems"
+	"github.com/okitec/libmangler/elem"
 )
 
 // Protocol constants
@@ -27,7 +27,7 @@ const (
 // The function interpret executes the line and returns a string that should be
 // sent to the client. This is also used by store(), which is why it was split off
 // handle in the first place.
-func interpret(s string, dot *[]elems.Elem) (ret string) {
+func interpret(s string, dot *[]elem.Elem) (ret string) {
 	var err error
 
 parse:
@@ -89,7 +89,7 @@ parse:
 			}
 
 			// Do not use := here, it would redefine dot. Subtle.
-			*dot, err = elems.Select(r, *dot, args)
+			*dot, err = elem.Select(r, *dot, args)
 			if err != nil {
 				log.Printf("cmd %c: %v", r, err)
 			}
@@ -130,10 +130,10 @@ parse:
 		case 'l':
 			name := s[1:strings.IndexRune(s, '\n')]
 			name = strings.TrimSpace(name)
-			u := elems.Users[name]
+			u := elem.Users[name]
 
 			for _, e := range *dot {
-				c, ok := e.(*elems.Copy)
+				c, ok := e.(*elem.Copy)
 				if !ok {
 					log.Printf("tried to lend a non-Copy element")
 					return "error: can't lend: not a Copy\n"
@@ -147,7 +147,7 @@ parse:
 
 		case 'r':
 			for _, e := range *dot {
-				c, ok := e.(*elems.Copy)
+				c, ok := e.(*elem.Copy)
 				if !ok {
 					log.Printf("tried to return a non-Copy element")
 					return "error: can't return: not a Copy\n"
@@ -180,19 +180,19 @@ parse:
 		case 'T':
 			tags := make(map[string]int)
 
-			for _, b := range elems.Books {
+			for _, b := range elem.Books {
 				for _, t := range b.Tags {
 					tags[t]++
 				}
 			}
 
-			for _, c := range elems.Copies {
+			for _, c := range elem.Copies {
 				for _, t := range c.Tags {
 					tags[t]++
 				}
 			}
 
-			for _, u := range elems.Users {
+			for _, u := range elem.Users {
 				for _, t := range u.Tags {
 					tags[t]++
 				}
@@ -211,7 +211,7 @@ parse:
 
 // The function handle communicates with a client, resolving its requests via interpret().
 func handle(rw io.ReadWriter) {
-	var dot []elems.Elem
+	var dot []elem.Elem
 	var err error
 	var n int
 	buf := make([]byte, 128)
@@ -245,9 +245,9 @@ func main() {
 		log.Panicln("net.Listen failed:", err)
 	}
 
-	elems.Books = make(map[elems.ISBN]*elems.Book)
-	elems.Users = make(map[string]*elems.User)
-	elems.Copies = make(map[int64]*elems.Copy)
+	elem.Books = make(map[elem.ISBN]*elem.Book)
+	elem.Users = make(map[string]*elem.User)
+	elem.Copies = make(map[int64]*elem.Copy)
 
 	nbooks, nusers, ncopies := load()
 	log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)

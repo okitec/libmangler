@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/okitec/libmangler/elems"
+	"github.com/okitec/libmangler/elem"
 	"github.com/okitec/libmangler/sexps"
 )
 
@@ -355,7 +355,7 @@ func load() (nbooks, nusers, ncopies int) {
 			case "books":
 				b := bookctx{}
 				sexps.Apply(sexp, handleBook, &b)
-				bp, err := elems.NewBook(b.isbn, b.title, b.authors)
+				bp, err := elem.NewBook(b.isbn, b.title, b.authors)
 				if err != nil {
 					log.Printf("can't create book: %v", err)
 					break
@@ -370,7 +370,7 @@ func load() (nbooks, nusers, ncopies int) {
 			case "users":
 				u := userctx{}
 				sexps.Apply(sexp, handleUser, &u)
-				up, err := elems.NewUser(u.name)
+				up, err := elem.NewUser(u.name)
 				if err != nil {
 					log.Printf("can't create user: %v", err)
 					break
@@ -385,14 +385,14 @@ func load() (nbooks, nusers, ncopies int) {
 			case "copies":
 				c := copyctx{}
 				sexps.Apply(sexp, handleCopy, &c)
-				cp, err := elems.NewCopy(c.id, elems.Books[elems.ISBN(c.isbn)])
+				cp, err := elem.NewCopy(c.id, elem.Books[elem.ISBN(c.isbn)])
 				if err != nil {
 					log.Printf("can't create copy: %v", err)
 					break
 				}
 
-				if len(c.user) > 0 && elems.Users[c.user] != nil {
-					err := cp.Lend(elems.Users[c.user])
+				if len(c.user) > 0 && elem.Users[c.user] != nil {
+					err := cp.Lend(elem.Users[c.user])
 					if err != nil {
 						log.Printf("can't associate copy with user anymore: %v", err)
 						break
