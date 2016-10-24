@@ -245,10 +245,6 @@ func main() {
 		log.Panicln("net.Listen failed:", err)
 	}
 
-	elem.Books = make(map[elem.ISBN]*elem.Book)
-	elem.Users = make(map[string]*elem.User)
-	elem.Copies = make(map[int64]*elem.Copy)
-
 	nbooks, nusers, ncopies := load()
 	log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)
 

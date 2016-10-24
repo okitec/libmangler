@@ -13,8 +13,6 @@ type User struct {
 	Copies []*Copy
 }
 
-var Users map[string]*User
-
 func (u *User) String() string {
 	return u.Name
 }

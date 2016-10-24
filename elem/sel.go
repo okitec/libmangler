@@ -22,6 +22,17 @@ type Elem interface {
 	Tag(add bool, tag string) // cmd t
 }
 
+var Books map[ISBN]*Book
+var Copies map[int64]*Copy
+var Users map[string]*User
+
+// Called during package initialisation and thus before any main().
+func init() {
+	Books = make(map[ISBN]*Book)
+	Users = make(map[string]*User)
+	Copies = make(map[int64]*Copy)
+}
+
 func Select(r rune, sel []Elem, args []string) ([]Elem, error) {
 	fn := seltab[r]
 	if fn == nil {

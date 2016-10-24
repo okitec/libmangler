@@ -15,9 +15,6 @@ type Copy struct {
 	Tags  []string
 }
 
-// The map Copies holds pointers to all copies indexed by id.
-var Copies map[int64]*Copy
-
 func (c *Copy) String() string {
 	return fmt.Sprint(c.ID)
 }

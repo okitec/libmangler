@@ -20,9 +20,6 @@ type Book struct {
 	Copies  []*Copy
 }
 
-// Books contains all book structs.
-var Books map[ISBN]*Book
-
 func (b *Book) String() string {
 	return string(b.ISBN)
 }
