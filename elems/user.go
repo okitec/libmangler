@@ -1,4 +1,4 @@
-package main
+package elems
 
 import (
 	"fmt"
@@ -7,15 +7,15 @@ import (
 )
 
 type User struct {
-	name   string
-	notes  []string
-	copies []*Copy
+	Name   string
+	Notes  []string
+	Copies []*Copy
 }
 
-var users map[string]*User
+var Users map[string]*User
 
 func (u *User) String() string {
-	return u.name
+	return u.Name
 }
 
 func (u *User) Print() string {
@@ -26,25 +26,25 @@ func (u *User) Print() string {
 	(copies %v)
 )`
 
-	return fmt.Sprintf(fmtstr, u.name, strings.Join(u.notes, "\"\n\t\t\""), sCopies(u.copies))
+	return fmt.Sprintf(fmtstr, u.Name, strings.Join(u.Notes, "\"\n\t\t\""), sCopies(u.Copies))
 }
 
 func (u *User) Note(note string) {
-	u.notes = append(u.notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
+	u.Notes = append(u.Notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
 }
 
 func (u *User) Delete() {
-	delete(users, u.name)
+	delete(Users, u.Name)
 }
 
 // The function NewUser adds a User. If a User of that name already exists,
 // it will be returned with an non-nil error.
 func NewUser(name string) (*User, error) {
-	if users[name] != nil {
-		return users[name], fmt.Errorf("NewUser: user %q already exists", name)
+	if Users[name] != nil {
+		return Users[name], fmt.Errorf("NewUser: user %q already exists", name)
 	}
 
 	u := User{name, nil, nil}
-	users[name] = &u
+	Users[name] = &u
 	return &u, nil
 }
