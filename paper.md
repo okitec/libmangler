@@ -573,6 +573,14 @@ man eine Kopie der Instanz, weil Go *Pass-by-Value* bei Parametern nutzt. Wenn
 man also die Instanz *modifizieren* will, muss man die Methode auf einen Pointer
 definieren (`*Book`). Das nennt man dann einen *Pointer Receiver*.
 
+Man sollte einfache Receiver verwenden, keine Pointer Receiver, sofern es nicht
+nötig ist [citation needed, vllt. Effective Go]. Man könnte also auf den Gedanken kommen,
+die `String`- und `Print`-Methoden, die nichts modifizieren, auf `Book` zu
+definieren, die anderen Methoden von `Elem` auf `*Book`. Das ist jedoch nicht
+zielführend: `Book` und `*Book` sind verschiedene Typen und keiner von beiden
+würde in dem Fall das Interface `Elem` implementieren. Deswegen sind die drei
+Implementierungen von `Elem` Pointer: `*Book`, `*Copy`, `*User`.
+
  - Beschreibung *Bottom-Up*
  - Elem
  - Book, Copy, User
