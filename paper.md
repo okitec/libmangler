@@ -517,7 +517,7 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 
 Der Server basiert maßgeblich auf dem Protokoll. Zentral ist das Interface
 `Elem`, welches ein selektierbares Element repräsentiert und die auf alle
-anwendbaren Methoden enthält.
+anwendbaren Methoden enthält (`elem/sel.go`).
 
 	type Elem interface {
 		fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
@@ -544,7 +544,7 @@ man in den Kommentaren nach den Methoden lesen kann.
 
 Die drei Implementationen von `Elem` sind `*Book`, `*Copy` und `*User`. Auf die
 Sterne (`*`) kommen wir noch zurück. Betrachten wir Bücher als Beispiel. Das
-ist die Definition eines `Book`s:
+ist die Definition eines `Book`s (`elem/book.go`):
 
 	type Book struct {
 		ISBN    ISBN
@@ -582,6 +582,16 @@ definieren, die anderen Methoden von `Elem` auf `*Book`. Das ist jedoch nicht
 zielführend: `Book` und `*Book` sind verschiedene Typen und keiner von beiden
 würde in dem Fall das Interface `Elem` implementieren. Deswegen sind die drei
 Implementierungen von `Elem` Pointer: `*Book`, `*Copy`, `*User`.
+
+Der Server speichert alle Bücher, Copies und User in drei Maps ab, die den
+jeweiligen Identifikatoren Pointer auf die Structs zuordnen (`sel.go`).
+
+	var Books map[ISBN]*Book
+	var Copies map[int64]*Copy
+	var Users map[string]*User
+
+Mithilfe dieser Maps ist der selektierende Teil des Protokolls recht einfach.
+XXX continue
 
  - Beschreibung *Bottom-Up*
  - Elem
