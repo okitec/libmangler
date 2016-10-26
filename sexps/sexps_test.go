@@ -70,3 +70,50 @@ func TestParse(t *testing.T) {
 		}
 	}
 }
+
+func TestList(t *testing.T) {
+	var tests = []struct {
+		s    string
+		want []string
+	}{
+		{"derp", []string{"derp"}},
+		{"(derp)", []string{"derp"}},
+		{"(derp herp)", []string{"derp", "herp"}},
+		{`(derp "")`, []string{"derp", ""}},
+		{`("")`, []string{""}},
+	}
+
+	// Initial value in diff for encountered strings. Must be != 0.
+	const foo = 100
+
+	for _, tt := range tests {
+		sxp, tail, err := Parse(tt.s)
+		if err != nil {
+			t.Errorf("Parse(%q): %v (tail = %s)", tt.s, err, tail)
+		}
+
+		got := List(sxp)
+		diff := make(map[string]int)
+		for _, s := range got {
+			// On first encounter, set start value distinct from 0.
+			if _, ok := diff[s]; !ok {
+				diff[s] = foo
+			}
+			diff[s]++
+		}
+
+		for _, s := range tt.want {
+			// On first encounter, set start value distinct from 0.
+			if _, ok := diff[s]; !ok {
+				diff[s] = foo
+			}
+			diff[s]--
+		}
+
+		for _, i := range diff {
+			if i != foo {
+				t.Errorf("List(%q): got %v, want %v; diff is %v\n", tt.s, got, tt.want, i)
+			}
+		}
+	}
+}
