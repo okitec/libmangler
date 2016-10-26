@@ -161,8 +161,8 @@ parse:
 
 			args := strings.Fields(s)
 			if len(args) < 2 {
-				log.Printf("")
-				return "usage: t +|- tag"
+				log.Printf("missing tag arguments: %s", s)
+				return "usage: t +|- tag\n"
 			}
 
 			if args[1] == "+" {
