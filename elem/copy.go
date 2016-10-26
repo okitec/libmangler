@@ -182,9 +182,15 @@ func sCopies(copies []*Copy) string {
 	return buf.String()
 }
 
+// If there are no tags the sexp should be (tags ""), but if there are,
+// there MUST NOT be quotes around all of them. Therefore,
+//     fmt.Printf("(tags %q)", strings.Join(tags, " ")) 
+// can't be used. This hack allows
+//     fmt.Printf("(tags %s)", sTags(tags))
+// to work.
 func sTags(tags []string) string {
-	if tags == nil {
-		return `""`  // if no tags, display as empty string
+	if tags == nil || tags[0] == "" {
+		return `""`  // if no tags, *display* as empty string represented by two adjacent quotes
 	} else {
 		return strings.Join(tags, " ")
 	}
