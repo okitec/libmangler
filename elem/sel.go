@@ -2,7 +2,9 @@ package elem
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
+	"strings"
 )
 
 // Selections, elements and commands working on selections
@@ -85,6 +87,49 @@ var seltab = map[rune]selFn{
 						}
 					}
 				}
+			// XXX I wanted it in one function; however, we can't generalise for []Elem
+			// XXX because we need the fields of Book, User, Copy.
+			} else if strings.ContainsRune(s, ':') {
+				kv := strings.FieldsFunc(s, func(r rune) bool { return r == ':' })
+				key := kv[0] // The keys are the struct field names in lowercase.
+				val := kv[1] // substring to be searched for
+
+				key = strings.Title(key)
+				for _, b := range Books {
+					f := reflect.ValueOf(*b).FieldByName(key)
+					switch f.Kind() {
+					case reflect.String:
+						if strings.Contains(f.Interface().(string), val) {
+							rsel = append(rsel, b)
+						}
+					case reflect.Ptr:
+						if f.Type() == reflect.TypeOf((*User)(nil)) {
+							if strings.Contains(f.Interface().(*User).Name, val) {
+								rsel = append(rsel, b)
+							}
+						} else if f.Type() == reflect.TypeOf((*Book)(nil)) {
+							if strings.Contains(string(f.Interface().(*Book).ISBN), val) {
+								rsel = append(rsel, b)
+							}
+						}
+					case reflect.Slice:
+						if f.Type() == reflect.TypeOf([]string{}) {
+							for _, s := range f.Interface().([]string) {
+								if strings.Contains(s, val) {
+									rsel = append(rsel, b)
+								}
+							}
+						} else if f.Type() == reflect.TypeOf([]*Copy{}) {
+							if n, err := strconv.ParseInt(val, 10, 64); err == nil {
+								for _, c := range f.Interface().([]*Copy) {
+									if c.ID == n {
+										rsel = append(rsel, b)
+									}
+								}
+							}
+						}
+					}
+				}
 			} else {
 				for _, b := range Books {
 					for _, c := range b.Copies {
@@ -134,6 +179,47 @@ var seltab = map[rune]selFn{
 					for _, t := range c.Tags {
 						if t == s {
 							rsel = append(rsel, c)
+						}
+					}
+				}
+			} else if strings.ContainsRune(s, ':') {
+				kv := strings.FieldsFunc(s, func(r rune) bool { return r == ':' })
+				key := kv[0] // The keys are the struct field names in lowercase.
+				val := kv[1] // substring to be searched for
+
+				key = strings.Title(key)
+				for _, c := range Copies {
+					f := reflect.ValueOf(*c).FieldByName(key)
+					switch f.Kind() {
+					case reflect.String:
+						if strings.Contains(f.Interface().(string), val) {
+							rsel = append(rsel, c)
+						}
+					case reflect.Ptr:
+						if f.Type() == reflect.TypeOf((*User)(nil)) {
+							if strings.Contains(f.Interface().(*User).Name, val) {
+								rsel = append(rsel, c)
+							}
+						} else if f.Type() == reflect.TypeOf((*Book)(nil)) {
+							if strings.Contains(string(f.Interface().(*Book).ISBN), val) {
+								rsel = append(rsel, c)
+							}
+						}
+					case reflect.Slice:
+						if f.Type() == reflect.TypeOf([]string{}) {
+							for _, s := range f.Interface().([]string) {
+								if strings.Contains(s, val) {
+									rsel = append(rsel, c)
+								}
+							}
+						} else if f.Type() == reflect.TypeOf([]*Copy{}) {
+							if n, err := strconv.ParseInt(val, 10, 64); err == nil {
+								for _, c := range f.Interface().([]*Copy) {
+									if c.ID == n {
+										rsel = append(rsel, c)
+									}
+								}
+							}
 						}
 					}
 				}
@@ -191,6 +277,47 @@ var seltab = map[rune]selFn{
 						}
 					}
 				}
+			} else if strings.ContainsRune(s, ':') {
+				kv := strings.FieldsFunc(s, func(r rune) bool { return r == ':' })
+				key := kv[0] // The keys are the struct field names in lowercase.
+				val := kv[1] // substring to be searched for
+
+				key = strings.Title(key)
+				for _, u := range Users {
+					f := reflect.ValueOf(*u).FieldByName(key)
+					switch f.Kind() {
+					case reflect.String:
+						if strings.Contains(f.Interface().(string), val) {
+							rsel = append(rsel, u)
+						}
+					case reflect.Ptr:
+						if f.Type() == reflect.TypeOf((*User)(nil)) {
+							if strings.Contains(f.Interface().(*User).Name, val) {
+								rsel = append(rsel, u)
+							}
+						} else if f.Type() == reflect.TypeOf((*Book)(nil)) {
+							if strings.Contains(string(f.Interface().(*Book).ISBN), val) {
+								rsel = append(rsel, u)
+							}
+						}
+					case reflect.Slice:
+						if f.Type() == reflect.TypeOf([]string{}) {
+							for _, s := range f.Interface().([]string) {
+								if strings.Contains(s, val) {
+									rsel = append(rsel, u)
+								}
+							}
+						} else if f.Type() == reflect.TypeOf([]*Copy{}) {
+							if n, err := strconv.ParseInt(val, 10, 64); err == nil {
+								for _, c := range f.Interface().([]*Copy) {
+									if c.ID == n {
+										rsel = append(rsel, u)
+									}
+								}
+							}
+						}
+					}
+				}
 			} else {
 				for _, u := range Users {
 					if s == u.Name {
@@ -203,3 +330,4 @@ var seltab = map[rune]selFn{
 		return rsel, nil
 	},
 }
+
