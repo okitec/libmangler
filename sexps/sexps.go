@@ -135,6 +135,10 @@ func preorder(sexp Sexp, parent Sexp, fn AppliedFn, data interface{}) {
 // which are atoms in many use cases. If a car is nil, an empty string is included.
 // If the sexp ist an atom, return its value.
 func List(sexp Sexp) (ls []string) {
+	if sexp == nil {
+		return nil
+	}
+
 	if IsAtom(sexp) {
 		return append(ls, sexp.String())
 	}

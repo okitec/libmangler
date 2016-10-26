@@ -121,7 +121,13 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		}
 
 	case "authors":
-		c.authors = sexps.List(parent)
+		// In this state, we are at the atom "authors". sexps.List(parent)
+		// would include "authors" as an item of the list. Thus, Cdr must
+		// be used in the argumenr of sexps.List, everywhere.
+		c.authors = sexps.List(parent.Cdr())
+		if c.authors == nil {
+			c.authors = []string{""}
+		}
 		c.authorsFilled = true
 		if !c.titleFilled {
 			c.state = "book2"
@@ -139,12 +145,18 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		}
 
 	case "notes":
-		c.notes = sexps.List(parent)
+		c.notes = sexps.List(parent.Cdr())
+		if c.notes == nil {
+			c.notes = []string{""}
+		}
 		c.notesFilled = true
 		c.state = ""
 
 	case "tags":
-		c.tags = sexps.List(parent)
+		c.tags = sexps.List(parent.Cdr())
+		if c.tags == nil {
+			c.tags = []string{""}
+		}
 		c.tagsFilled = true
 		c.state = ""
 
@@ -186,15 +198,19 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		u.state = ""
 
 	case "notes":
-		// In this state, we are at the atom "notes". sexps.List(parent)
-		// would include "notes" as an item of the list.
 		u.notes = sexps.List(parent.Cdr())
+		if u.notes == nil {
+			u.notes = []string{""}
+		}
 		u.notesFilled = true
 		u.state = ""
 
 	// XXX doesn't work - maybe because we never enter this state. Test!
 	case "tags":
-		u.tags = sexps.List(parent)
+		u.tags = sexps.List(parent.Cdr())
+		if u.tags == nil {
+			u.tags = []string{""}
+		}
 		u.tagsFilled = true
 		u.state = ""
 
@@ -262,7 +278,10 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		}
 
 	case "authors":
-		b.authors = sexps.List(parent)
+		b.authors = sexps.List(parent.Cdr())
+		if b.authors == nil {
+			b.authors = []string{""}
+		}
 		b.authorsFilled = true
 		if !b.titleFilled {
 			b.state = "book2"
@@ -280,12 +299,18 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		}
 
 	case "notes":
-		b.notes = sexps.List(parent)
+		b.notes = sexps.List(parent.Cdr())
+		if b.notes == nil {
+			b.notes = []string{""}
+		}
 		b.notesFilled = true
 		b.state = ""
 
 	case "tags":
-		b.tags = sexps.List(parent)
+		b.tags = sexps.List(parent.Cdr())
+		if b.tags == nil {
+			b.tags = []string{""}
+		}
 		b.tagsFilled = true
 		b.state = ""
 
