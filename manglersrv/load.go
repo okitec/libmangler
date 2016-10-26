@@ -20,6 +20,7 @@ type copyctx struct {
 	titleFilled   bool
 	notesFilled   bool
 	tagsFilled    bool
+	skip          int // # of atoms to be skipped after sexps.List()
 
 	id      int64
 	user    string
@@ -36,6 +37,7 @@ type userctx struct {
 	notesFilled  bool
 	tagsFilled   bool
 	copiesFilled bool
+	skip         int // # of atoms to be skipped after sexps.List()
 
 	name   string
 	notes  []string
@@ -51,6 +53,7 @@ type bookctx struct {
 	notesFilled   bool
 	tagsFilled    bool
 	copiesFilled  bool
+	skip          int // # of atoms to be skipped after sexps.List()
 
 	isbn    string
 	authors []string
@@ -63,6 +66,11 @@ type bookctx struct {
 func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	c := data.(*copyctx)
 
+	if c.skip > 0 {
+		c.skip--
+		return
+	}
+
 	switch c.state {
 	case "":
 		if c.idFilled && c.userFilled && c.isbnFilled && c.authorsFilled && c.titleFilled && c.notesFilled && c.tagsFilled {
@@ -72,20 +80,30 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 
 		switch atom.String() {
 		case "copy":
-			c.state = "copy"
+			c.state = "get-id"
 		case "user":
-			c.state = "user"
+			c.state = "get-user"
 		case "book":
-			c.state = "book"
+			c.state = "get-isbn"
+		case "authors":
+			c.authors = sexps.List(parent.Cdr())
+			c.skip = len(c.authors)
+			c.authorsFilled = true
+		case "title":
+			c.state = "get-title"
 		case "notes":
-			c.state = "notes"
+			c.notes = sexps.List(parent.Cdr())
+			c.skip = len(c.notes)
+			c.notesFilled = true
 		case "tags":
-			c.state = "tags"
+			c.tags = sexps.List(parent.Cdr())
+			c.skip = len(c.tags)
+			c.tagsFilled = true
 		default:
 			c.state = "err"
 		}
 
-	case "copy":
+	case "get-id":
 		var err error
 		c.id, err = strconv.ParseInt(atom.String(), 10, 64)
 		if err != nil {
@@ -95,69 +113,19 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 		c.idFilled = true
 		c.state = ""
 
-	case "user":
+	case "get-user":
 		c.user = atom.String()
 		c.userFilled = true
 		c.state = ""
 
-	case "book":
+	case "get-isbn":
 		c.isbn = atom.String()
 		c.isbnFilled = true
-		c.state = "book2"
-
-	case "book2":
-		if c.authorsFilled && c.titleFilled {
-			c.state = ""
-			break
-		}
-
-		switch atom.String() {
-		case "authors":
-			c.state = "authors"
-		case "title":
-			c.state = "title"
-		default:
-			// do nothing; the authors match here
-		}
-
-	case "authors":
-		// In this state, we are at the atom "authors". sexps.List(parent)
-		// would include "authors" as an item of the list. Thus, Cdr must
-		// be used in the argumenr of sexps.List, everywhere.
-		c.authors = sexps.List(parent.Cdr())
-		if c.authors == nil {
-			c.authors = []string{""}
-		}
-		c.authorsFilled = true
-		if !c.titleFilled {
-			c.state = "book2"
-		} else {
-			c.state = ""
-		}
-
-	case "title":
-		c.title = atom.String()
-		c.titleFilled = true
-		if !c.authorsFilled {
-			c.state = "book2"
-		} else {
-			c.state = ""
-		}
-
-	case "notes":
-		c.notes = sexps.List(parent.Cdr())
-		if c.notes == nil {
-			c.notes = []string{""}
-		}
-		c.notesFilled = true
 		c.state = ""
 
-	case "tags":
-		c.tags = sexps.List(parent.Cdr())
-		if c.tags == nil {
-			c.tags = []string{""}
-		}
-		c.tagsFilled = true
+	case "get-title":
+		c.title = atom.String()
+		c.titleFilled = true
 		c.state = ""
 
 	case "end":
@@ -172,6 +140,11 @@ func handleCopy(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	u := data.(*userctx)
 
+	if u.skip > 0 {
+		u.skip--
+		return
+	}
+
 	switch u.state {
 	case "":
 		if u.nameFilled && u.notesFilled && u.tagsFilled && u.copiesFilled {
@@ -181,48 +154,31 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 
 		switch atom.String() {
 		case "user":
-			u.state = "user"
+			u.state = "get-name"
 		case "notes":
-			u.state = "notes"
+			u.notes = sexps.List(parent.Cdr())
+			u.skip = len(u.notes)
+			u.notesFilled = true
 		case "copies":
-			u.state = "copies"
+			var err error
+			u.copies, err = getCopies(parent.Cdr())
+			if err != nil {
+				u.state = "err"
+			}
+			u.skip = len(u.copies)
+			u.copiesFilled = true
 		case "tags":
-			u.state = "tags"
+			u.tags = sexps.List(parent.Cdr())
+			u.skip = len(u.tags)
+			u.tagsFilled = true
 		default:
 			u.state = "err"
 		}
 
-	case "user":
+	case "get-name":
 		u.name = atom.String()
 		u.nameFilled = true
 		u.state = ""
-
-	case "notes":
-		u.notes = sexps.List(parent.Cdr())
-		if u.notes == nil {
-			u.notes = []string{""}
-		}
-		u.notesFilled = true
-		u.state = ""
-
-	// XXX doesn't work - maybe because we never enter this state. Test!
-	case "tags":
-		u.tags = sexps.List(parent.Cdr())
-		if u.tags == nil {
-			u.tags = []string{""}
-		}
-		u.tagsFilled = true
-		u.state = ""
-
-	case "copies":
-		var err error
-		u.copies, err = getCopies(parent)
-		if err != nil {
-			u.state = "err"
-		} else {
-			u.copiesFilled = true
-			u.state = ""
-		}
 
 	case "end":
 		return
@@ -233,9 +189,13 @@ func handleUser(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	}
 }
 
-// XXX heavily duplicated from handleCopy
 func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 	b := data.(*bookctx)
+
+	if b.skip > 0 {
+		b.skip--
+		return
+	}
 
 	switch b.state {
 	case "":
@@ -246,83 +206,42 @@ func handleBook(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
 
 		switch atom.String() {
 		case "book":
-			b.state = "book"
+			b.state = "get-isbn"
+		case "authors":
+			b.authors = sexps.List(parent.Cdr())
+			b.skip = len(b.authors)
+			b.authorsFilled = true
+		case "title":
+			b.state = "get-title"
 		case "notes":
-			b.state = "notes"
+			b.notes = sexps.List(parent.Cdr())
+			b.skip = len(b.notes)
+			b.notesFilled = true
 		case "tags":
-			b.state = "tags"
+			b.tags = sexps.List(parent.Cdr())
+			b.skip = len(b.tags)
+			b.tagsFilled = true
 		case "copies":
-			b.state = "copies"
+			var err error
+			b.copies, err = getCopies(parent.Cdr())
+			if err != nil {
+				b.state = "err"
+			}
+			b.skip = len(b.copies)
+			b.copiesFilled = true
 		default:
 			b.state = "err"
 		}
 
-	case "book":
+	case "get-isbn":
 		b.isbn = atom.String()
 		b.isbnFilled = true
-		b.state = "book2"
+		b.state = ""
 
-	case "book2":
-		if b.authorsFilled && b.titleFilled {
-			b.state = ""
-			break
-		}
-
-		switch atom.String() {
-		case "authors":
-			b.state = "authors"
-		case "title":
-			b.state = "title"
-		default:
-			// do nothing; the authors match here
-		}
-
-	case "authors":
-		b.authors = sexps.List(parent.Cdr())
-		if b.authors == nil {
-			b.authors = []string{""}
-		}
-		b.authorsFilled = true
-		if !b.titleFilled {
-			b.state = "book2"
-		} else {
-			b.state = ""
-		}
-
-	case "title":
+	case "get-title":
 		b.title = atom.String()
 		b.titleFilled = true
-		if !b.authorsFilled {
-			b.state = "book2"
-		} else {
-			b.state = ""
-		}
-
-	case "notes":
-		b.notes = sexps.List(parent.Cdr())
-		if b.notes == nil {
-			b.notes = []string{""}
-		}
-		b.notesFilled = true
 		b.state = ""
-
-	case "tags":
-		b.tags = sexps.List(parent.Cdr())
-		if b.tags == nil {
-			b.tags = []string{""}
-		}
-		b.tagsFilled = true
-		b.state = ""
-
-	case "copies":
-		var err error
-		b.copies, err = getCopies(parent)
-		if err != nil {
-			b.state = "err"
-		} else {
-			b.copiesFilled = true
-			b.state = ""
-		}
 
 	case "end":
 		return
@@ -372,7 +291,7 @@ func load() (nbooks, nusers, ncopies int) {
 			var err error
 			sexp, tail, err = sexps.Parse(tail)
 			if err != nil {
-				log.Printf("parse error in %s: %v", input, err)
+				log.Printf("parse error in %s: %v", input.Name(), err)
 				return
 			}
 
