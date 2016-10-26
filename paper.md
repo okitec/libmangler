@@ -63,10 +63,12 @@ Der Client ist vergleichbar mit einem Fenster in die Daten des Servers: er
 scannt einen QR-Code oder lässt den Nutzer eine Suchanfrage eintippen, fragt
 den Server nach dem Gesuchten, speichert nur dieses und erlaubt dann einige
 Aktionen bezüglich dieser Daten. Trotz einfacher Anforderungen stellte sich der
-Client als schwieriger heraus als der Server, da blockierende
-Netzwerkkommunikation in Android nicht möglich ist. Zudem ist es schwer, Daten
-lebendig zu halten, weil der User die App pausieren oder rotieren könnte und
-auf diese Weise immer einen neuen Prozess (*Activity*) startet.
+Client als schwieriger heraus als der Server, da blockierende Netzwerkkommunikation
+in Android nicht erwünscht ist; am Ende wurde die Komplexität jedoch ersetzt mit
+einer blockierenden und funktionierenden Lösung, wenngleich das nicht zu den
+*best practices* gehört. Zudem ist es schwer, Daten lebendig zu halten, weil der
+User die App pausieren oder rotieren könnte und auf diese Weise immer einen neuen
+Prozess (*Activity*) startet [citation needed].
 
 Bevor wir zu einer genaueren Beschreibung der Komponenten kommen können, muss
 das Protokoll verstanden sein. Seine Struktur ist die Struktur des Servers;
