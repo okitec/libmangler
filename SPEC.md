@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 7
+Version: Protokollversion 8
 
 0. Index
 --------
@@ -98,6 +98,7 @@ Bindestrichen (`---`).
 		/id/    Selektiert etwas mit dieser ID
 		/name/  Selektiert etwas mit diesem Namen
 		/#tag/  Selektiert etwas mit diesem Tag
+		/metadata:value/ Selektiert etwas, dessen angegebenes Metadatum den Wert enthält
 
 Im Selektionsargument (/.../) lassen sich mehrere Kriterien durch ein Komma
 kombinieren; ein abschließendes Komma ist erlaubt.
@@ -124,7 +125,7 @@ Copies:
 
 		(copy 594
 			(user "Dominik Okwieka")
-		 	(book "978-0-201-07981-4"
+		 	(book 978-0-201-07981-4
 				(authors "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
 				(title "The AWK Programming Language")
 			)
@@ -133,7 +134,7 @@ Copies:
 		)
 Bücher:
 
-		(book "978-0-201-07981-4"
+		(book 978-0-201-07981-4
 			(authors "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
 			(title "The AWK Programming Language")
 			(notes "2016-04-26T18:16+02:00 excellent read")
