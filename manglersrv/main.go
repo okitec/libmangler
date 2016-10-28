@@ -74,7 +74,6 @@ parse:
 				hasarg = true
 				start++                                     // +1: skip the slash
 				end = strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
-				// XXX really hacky solution, doesn't fulfill spec (strings are single-quoted in spec)
 				csvr := csv.NewReader(strings.NewReader(s[start:end]))
 
 				args, err = csvr.Read()
@@ -111,8 +110,11 @@ parse:
 			return sret
 		case 'n':
 			// The note is all text after "n" and before the EOL, whitespace-trimmed.
-			note := s[1:strings.IndexRune(s, '\n')]
+			args := strings.Fields(s)
+			note := strings.Join(args[1:], " ")
+			note = strings.TrimRight(note, "\n")
 			note = strings.TrimSpace(note)
+
 			for _, e := range *dot {
 				e.Note(note)
 			}
@@ -128,8 +130,9 @@ parse:
 			return ""
 
 		case 'l':
-			name := s[1:strings.IndexRune(s, '\n')]
-			name = strings.TrimSpace(name)
+			args := strings.Fields(s)
+			name := strings.Join(args[1:], " ")
+			name = strings.TrimRight(name, "\n")
 			u := elem.Users[name]
 
 			for _, e := range *dot {
@@ -137,10 +140,13 @@ parse:
 				if !ok {
 					log.Printf("tried to lend a non-Copy element")
 					return "error: can't lend: not a Copy\n"
-					break
 				}
 
-				c.Lend(u)
+				err = c.Lend(u)
+				if err != nil {
+					log.Printf("can't lend %v to user %v (%s)", c, u, name)
+					return "error: can't lend: " + err.Error()
+				}
 			}
 
 			return ""
