@@ -32,8 +32,16 @@ public class Connection {
 		out = new PrintWriter(socket.getOutputStream());
 	}
 
-	public String print(long... id) {
+	public String printCopy(long... id) {
 		return transact("C/" + mksel(id) + "/p");
+	}
+
+	public String printBook(String... isbn) {
+		return transact("B/" + mksel(isbn) + "/p");
+	}
+
+	public String printUser(String... name) {
+		return transact("U/" + mksel(name) + "/p");
 	}
 
 	public void delete(long... id) {
@@ -129,6 +137,17 @@ public class Connection {
 		sel = "";
 		for(int i = 0; i < id.length; i++)
 			sel += id[i] + ", ";    /* trailing comma is fine */
+
+		return sel;
+	}
+
+	/* mksel: generate selection string for a list of strings */
+	private String mksel(String... s) {
+		String sel;
+
+		sel = "";
+		for(int i = 0; i < s.length; i++)
+			sel += s[i] + ", ";    /* trailing comma is fine */
 
 		return sel;
 	}

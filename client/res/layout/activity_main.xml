@@ -25,13 +25,13 @@
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/infoLayout"
+			android:id="@+id/copyInfoLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical" >
 
 			<TextView
-				android:id="@+id/Tinfo"
+				android:id="@+id/Tcopyinfo"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
@@ -123,7 +123,7 @@
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/panicLayout"
+			android:id="@+id/elemLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical" >
@@ -135,6 +135,50 @@
 
 			<Button
 				android:id="@+id/Btomain3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/bookInfoLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tbookinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="10"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false" />
+
+			<Button
+				android:id="@+id/Btomain4"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/userInfoLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tuserinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="10"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false" />
+
+			<Button
+				android:id="@+id/Btomain5"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/tomain" />

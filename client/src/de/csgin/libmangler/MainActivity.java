@@ -32,6 +32,8 @@ public class MainActivity extends Activity {
 	private static final int SearchLayout = 2;
 	private static final int PanicLayout = 3;
 	private static final int ElemsLayout = 4;
+	private static final int BookInfoLayout = 5;
+	private static final int UserInfoLayout = 6;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -86,6 +88,8 @@ public class MainActivity extends Activity {
 			}
 		});
 		flipView(ElemsLayout);
+
+		bookinfo("978-0-201-07981-4");
 	}
 
 	@Override
@@ -146,6 +150,8 @@ public class MainActivity extends Activity {
 		initSearchLayout();
 		// PanicLayout needs no initialisation, as it has no buttons.
 		initElemsLayout();
+		initBookInfoLayout();
+		initUserInfoLayout();
 	}
 
 	private void initMainLayout() {
@@ -338,6 +344,28 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	private void initBookInfoLayout() {
+		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
+
+		Btomain4.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+	}
+
+	private void initUserInfoLayout() {
+		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
+
+		Btomain5.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+	}
+
 	/**
 	 * Fetch info about a Copy and show it in the CopyInfoLayout.
 	 */
@@ -345,9 +373,27 @@ public class MainActivity extends Activity {
 		if(id == -1)
 			return;
 
-		TextView Tinfo = (TextView) findViewById(R.id.Tinfo);
-		Tinfo.setText("The server says: " + conn.print(id));
-		flipView(InfoLayout);
+		TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
+		Tcopyinfo.setText("The server says: " + conn.printCopy(id));
+		flipView(CopyInfoLayout);
+	}
+
+	/**
+	 * Fetch info about a Book and show it in the BookInfoLayout.
+	 */
+	private void bookinfo(String isbn) {
+		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		Tbookinfo.setText("The server says: " + conn.printBook(isbn));
+		flipView(BookInfoLayout);
+	}
+
+	/**
+	 * Fetch info about a User and show it in the UserInfoLayout.
+	 */
+	private void userinfo(String name) {
+		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		Tuserinfo.setText("The server says: " + conn.printUser(name));
+		flipView(UserInfoLayout);
 	}
 
 	/**
