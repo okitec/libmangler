@@ -40,15 +40,15 @@ public class Connection {
 		transact("C/" + mksel(id) + "/n " + note);
 	}
 
-	/* lend: lend copy to user; return false if any lend failed, true otherwise */
-	public boolean lend(String user, long... id) {
+	/* lend: lend copy to user; return an error string if any lend failed, null otherwise */
+	public String lend(String user, long... id) {
 		String s;
 
 		s = transact("C/" + mksel(id) + "/l " + user);
 		if(s.contains(LENDERR))
-			return false;
+			return s;
 
-		return true;
+		return null;
 	}
 
 	public void returncopy(long... id) {

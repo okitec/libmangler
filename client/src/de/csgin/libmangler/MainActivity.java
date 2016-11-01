@@ -1,6 +1,7 @@
 package de.csgin.libmangler;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -175,12 +176,17 @@ public class MainActivity extends Activity {
 				if(id == -1)
 					return;
 
-				// XXX Query for lendee name
-				new StringDialog(MainActivity.this, "Lendee", "Who is the lendee?", "",
+				new StringDialog(MainActivity.this, "Zu verleihen an ...", "An wen soll das Exemplar verliehen werden?", "",
 					new StringDialog.ResultTaker() {
 						@Override
 						public void take(String res) {
-							panic(res);
+							String err = conn.lend(res, id);
+							if(err != null) {
+								notice("Fehler beim Verleih", err);
+							} else {
+								toast("Erfolgreich verliehen");
+								dispinfo(id);
+							}
 						}
 					});
 			}
@@ -250,5 +256,14 @@ public class MainActivity extends Activity {
 		TextView Tpanic = (TextView) findViewById(R.id.Tpanic);
 		Tpanic.setText("Fataler Fehler: " + s);
 		flipView(PanicLayout);
+	}
+
+	/**
+	 * Show a notice dialog.
+	 */
+	private void notice(String title, String msg) {
+		AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
+		b.setTitle(title).setMessage(msg);
+		b.show();
 	}
 }
