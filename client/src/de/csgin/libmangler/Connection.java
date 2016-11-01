@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 
 public class Connection {
 	private static final int PORT         = 40000;
-	private static final int VERS         = 6;
+	private static final int VERS         = 7;
 	private static final String ENDMARKER = "---";
 
 	/* protocol error strings */

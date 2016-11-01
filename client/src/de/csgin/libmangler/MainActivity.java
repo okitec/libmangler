@@ -176,6 +176,13 @@ public class MainActivity extends Activity {
 					return;
 
 				// XXX Query for lendee name
+				new StringDialog(MainActivity.this, "Lendee", "Who is the lendee?", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							panic(res);
+						}
+					});
 			}
 		});
 
@@ -231,7 +238,7 @@ public class MainActivity extends Activity {
 	 * Make a long toast.
 	 */
 	private void toast(String s) {
-		Toast.makeText(getBaseContext(), s, Toast.LENGTH_LONG).show();
+		Toast.makeText(MainActivity.this, s, Toast.LENGTH_LONG).show();
 	}
 
 	/**
