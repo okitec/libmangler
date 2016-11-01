@@ -133,7 +133,7 @@ var seltab = map[rune]selFn{
 			} else {
 				for _, b := range Books {
 					for _, c := range b.Copies {
-						if c.User.Name == s {
+						if c.User != nil && c.User.Name == s {
 							rsel = append(rsel, b)
 						}
 					}
@@ -225,7 +225,7 @@ var seltab = map[rune]selFn{
 				}
 			} else {
 				for _, u := range Users {
-					if u.Name == s {
+					if s == u.Name {
 						// Convert from []*Copy to []Elem
 						var cs []Elem
 						for _, c := range u.Copies {
