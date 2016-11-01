@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class MainActivity extends Activity {
 	/* ViewFlipper indexes */
 	private static final int MainLayout = 0;
-	private static final int InfoLayout = 1;
+	private static final int CopyInfoLayout = 1;
 	private static final int SearchLayout = 2;
 	private static final int PanicLayout = 3;
 	private static final int ElemsLayout = 4;
@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
 				String s = data.getStringExtra("SCAN_RESULT");
 				try {
 					id = Long.parseLong(s);
-					dispinfo(id);
+					copyinfo(id);
 				} catch(NumberFormatException nfe) {
 					toast("QR code is not a valid copy ID");
 				}
@@ -142,7 +142,7 @@ public class MainActivity extends Activity {
 	 */
 	private void initLayouts() {
 		initMainLayout();
-		initInfoLayout();
+		initCopyInfoLayout();
 		initSearchLayout();
 		// PanicLayout needs no initialisation, as it has no buttons.
 		initElemsLayout();
@@ -180,7 +180,7 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	private void initInfoLayout() {
+	private void initCopyInfoLayout() {
 		Button Btomain = (Button) findViewById(R.id.Btomain);
 		Button Blend = (Button) findViewById(R.id.Blend);
 		Button Breturn = (Button) findViewById(R.id.Breturn);
@@ -212,7 +212,7 @@ public class MainActivity extends Activity {
 								notice("Fehler beim Verleih", err);
 							} else {
 								toast("Erfolgreich verliehen");
-								dispinfo(id);
+								copyinfo(id);
 							}
 						}
 					});
@@ -225,9 +225,9 @@ public class MainActivity extends Activity {
 				if(id == -1)
 					return;
 
-				conn.returncopy(id);
+				conn.returnCopy(id);
 				toast("Zurückgegeben");
-				dispinfo(id);
+				copyinfo(id);
 			}
 		});
 
@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
 
 				conn.retire(id);
 				toast("Beiseitegestellt");
-				dispinfo(id);
+				copyinfo(id);
 			}
 		});
 
@@ -255,7 +255,7 @@ public class MainActivity extends Activity {
 						public void take(String res) {
 							conn.note(res, id);
 							toast("Notiz hinzugefügt");
-							dispinfo(id);
+							copyinfo(id);
 						}
 					});
 			}
@@ -273,7 +273,7 @@ public class MainActivity extends Activity {
 						public void take(String res) {
 							conn.addTag(res, id);
 							toast("Tag hinzugefügt");
-							dispinfo(id);
+							copyinfo(id);
 						}
 					});
 			}
@@ -291,7 +291,7 @@ public class MainActivity extends Activity {
 						public void take(String res) {
 							conn.rmTag(res, id);
 							toast("Tag entfernt");
-							dispinfo(id);
+							copyinfo(id);
 						}
 					});
 			}
@@ -317,7 +317,7 @@ public class MainActivity extends Activity {
 
 				// XXX search for more than just id!
 				id = Long.parseLong(Esearch.getText().toString());
-				dispinfo(id);
+				copyinfo(id);
 			}
 		});
 	}
@@ -339,9 +339,9 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * Fetch info about a Copy and show it in the InfoLayout.
+	 * Fetch info about a Copy and show it in the CopyInfoLayout.
 	 */
-	private void dispinfo(long id) {
+	private void copyinfo(long id) {
 		if(id == -1)
 			return;
 

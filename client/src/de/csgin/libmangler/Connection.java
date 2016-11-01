@@ -63,7 +63,7 @@ public class Connection {
 		return null;
 	}
 
-	public void returncopy(long... id) {
+	public void returnCopy(long... id) {
 		transact("C/" + mksel(id) + "/r");
 	}
 
