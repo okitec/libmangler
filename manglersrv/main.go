@@ -8,9 +8,11 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -43,21 +45,83 @@ parse:
 
 		case 'q':
 			// We must handle QUIT here to avoid closing the connection both
-			// in the deferred call and in cmd.go. So send special quit string,
+			// in the deferred call and here. So send special quit string,
 			// handle will know.
 			return "quit"
 
-		case 'A', 'a', 'u', 'v':
-			// 'Simple' commands not operating on selections.
+		case 'A':
 			args := strings.Fields(s)
-
-			fn := simpleCmdtab[r]
-			sret, err := fn(args)
-			if err != nil {
-				log.Printf("cmd %c: %v", r, err)
+			if len(args) < 2 {
+				return "Can't create book: missing ISBN\n"
 			}
 
-			return sret + "\n"
+			_, err = elem.NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
+			return ""
+
+		case 'a':
+			var b *elem.Book
+			var n int
+			var ok bool
+
+			args := strings.Fields(s)
+			if len(args) < 3 {
+				return "Can't create copy: missing ISBN and number of books\n"
+			}
+
+			if b, ok = elem.Books[elem.ISBN(args[1])]; !ok {
+				return "Can't create copy: book doesn't exist\n"
+			}
+
+			if n, err = strconv.Atoi(args[2]); err != nil {
+				return "Can't create copy: count is not a number\n"
+			}
+
+			for i := 0; i < n; i++ {
+				var id int64
+
+				// Skip used ids
+				for id = rand.Int63(); elem.Copies[id] != nil; id = rand.Int63() {
+				}
+
+				elem.NewCopy(id, b)
+			}
+
+			return ""
+
+		case 'u':
+			args := strings.Fields(s)
+			if len(args) < 2 {
+				return "Can't create user: missing username\n"
+			}
+
+			// args[1:]: skip first element "u" (the command)
+			name := strings.Join(args[1:], " ")
+			_, err = elem.NewUser(name)
+			if err != nil {
+				return "Can't create user: " + err.Error() + "\n"
+			}
+			return ""
+
+		case 'v':
+			args := strings.Fields(s)
+			sret := fmt.Sprintf("libmangler proto %d\n", protoVersion)
+
+			if len(args) < 2 {
+				return sret + "specify your protocol version\n"
+			}
+
+			i, err := strconv.Atoi(args[1])
+			if err != nil {
+				return sret + fmt.Sprintf("version is not a number (%q)\n", args[1])
+			}
+
+			// XXX Tell rest of manglersrv that a mismatch is fatal. But how? Panic/recover?
+			if i != protoVersion {
+				return sret + fmt.Sprintf("version mismatch (server %d, client %d)\n", protoVersion, i)
+			}
+
+			return sret
+
 		case 'B', 'C', 'U':
 			// B/.../, C/.../, U/.../ reset the selection.
 			*dot = nil
