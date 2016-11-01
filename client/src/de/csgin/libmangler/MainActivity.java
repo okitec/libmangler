@@ -11,9 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +76,15 @@ public class MainActivity extends Activity {
 		ArrayAdapter aa = (ArrayAdapter) Lelems.getAdapter();
 		aa.add("hello");
 		aa.add("world");
+		Lelems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+				ListView lv = (ListView) parent;
+
+				ListAdapter la = lv.getAdapter();
+				toast((String) la.getItem(pos));
+			}
+		});
 		flipView(ElemsLayout);
 	}
 
