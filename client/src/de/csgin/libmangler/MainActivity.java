@@ -182,6 +182,7 @@ public class MainActivity extends Activity {
 						public void take(String res) {
 							String err = conn.lend(res, id);
 							if(err != null) {
+								// XXX issue #35: freeze on lend error
 								notice("Fehler beim Verleih", err);
 							} else {
 								toast("Erfolgreich verliehen");
@@ -192,8 +193,23 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		//Button Bretire = (Button) findViewById(R.id.Bretire);
-		//Button Bnote = (Button) findViewById(R.id.Bnote);
+		Bnote.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				new StringDialog(MainActivity.this, "Notiz hinzufügen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.note(res, id);
+							toast("Notiz hinzugefügt");
+							dispinfo(id);
+						}
+					});
+			}
+		});
 	}
 
 	private void initSearchLayout() {
