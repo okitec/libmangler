@@ -79,7 +79,7 @@ var seltab = map[rune]selFn{
 						}
 					}
 				}
-			} else if s[0] == '#' {
+			} else if len(s) > 0 && s[0] == '#' {
 				for _, b := range Books {
 					for _, t := range b.Tags {
 						if t == s {
@@ -174,7 +174,7 @@ var seltab = map[rune]selFn{
 						rsel = append(rsel, c)
 					}
 				}
-			} else if s[0] == '#' {
+			} else if len(s) > 0 && s[0] == '#' {
 				for _, c := range Copies {
 					for _, t := range c.Tags {
 						if t == s {
@@ -269,7 +269,7 @@ var seltab = map[rune]selFn{
 						}
 					}
 				}
-			} else if s[0] == '#' {
+			} else if len(s) > 0 && s[0] == '#' {
 				for _, u := range Users {
 					for _, t := range u.Tags {
 						if t == s {
