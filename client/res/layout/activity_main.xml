@@ -46,10 +46,28 @@
 				android:text="@string/lend" />
 
 			<Button
+				android:id="@+id/Breturn"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/returncopy" />
+
+			<Button
 				android:id="@+id/Bnote"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/note" />
+
+			<Button
+				android:id="@+id/Baddtag"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addtag" />
+
+			<Button
+				android:id="@+id/Brmtag"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmtag" />
 
 			<Button
 				android:id="@+id/Bretire"

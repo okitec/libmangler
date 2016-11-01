@@ -160,8 +160,11 @@ public class MainActivity extends Activity {
 	private void initInfoLayout() {
 		Button Btomain = (Button) findViewById(R.id.Btomain);
 		Button Blend = (Button) findViewById(R.id.Blend);
+		Button Breturn = (Button) findViewById(R.id.Breturn);
 		Button Bretire = (Button) findViewById(R.id.Bretire);
 		Button Bnote = (Button) findViewById(R.id.Bnote);
+		Button Baddtag = (Button) findViewById(R.id.Baddtag);
+		Button Brmtag = (Button) findViewById(R.id.Brmtag);
 
 		Btomain.setOnClickListener(new OnClickListener() {
 			@Override
@@ -193,6 +196,18 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		Breturn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				conn.returncopy(id);
+				toast("Zurückgegeben");
+				dispinfo(id);
+			}
+		});
+
 		Bretire.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -200,6 +215,7 @@ public class MainActivity extends Activity {
 					return;
 
 				conn.retire(id);
+				toast("Beiseitegestellt");
 				dispinfo(id);
 			}
 		});
@@ -216,6 +232,42 @@ public class MainActivity extends Activity {
 						public void take(String res) {
 							conn.note(res, id);
 							toast("Notiz hinzugefügt");
+							dispinfo(id);
+						}
+					});
+			}
+		});
+
+		Baddtag.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				new StringDialog(MainActivity.this, "Tag hinzufügen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.addTag(res, id);
+							toast("Tag hinzugefügt");
+							dispinfo(id);
+						}
+					});
+			}
+		});
+
+		Brmtag.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				new StringDialog(MainActivity.this, "Tag entfernen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.rmTag(res, id);
+							toast("Tag entfernt");
 							dispinfo(id);
 						}
 					});

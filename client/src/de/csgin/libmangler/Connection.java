@@ -9,6 +9,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * Connction provides an interface to the server's RPC library, i.e. provides
+ * functions wrapping the protocol commands.
+ */
 public class Connection {
 	private static final int PORT         = 40000;
 	private static final int VERS         = 7;
@@ -38,6 +42,14 @@ public class Connection {
 
 	public void note(String note, long... id) {
 		transact("C/" + mksel(id) + "/n " + note);
+	}
+
+	public void addTag(String tag, long... id) {
+		transact("C/" + mksel(id) + "/t + " + tag);
+	}
+
+	public void rmTag(String tag, long... id) {
+		transact("C/" + mksel(id) + "/t - " + tag);
 	}
 
 	/* lend: lend copy to user; return an error string if any lend failed, null otherwise */
