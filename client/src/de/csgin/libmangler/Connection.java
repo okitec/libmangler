@@ -44,8 +44,16 @@ public class Connection {
 		return transact("U/" + mksel(name) + "/p");
 	}
 
-	public void delete(long... id) {
-		transact("C/" + mksel(id) + "/d");
+	public String deleteCopy(long... id) {
+		return transact("C/" + mksel(id) + "/d");
+	}
+
+	public String deleteBook(String... isbn) {
+		return transact("B/" + mksel(isbn) + "/d");
+	}
+
+	public String deleteUser(String... name) {
+		return transact("U/" + mksel(name) + "/d");
 	}
 
 	public void note(String note, long... id) {

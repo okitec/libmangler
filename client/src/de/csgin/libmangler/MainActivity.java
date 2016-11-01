@@ -42,8 +42,10 @@ public class MainActivity extends Activity {
 	private static final int PORT = 40000;
 	private Connection conn;
 
-	/** currently investigated copy */
+	/* currently investigated copy, book, name */
 	private long id = -1;
+	private String isbn;
+	private String name;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +91,8 @@ public class MainActivity extends Activity {
 		});
 		flipView(ElemsLayout);
 
-		bookinfo("978-0-201-07981-4");
+		name = "Hugg";
+		userinfo(name);
 	}
 
 	@Override
@@ -345,7 +348,21 @@ public class MainActivity extends Activity {
 	}
 
 	private void initBookInfoLayout() {
+		Button Brmbook = (Button) findViewById(R.id.Brmbook);
 		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
+
+		Brmbook.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String err = conn.deleteBook(isbn);
+				if(err.equals(""))
+					toast("Buch gelöscht");
+				else
+					notice("Fehler beim Löschen", err);
+
+				flipView(MainLayout);
+			}
+		});
 
 		Btomain4.setOnClickListener(new OnClickListener() {
 			@Override
@@ -356,7 +373,22 @@ public class MainActivity extends Activity {
 	}
 
 	private void initUserInfoLayout() {
+		Button Brmuser = (Button) findViewById(R.id.Brmuser);
 		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
+
+		Brmuser.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String err = conn.deleteUser(name);
+
+				if(err.equals(""))
+					toast("Nutzer gelöscht");
+				else
+					notice("Fehler beim Löschen", err);
+
+				flipView(MainLayout);
+			}
+		});
 
 		Btomain5.setOnClickListener(new OnClickListener() {
 			@Override

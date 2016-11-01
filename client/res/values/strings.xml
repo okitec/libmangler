@@ -11,5 +11,7 @@
 	<string name="note">Notiz hinzufügen ...</string>
 	<string name="addtag">Tag hinzufügen ...</string>
 	<string name="rmtag">Tag entfernen ...</string>
+	<string name="rmbook">Buch löschen</string>
+	<string name="rmuser">Nutzer löschen</string>
 	<string name="dosearch">Suchen!</string>
 </resources>

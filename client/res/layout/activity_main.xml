@@ -156,6 +156,12 @@
 				android:scrollHorizontally="false" />
 
 			<Button
+				android:id="@+id/Brmbook"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmbook" />
+
+			<Button
 				android:id="@+id/Btomain4"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -176,6 +182,12 @@
 				android:maxLines="10"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
+
+			<Button
+				android:id="@+id/Brmuser"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmuser" />
 
 			<Button
 				android:id="@+id/Btomain5"
