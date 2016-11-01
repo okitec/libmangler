@@ -144,11 +144,16 @@ func NewCopy(id int64, b *Book) (*Copy, error) {
 }
 
 // addToTags adds or removes a tag given without initial hash symbol and returns the new
-// tags array.
+// tags slice.
 func addToTags(tags []string, add bool, tag string) []string {
 	tag = "#" + tag
 
 	if add {
+		// Loading from disk leaves a dummy member in the slice.
+		if len(tags) == 1 && tags[0] == "" {
+			return []string{tag}
+		}
+
 		for _, s := range tags {
 			if tag == s {
 				return tags // tag already exists; do nothing
@@ -161,6 +166,12 @@ func addToTags(tags []string, add bool, tag string) []string {
 			if tag == s {
 				tags[i] = tags[len(tags)-1]
 				tags[len(tags)-1] = ""
+
+				// Reset the field to nil if there are no tags
+				// so that sTags() works.
+				if len(tag) == 1 && tags[0] == "" {
+					return nil
+				}
 				return tags
 			}
 		}
