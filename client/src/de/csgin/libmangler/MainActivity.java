@@ -11,14 +11,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 	/* ViewFlipper indexes */
@@ -26,6 +29,7 @@ public class MainActivity extends Activity {
 	private static final int InfoLayout = 1;
 	private static final int SearchLayout = 2;
 	private static final int PanicLayout = 3;
+	private static final int ElemsLayout = 4;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -64,6 +68,13 @@ public class MainActivity extends Activity {
 			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
 		if(conn != null && !conn.isProperVersion())
 			panic("Inkompatibles Protokoll zwischen Client und Server!");
+
+		// XXX remove this test code again
+		ListView Lelems = (ListView) findViewById(R.id.Lelems);
+		ArrayAdapter aa = (ArrayAdapter) Lelems.getAdapter();
+		aa.add("hello");
+		aa.add("world");
+		flipView(ElemsLayout);
 	}
 
 	@Override
@@ -123,6 +134,7 @@ public class MainActivity extends Activity {
 		initInfoLayout();
 		initSearchLayout();
 		// PanicLayout needs no initialisation, as it has no buttons.
+		initElemsLayout();
 	}
 
 	private void initMainLayout() {
@@ -295,6 +307,22 @@ public class MainActivity extends Activity {
 				// XXX search for more than just id!
 				id = Long.parseLong(Esearch.getText().toString());
 				dispinfo(id);
+			}
+		});
+	}
+
+	private void initElemsLayout() {
+		ListView Lelems = (ListView) findViewById(R.id.Lelems);
+		Button Btomain3 = (Button) findViewById(R.id.Btomain3);
+
+		ArrayList<String> ls = new ArrayList<String>();
+		ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, ls);
+		Lelems.setAdapter(aa);
+
+		Btomain3.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
 			}
 		});
 	}

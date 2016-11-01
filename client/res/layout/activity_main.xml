@@ -104,7 +104,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/tomain" />
-
 		</LinearLayout>
 
 		<LinearLayout
@@ -121,5 +120,23 @@
 				android:maxLines="10"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/panicLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<ListView
+				android:id="@+id/Lelems"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+
+			<Button
+				android:id="@+id/Btomain3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
 		</LinearLayout>
 </ViewFlipper>
