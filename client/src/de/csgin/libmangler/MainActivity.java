@@ -91,8 +91,8 @@ public class MainActivity extends Activity {
 		});
 		flipView(ElemsLayout);
 
-		name = "Hugg";
-		userinfo(name);
+		isbn = "978-0-201-07981-4";
+		bookinfo(isbn);
 	}
 
 	@Override
@@ -348,8 +348,33 @@ public class MainActivity extends Activity {
 	}
 
 	private void initBookInfoLayout() {
+		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
 		Button Brmbook = (Button) findViewById(R.id.Brmbook);
 		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
+
+		Baddcopy.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Exemplare hinzufügen", "Anzahl an neuen Exemplaren", "1",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							try {
+								int n = Integer.parseInt(res);
+								String err = conn.addCopies(isbn, n);
+								if(err.equals("")) {
+									toast("Exemplare hinzugefügt");
+									bookinfo(isbn);
+								} else {
+									notice("Fehler", err);
+								}
+							} catch(NumberFormatException nfe) {
+								notice("Fehler", "'" + res + "' ist keine Zahl");
+							}
+						}
+					});
+			}
+		});
 
 		Brmbook.setOnClickListener(new OnClickListener() {
 			@Override

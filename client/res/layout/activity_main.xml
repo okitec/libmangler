@@ -156,6 +156,12 @@
 				android:scrollHorizontally="false" />
 
 			<Button
+				android:id="@+id/Baddcopy"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addcopy" />
+
+			<Button
 				android:id="@+id/Brmbook"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"

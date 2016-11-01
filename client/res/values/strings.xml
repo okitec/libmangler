@@ -13,5 +13,6 @@
 	<string name="rmtag">Tag entfernen ...</string>
 	<string name="rmbook">Buch löschen</string>
 	<string name="rmuser">Nutzer löschen</string>
+	<string name="addcopy">Exemplare hinzufügen ...</string>
 	<string name="dosearch">Suchen!</string>
 </resources>

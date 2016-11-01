@@ -87,6 +87,10 @@ public class Connection {
 		transact("C/" + mksel(id) + "/R");
 	}
 
+	public String addCopies(String isbn, int n) {
+		return transact("a " + isbn + " " + n);
+	}
+
 	public void quit(String reason) {
 		transact("q " + reason);
 	}
