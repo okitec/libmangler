@@ -43,12 +43,6 @@ parse:
 		case '\n':
 			return ""
 
-		case 'q':
-			// We must handle QUIT here to avoid closing the connection both
-			// in the deferred call and here. So send special quit string,
-			// handle will know.
-			return "quit"
-
 		case 'A':
 			args := strings.Fields(s)
 			if len(args) < 2 {
@@ -87,40 +81,6 @@ parse:
 			}
 
 			return ""
-
-		case 'u':
-			args := strings.Fields(s)
-			if len(args) < 2 {
-				return "Can't create user: missing username\n"
-			}
-
-			// args[1:]: skip first element "u" (the command)
-			name := strings.Join(args[1:], " ")
-			_, err = elem.NewUser(name)
-			if err != nil {
-				return "Can't create user: " + err.Error() + "\n"
-			}
-			return ""
-
-		case 'v':
-			args := strings.Fields(s)
-			sret := fmt.Sprintf("libmangler proto %d\n", protoVersion)
-
-			if len(args) < 2 {
-				return sret + "specify your protocol version\n"
-			}
-
-			i, err := strconv.Atoi(args[1])
-			if err != nil {
-				return sret + fmt.Sprintf("version is not a number (%q)\n", args[1])
-			}
-
-			// XXX Tell rest of manglersrv that a mismatch is fatal. But how? Panic/recover?
-			if i != protoVersion {
-				return sret + fmt.Sprintf("version mismatch (server %d, client %d)\n", protoVersion, i)
-			}
-
-			return sret
 
 		case 'B', 'C', 'U':
 			// B/.../, C/.../, U/.../ reset the selection.
@@ -165,27 +125,6 @@ parse:
 				goto parse
 			}
 
-		case 'p':
-			sret := ""
-			for _, e := range *dot {
-				sret += e.Print() + "\n"
-			}
-
-			return sret
-		case 'n':
-			// The note is all text after "n" and before the EOL, whitespace-trimmed.
-			args := strings.Fields(s)
-			note := strings.Join(args[1:], " ")
-			note = strings.TrimRight(note, "\n")
-			note = strings.TrimSpace(note)
-
-			for _, e := range *dot {
-				e.Note(note)
-			}
-
-			// No need to continue, the note is the rest of the line.
-			return ""
-
 		case 'd':
 			for _, e := range *dot {
 				e.Delete()
@@ -215,6 +154,34 @@ parse:
 
 			return ""
 
+		case 'n':
+			// The note is all text after "n" and before the EOL, whitespace-trimmed.
+			args := strings.Fields(s)
+			note := strings.Join(args[1:], " ")
+			note = strings.TrimRight(note, "\n")
+			note = strings.TrimSpace(note)
+
+			for _, e := range *dot {
+				e.Note(note)
+			}
+
+			// No need to continue, the note is the rest of the line.
+			return ""
+
+		case 'p':
+			sret := ""
+			for _, e := range *dot {
+				sret += e.Print() + "\n"
+			}
+
+			return sret
+
+		case 'q':
+			// We must handle QUIT here to avoid closing the connection both
+			// in the deferred call and here. So send special quit string,
+			// handle will know.
+			return "quit"
+
 		case 'r':
 			for _, e := range *dot {
 				c, ok := e.(*elem.Copy)
@@ -225,27 +192,6 @@ parse:
 
 				c.Return()
 			}
-
-		case 't':
-			var add bool
-
-			args := strings.Fields(s)
-			if len(args) < 2 {
-				log.Printf("missing tag arguments: %s", s)
-				return "usage: t +|- tag\n"
-			}
-
-			if args[1] == "+" {
-				add = true
-			} else { // just assume it's a minus ('-')
-				add = false
-			}
-
-			for _, e := range *dot {
-				e.Tag(add, args[2])
-			}
-
-			return ""
 
 		case 'T':
 			tags := make(map[string]int)
@@ -273,6 +219,61 @@ parse:
 				s += t + "\n"
 			}
 			return s
+
+		case 't':
+			var add bool
+
+			args := strings.Fields(s)
+			if len(args) < 2 {
+				log.Printf("missing tag arguments: %s", s)
+				return "usage: t +|- tag\n"
+			}
+
+			if args[1] == "+" {
+				add = true
+			} else { // just assume it's a minus ('-')
+				add = false
+			}
+
+			for _, e := range *dot {
+				e.Tag(add, args[2])
+			}
+
+			return ""
+
+		case 'u':
+			args := strings.Fields(s)
+			if len(args) < 2 {
+				return "Can't create user: missing username\n"
+			}
+
+			// args[1:]: skip first element "u" (the command)
+			name := strings.Join(args[1:], " ")
+			_, err = elem.NewUser(name)
+			if err != nil {
+				return "Can't create user: " + err.Error() + "\n"
+			}
+			return ""
+
+		case 'v':
+			args := strings.Fields(s)
+			sret := fmt.Sprintf("libmangler proto %d\n", protoVersion)
+
+			if len(args) < 2 {
+				return sret + "specify your protocol version\n"
+			}
+
+			i, err := strconv.Atoi(args[1])
+			if err != nil {
+				return sret + fmt.Sprintf("version is not a number (%q)\n", args[1])
+			}
+
+			// XXX Tell rest of manglersrv that a mismatch is fatal. But how? Panic/recover?
+			if i != protoVersion {
+				return sret + fmt.Sprintf("version mismatch (server %d, client %d)\n", protoVersion, i)
+			}
+
+			return sret
 		}
 	}
 
