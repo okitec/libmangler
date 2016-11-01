@@ -193,6 +193,17 @@ public class MainActivity extends Activity {
 			}
 		});
 
+		Bretire.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				conn.retire(id);
+				dispinfo(id);
+			}
+		});
+
 		Bnote.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

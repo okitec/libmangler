@@ -182,6 +182,11 @@ parse:
 			// handle will know.
 			return "quit"
 
+		case 'R':
+			for _, e := range *dot {
+				e.Tag(true, "retired")
+			}
+
 		case 'r':
 			for _, e := range *dot {
 				c, ok := e.(*elem.Copy)
