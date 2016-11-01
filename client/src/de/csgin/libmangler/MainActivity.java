@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
 
+	/* default server and port */
 	private static final String SRVADDR = "oquasinus.duckdns.org";
 	private static final int PORT = 40000;
 	private Connection conn;
@@ -61,20 +62,24 @@ public class MainActivity extends Activity {
 
 		initLayouts();
 
-		try {
-			conn = new Connection(SRVADDR);
-		} catch(UnknownHostException uhe) {
-			panic("Server '" + SRVADDR + "' nicht gefunden");
-		} catch(IOException ioe) {
-			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
-		} catch (android.os.NetworkOnMainThreadException netmain) {
-			panic("NetworkOnMainThreadException - sollte nicht passieren");
-		}
+		new StringDialog(this, "Serveradresse", "", SRVADDR, new StringDialog.ResultTaker() {
+			@Override
+			public void take(String res) {
+				String ap[] = res.split(":"); // address:port tuple
 
-		if(conn == null)
-			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
-		if(conn != null && !conn.isProperVersion())
-			panic("Inkompatibles Protokoll zwischen Client und Server!");
+				if(ap.length == 1) 
+					conn = getConn(ap[0], PORT);
+				else if(ap.length == 2) {
+					try {
+						int port = Integer.parseInt(ap[1]);
+						conn = getConn(ap[0], port);
+					} catch(NumberFormatException nfe) {
+						conn = getConn(ap[0], PORT);
+					}
+				} else
+					conn = getConn(SRVADDR, PORT);
+			}
+		});
 
 		// XXX remove this test code again
 		ListView Lelems = (ListView) findViewById(R.id.Lelems);
@@ -140,6 +145,33 @@ public class MainActivity extends Activity {
 			}
 			/* don't do anything on failure */
 		}
+	}
+
+	/**
+	 * Open a connection to a server.
+	 */
+	private Connection getConn(String srvaddr, int port) {
+		Connection conn;
+
+		try {
+			conn = new Connection(SRVADDR);
+		} catch(UnknownHostException uhe) {
+			panic("Server '" + SRVADDR + "' nicht gefunden");
+			return null;
+		} catch(IOException ioe) {
+			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
+			return null;
+		} catch (android.os.NetworkOnMainThreadException netmain) {
+			panic("NetworkOnMainThreadException - sollte nicht passieren");
+			return null;
+		}
+
+		if(!conn.isProperVersion()) {
+			panic("Inkompatibles Protokoll zwischen Client und Server!");
+			return null;
+		}
+
+		return conn;
 	}
 
 	/**
