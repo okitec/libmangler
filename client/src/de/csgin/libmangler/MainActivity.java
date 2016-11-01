@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
 	private static final int ElemsLayout = 4;
 	private static final int BookInfoLayout = 5;
 	private static final int UserInfoLayout = 6;
+	private static final int AddBookLayout = 7;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -90,9 +91,6 @@ public class MainActivity extends Activity {
 			}
 		});
 		flipView(ElemsLayout);
-
-		isbn = "978-0-201-07981-4";
-		bookinfo(isbn);
 	}
 
 	@Override
@@ -155,13 +153,15 @@ public class MainActivity extends Activity {
 		initElemsLayout();
 		initBookInfoLayout();
 		initUserInfoLayout();
+		initAddBookLayout();
 	}
 
 	private void initMainLayout() {
-		Button Bscan;
-		Button Bsearch;
+		Button Bscan = (Button) findViewById(R.id.Bscan);
+		Button Bsearch = (Button) findViewById(R.id.Bsearch);
+		Button Baddbook = (Button) findViewById(R.id.Baddbook);
+		Button Badduser = (Button) findViewById(R.id.Badduser);
 
-		Bscan = (Button) findViewById(R.id.Bscan);
 		// I wish lambda expressions were available in Android.
 		Bscan.setOnClickListener(new OnClickListener() {
 			@Override
@@ -180,11 +180,37 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Bsearch = (Button) findViewById(R.id.Bsearch);
 		Bsearch.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				flipView(SearchLayout);
+			}
+		});
+
+		Baddbook.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(AddBookLayout);
+			}
+		});
+
+		Badduser.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Neuer Nutzer", "Nutzername:", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							String err = conn.addUser(res);
+							if(err != null && err.equals("")) {
+								toast("Neuer Nutzer erstellt");
+								name = res;
+								userinfo(name);
+							} else {
+								notice("Fehler", err);
+							}
+						}
+					});
 			}
 		});
 	}
@@ -216,12 +242,13 @@ public class MainActivity extends Activity {
 						@Override
 						public void take(String res) {
 							String err = conn.lend(res, id);
-							if(err != null) {
-								// XXX issue #35: freeze on lend error
-								notice("Fehler beim Verleih", err);
-							} else {
+							// XXX issue #35: freeze on lend error
+								
+							if(err.equals("")) {
 								toast("Erfolgreich verliehen");
 								copyinfo(id);
+							} else {
+								notice("Fehler beim Verleih", err);
 							}
 						}
 					});
@@ -423,12 +450,46 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	private void initAddBookLayout() {
+		Button Bdoaddbook = (Button) findViewById(R.id.Bdoaddbook);
+		Button Btomain6 = (Button) findViewById(R.id.Btomain6);
+
+		Bdoaddbook.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String isbn = ((EditText) findViewById(R.id.Eisbn)).getText().toString();
+				String title = ((EditText) findViewById(R.id.Etitle)).getText().toString();
+				String sauthors = ((EditText) findViewById(R.id.Eauthors)).getText().toString();
+				String authors[] = sauthors.split(",");
+
+				String err = conn.addBook(isbn, title, authors);
+				if(err.equals(""))
+					toast("Buch erstellt");
+				else
+					notice("Fehler beim Erstellen", err);
+
+				bookinfo(isbn);
+			}
+		});
+
+		Btomain6.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+	}
+
 	/**
 	 * Fetch info about a Copy and show it in the CopyInfoLayout.
 	 */
 	private void copyinfo(long id) {
 		if(id == -1)
 			return;
+
+		this.id = id;
+		this.isbn = null;
+		this.name = null;
 
 		TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
 		Tcopyinfo.setText("The server says: " + conn.printCopy(id));
@@ -439,6 +500,11 @@ public class MainActivity extends Activity {
 	 * Fetch info about a Book and show it in the BookInfoLayout.
 	 */
 	private void bookinfo(String isbn) {
+		this.id = -1;
+		this.isbn = isbn;
+		this.name = null;
+
+
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
 		Tbookinfo.setText("The server says: " + conn.printBook(isbn));
 		flipView(BookInfoLayout);
@@ -448,6 +514,10 @@ public class MainActivity extends Activity {
 	 * Fetch info about a User and show it in the UserInfoLayout.
 	 */
 	private void userinfo(String name) {
+		this.id = -1;
+		this.isbn = null;
+		this.name = name;
+
 		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
 		Tuserinfo.setText("The server says: " + conn.printUser(name));
 		flipView(UserInfoLayout);

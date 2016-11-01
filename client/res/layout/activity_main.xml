@@ -22,6 +22,18 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/search" />
+
+			<Button
+				android:id="@+id/Baddbook"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addbook" />
+
+			<Button
+				android:id="@+id/Badduser"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/adduser" />
 		</LinearLayout>
 
 		<LinearLayout
@@ -197,6 +209,43 @@
 
 			<Button
 				android:id="@+id/Btomain5"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/addBookLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<EditText
+				android:id="@+id/Eisbn"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/isbn" />
+
+			<EditText
+				android:id="@+id/Etitle"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/title" />
+
+			<EditText
+				android:id="@+id/Eauthors"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/authors" />
+
+			<Button
+				android:id="@+id/Bdoaddbook"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/doaddbook" />
+
+			<Button
+				android:id="@+id/Btomain6"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/tomain" />

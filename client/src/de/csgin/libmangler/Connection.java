@@ -70,13 +70,7 @@ public class Connection {
 
 	/* lend: lend copy to user; return an error string if any lend failed, null otherwise */
 	public String lend(String user, long... id) {
-		String s;
-
-		s = transact("C/" + mksel(id) + "/l " + user);
-		if(s.contains(LENDERR))
-			return s;
-
-		return null;
+		return transact("C/" + mksel(id) + "/l " + user);
 	}
 
 	public void returnCopy(long... id) {
@@ -89,6 +83,14 @@ public class Connection {
 
 	public String addCopies(String isbn, int n) {
 		return transact("a " + isbn + " " + n);
+	}
+
+	public String addBook(String isbn, String title, String[] authors) {
+		return transact("A " + isbn); // XXX add other info to the A command
+	}
+
+	public String addUser(String name) {
+		return transact("u " + name);
 	}
 
 	public void quit(String reason) {

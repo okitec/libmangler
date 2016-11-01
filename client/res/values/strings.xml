@@ -14,5 +14,11 @@
 	<string name="rmbook">Buch löschen</string>
 	<string name="rmuser">Nutzer löschen</string>
 	<string name="addcopy">Exemplare hinzufügen ...</string>
+	<string name="addbook">Buch hinzufügen ...</string>
+	<string name="adduser">Nutzer hinzufügen ...</string>
 	<string name="dosearch">Suchen!</string>
+	<string name="doaddbook">Buch erstellen</string>
+	<string name="isbn">978-0-XXX-YYYYY-Z</string>
+	<string name="title">Titel meines tollen Buchs</string>
+	<string name="authors">Autor 1, Autor 2, Autor 3</string>
 </resources>
