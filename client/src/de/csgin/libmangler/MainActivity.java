@@ -522,10 +522,20 @@ public class MainActivity extends Activity {
 
 	private void initUserInfoLayout() {
 		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		Button Breturnall = (Button) findViewById(R.id.Breturnall);
 		Button Brmuser = (Button) findViewById(R.id.Brmuser);
 		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
 
 		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
+
+		Breturnall.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				conn.returnAll(name);
+				toast("Alle Exemplare zurückgegeben");
+				userinfo(name);
+			}
+		});
 
 		Brmuser.setOnClickListener(new OnClickListener() {
 			@Override

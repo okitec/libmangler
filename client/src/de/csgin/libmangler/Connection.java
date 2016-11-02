@@ -76,6 +76,10 @@ public class Connection {
 		transact("C/" + mksel(id) + "/r");
 	}
 
+	public void returnAll(String user) {
+		transact("C/" + user + "/r");
+	}
+
 	public void retire(long... id) {
 		transact("C/" + mksel(id) + "/R");
 	}
