@@ -148,7 +148,7 @@ parse:
 				err = c.Lend(u)
 				if err != nil {
 					log.Printf("can't lend %v to user %v (%s)", c, u, name)
-					return "error: can't lend: " + err.Error()
+					return "error: can't lend: " + err.Error() + "\n"
 				}
 			}
 
