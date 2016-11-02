@@ -3,10 +3,12 @@ package de.csgin.libmangler;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
@@ -16,17 +18,18 @@ import java.net.UnknownHostException;
 public class Connection {
 	private static final int VERS         = 9;
 	private static final String ENDMARKER = "---";
-
-	/* protocol error strings */
-	private static final String LENDERR = "can't lend";
+	private static final int TIMEOUT      = 3000;  /* in ms */
 
 	private Socket socket;
 	private BufferedReader in;
 	private PrintWriter out;
 
 	/* just rethrow, we can't tell the user */
-	public Connection(String addr, int port) throws UnknownHostException, IOException {
-		socket = new Socket(addr, port);
+	public Connection(String addr, int port) throws UnknownHostException, IOException, SocketTimeoutException {
+		socket = new Socket();
+		socket.setSoTimeout(TIMEOUT);
+		socket.connect(new InetSocketAddress(addr, port));
+
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream());
 	}
@@ -139,13 +142,17 @@ public class Connection {
 			String line;
 
 			// note the classic Java naming inconsistency (readLine vs println)
-			while(!(line = in.readLine()).equals(ENDMARKER)) {
+			while((line = in.readLine()) != null && !line.equals(ENDMARKER)) {
 				Log.e("libmangler-proto", "[->proto] " + answer);
 				answer.append(line);
 				answer.append("\n");
 			}
 
 			return answer.toString();
+		} catch(SocketTimeoutException ste) {
+			// XXX tell MainActivity to reestablish connection and show error
+			Log.e("libmangler", "Socket timeout");
+			return "TIMEOUT";
 		} catch(IOException ioe) {
 			Log.e("libmangler-proto", "IO EXCEPTION");
 			return "IO EXCEPTION";
