@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -388,8 +389,14 @@ public class MainActivity extends Activity {
 	}
 
 	private void initSearchLayout() {
+		Spinner Selemtype = (Spinner) findViewById(R.id.Selemtype);
 		Button Btomain2 = (Button) findViewById(R.id.Btomain2);
 		Button Bdosearch = (Button) findViewById(R.id.Bdosearch);
+
+		// cf. https://developer.android.com/guide/topics/ui/controls/spinner.html
+		ArrayAdapter<CharSequence> aa = ArrayAdapter.createFromResource(this, R.array.elemtype_array, android.R.layout.simple_spinner_item);
+		aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		Selemtype.setAdapter(aa);
 
 		Btomain2.setOnClickListener(new OnClickListener() {
 			@Override
@@ -399,14 +406,32 @@ public class MainActivity extends Activity {
 		});
 
 		Bdosearch.setOnClickListener(new OnClickListener() {
+			private static final int BookPos = 0;
+			private static final int CopyPos = 1;
+			private static final int UserPos = 2;
+
 			@Override
 			public void onClick(View v) {
+				Spinner Selemtype = (Spinner) findViewById(R.id.Selemtype);
 				EditText Esearch = (EditText) findViewById(R.id.Esearch);
-				long id;
+				ListView Lelems = (ListView) findViewById(R.id.Lelems);
+				String cmd, res;
 
-				// XXX search for more than just id!
-				id = Long.parseLong(Esearch.getText().toString());
-				copyinfo(id);
+				String s = Esearch.getText().toString();
+				switch(Selemtype.getSelectedItemPosition()) {
+				case BookPos:
+					cmd = String.format("B/authors:%s, title:%s, notes:%s, tags:%s/p", s, s, s, s);
+					break;
+				case CopyPos:
+					cmd = String.format("C/notes:%s, tags:%s/p", s, s, s);
+					break;
+				case UserPos:
+					cmd = String.format("U/name:%s, notes:%s, tags:%s/p", s, s, s);
+					break;
+				}
+
+				res = conn.transact(cmd);
+				notice("Resultat", res);
 			}
 		});
 	}

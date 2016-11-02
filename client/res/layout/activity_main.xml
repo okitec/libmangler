@@ -107,6 +107,11 @@
 			android:layout_height="wrap_content"
 			android:orientation="vertical" >
 
+			<Spinner
+				android:id="@+id/Selemtype"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content" />
+
 			<EditText
 				android:id="@+id/Esearch"
 				android:layout_width="match_parent"
@@ -204,7 +209,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="10"
+				android:maxLines="20"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 

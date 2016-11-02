@@ -196,6 +196,7 @@ var seltab = map[rune]selFn{
 							rsel = append(rsel, c)
 						}
 					case reflect.Ptr:
+						// XXX crashes inevitably - issue #38
 						if f.Type() == reflect.TypeOf((*User)(nil)) {
 							if strings.Contains(f.Interface().(*User).Name, val) {
 								rsel = append(rsel, c)

@@ -125,7 +125,7 @@ public class Connection {
 	}
 
 	/* transact: send request line, return multi-line answer */
-	private String transact(String req) {
+	public String transact(String req) {
 		out.println(req);
 		out.flush();
 		Log.e("libmangler-proto", "[proto->] " + req);
