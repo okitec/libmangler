@@ -42,7 +42,7 @@ func (b *Book) Print() string {
 }
 
 func (b *Book) List() string {
-	return fmt.Sprintf("%s %s", b.ISBN, b.Title)
+	return fmt.Sprintf("book %s %s", b.ISBN, b.Title)
 }
 
 // Note saves a note after prepending a ISO 8601 == RFC 3339 date.

@@ -30,7 +30,7 @@ func (u *User) Print() string {
 }
 
 func (u *User) List() string {
-	return u.Name
+	return "user " + u.Name
 }
 
 func (u *User) Note(note string) {

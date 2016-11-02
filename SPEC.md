@@ -165,7 +165,7 @@ in der App.
 
 Buch:
 
-		978-0-201-07981-4 The Awk Programming Language
+		book 978-0-201-07981-4 The Awk Programming Language
 
 Copy:
 
@@ -173,7 +173,7 @@ Copy:
 
 User:
 
-		Dominik Okwieka
+		user Dominik Okwieka
 
 #### `r` - return
 
