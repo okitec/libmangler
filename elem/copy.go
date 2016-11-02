@@ -200,7 +200,7 @@ func sCopies(copies []*Copy) string {
 //     fmt.Printf("(tags %s)", sTags(tags))
 // to work.
 func sTags(tags []string) string {
-	if tags == nil {
+	if tags == nil || (len(tags) == 1 && tags[0] == "") {
 		return `""`  // if no tags, *display* as empty string represented by two adjacent quotes
 	} else {
 		return strings.Join(tags, " ")
