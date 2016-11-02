@@ -34,6 +34,12 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/adduser" />
+
+			<Button
+				android:id="@+id/Blisttags"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listtags" />
 		</LinearLayout>
 
 		<LinearLayout
@@ -47,9 +53,10 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="10"
+				android:maxLines="7"
 				android:scrollbars="vertical"
-				android:scrollHorizontally="false" />
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
 
 			<Button
 				android:id="@+id/Blend"
@@ -129,7 +136,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="10"
+				android:maxLines="20"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 		</LinearLayout>
@@ -163,7 +170,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="10"
+				android:maxLines="20"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 

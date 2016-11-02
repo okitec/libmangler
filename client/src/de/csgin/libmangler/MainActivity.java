@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -81,20 +83,6 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		// XXX remove this test code again
-		ListView Lelems = (ListView) findViewById(R.id.Lelems);
-		ArrayAdapter aa = (ArrayAdapter) Lelems.getAdapter();
-		aa.add("hello");
-		aa.add("world");
-		Lelems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-				ListView lv = (ListView) parent;
-
-				ListAdapter la = lv.getAdapter();
-				toast((String) la.getItem(pos));
-			}
-		});
 		flipView(ElemsLayout);
 	}
 
@@ -193,6 +181,7 @@ public class MainActivity extends Activity {
 		Button Bsearch = (Button) findViewById(R.id.Bsearch);
 		Button Baddbook = (Button) findViewById(R.id.Baddbook);
 		Button Badduser = (Button) findViewById(R.id.Badduser);
+		Button Blisttags = (Button) findViewById(R.id.Blisttags);
 
 		// I wish lambda expressions were available in Android.
 		Bscan.setOnClickListener(new OnClickListener() {
@@ -245,9 +234,24 @@ public class MainActivity extends Activity {
 					});
 			}
 		});
+
+		Blisttags.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String s = conn.listTags();
+				String ls[] = s.split("\n");
+
+				ListView Lelems = (ListView) findViewById(R.id.Lelems);
+				ArrayAdapter aa = (ArrayAdapter) Lelems.getAdapter();
+				aa.clear();
+				aa.addAll((Object[]) ls);
+				flipView(ElemsLayout);
+			}
+		});
 	}
 
 	private void initCopyInfoLayout() {
+		TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
 		Button Btomain = (Button) findViewById(R.id.Btomain);
 		Button Blend = (Button) findViewById(R.id.Blend);
 		Button Breturn = (Button) findViewById(R.id.Breturn);
@@ -255,6 +259,9 @@ public class MainActivity extends Activity {
 		Button Bnote = (Button) findViewById(R.id.Bnote);
 		Button Baddtag = (Button) findViewById(R.id.Baddtag);
 		Button Brmtag = (Button) findViewById(R.id.Brmtag);
+
+		// Why can't this be done in XML? Really.
+		Tcopyinfo.setMovementMethod(new ScrollingMovementMethod());
 
 		Btomain.setOnClickListener(new OnClickListener() {
 			@Override
@@ -275,7 +282,7 @@ public class MainActivity extends Activity {
 						public void take(String res) {
 							String err = conn.lend(res, id);
 							// XXX issue #35: freeze on lend error
-								
+							Log.i("libmangler", "got here, err = " + err);
 							if(err.equals("")) {
 								toast("Erfolgreich verliehen");
 								copyinfo(id);
@@ -398,6 +405,16 @@ public class MainActivity extends Activity {
 		ArrayAdapter<String> aa = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, ls);
 		Lelems.setAdapter(aa);
 
+		Lelems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+				ListView lv = (ListView) parent;
+
+				ListAdapter la = lv.getAdapter();
+				toast((String) la.getItem(pos));
+			}
+		});
+
 		Btomain3.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -407,9 +424,12 @@ public class MainActivity extends Activity {
 	}
 
 	private void initBookInfoLayout() {
+		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
 		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
 		Button Brmbook = (Button) findViewById(R.id.Brmbook);
 		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
+
+		Tbookinfo.setMovementMethod(new ScrollingMovementMethod());
 
 		Baddcopy.setOnClickListener(new OnClickListener() {
 			@Override
@@ -457,8 +477,11 @@ public class MainActivity extends Activity {
 	}
 
 	private void initUserInfoLayout() {
+		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
 		Button Brmuser = (Button) findViewById(R.id.Brmuser);
 		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
+
+		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
 
 		Brmuser.setOnClickListener(new OnClickListener() {
 			@Override

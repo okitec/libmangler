@@ -21,4 +21,5 @@
 	<string name="isbn">978-0-XXX-YYYYY-Z</string>
 	<string name="title">Titel meines tollen Buchs</string>
 	<string name="authors">Autor 1, Autor 2, Autor 3</string>
+	<string name="listtags">#tags auflisten</string>
 </resources>

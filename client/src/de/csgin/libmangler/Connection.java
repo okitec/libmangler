@@ -93,6 +93,10 @@ public class Connection {
 		return transact("u " + name);
 	}
 
+	public String listTags() {
+		return transact("T");
+	}
+
 	public void quit(String reason) {
 		transact("q " + reason);
 	}
@@ -117,7 +121,7 @@ public class Connection {
 		/* format: libmangler proto P */
 		s = transact("v " + VERS);
 
-		String args[] = s.split(" ");
+		String args[] = s.split("( |\n)");
 		return Integer.parseInt(args[2]);
 	}
 
@@ -135,6 +139,7 @@ public class Connection {
 			while(!(line = in.readLine()).equals(ENDMARKER)) {
 				Log.e("libmangler-proto", "[->proto] " + answer);
 				answer.append(line);
+				answer.append("\n");
 			}
 
 			return answer.toString();

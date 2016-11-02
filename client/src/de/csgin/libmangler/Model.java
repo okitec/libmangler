@@ -182,14 +182,14 @@ public class Model {
 	private static class CopyHandler implements AppliedFn {
 		@Override
 		public void fn(Sexp atom, Sexp parent, Object data) {
-			
+			// XXX fill
 		}
 	}
 
 	private static class UserHandler implements AppliedFn {
 		@Override
 		public void fn(Sexp atom, Sexp parent, Object data) {
-			
+			// XXX fill
 		}
 	}
 
@@ -200,8 +200,8 @@ public class Model {
 
 		while(tail.length() > 1) { // lonely newline 
 			Parser.State st = Parser.Parse(s);
-			//if(st.err != null)
-			//	break;
+			if(st.err != null)
+				break;
 
 			Book b = new Book();
 			apply(st.sexp, new BookHandler(), b);
