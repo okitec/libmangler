@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 
 		initLayouts();
 
-		new StringDialog(this, "Serveradresse", "", SRVADDR, new StringDialog.ResultTaker() {
+		new StringDialog(this, "Serveradresse", "Format: Adresse[:Port]", SRVADDR, new StringDialog.ResultTaker() {
 			@Override
 			public void take(String res) {
 				String ap[] = res.split(":"); // address:port tuple

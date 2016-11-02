@@ -108,7 +108,7 @@ func IsAtom(sexp Sexp) bool {
 // Called by Apply for each atom with fn(atom, parent, data).
 type AppliedFn func(Sexp, Sexp, interface{})
 
-// For every atom from left to right, PreOrder calls fn(atom, parent, data).
+// For every atom from left to right, Apply calls fn(atom, parent, data).
 // The parent is needed for List() and other functions requiring more than
 // just the atom string. This operation is similar to a Map operation, but
 // works with an entire tree, not a list.
