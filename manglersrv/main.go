@@ -221,7 +221,9 @@ parse:
 
 			s := ""
 			for t, _ := range tags {
-				s += t + "\n"
+				if t != "" {
+					s += t + "\n"
+				}
 			}
 			return s
 
