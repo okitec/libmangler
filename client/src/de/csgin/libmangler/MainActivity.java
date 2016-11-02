@@ -44,6 +44,9 @@ public class MainActivity extends Activity {
 	/* default server and port */
 	private static final String SRVADDR = "oquasinus.duckdns.org";
 	private static final int PORT = 40000;
+
+	private String srvaddr;
+	private int port;
 	private Connection conn;
 
 	/* currently investigated copy, book, name */
@@ -69,21 +72,24 @@ public class MainActivity extends Activity {
 			public void take(String res) {
 				String ap[] = res.split(":"); // address:port tuple
 
-				if(ap.length == 1) 
-					conn = getConn(ap[0], PORT);
-				else if(ap.length == 2) {
+				if(ap.length == 1) {
+					srvaddr = ap[0];
+					port = PORT;
+				} else if(ap.length == 2) {
+					srvaddr = ap[0];
 					try {
-						int port = Integer.parseInt(ap[1]);
-						conn = getConn(ap[0], port);
+						port = Integer.parseInt(ap[1]);
 					} catch(NumberFormatException nfe) {
-						conn = getConn(ap[0], PORT);
+						port = PORT;
 					}
-				} else
-					conn = getConn(SRVADDR, PORT);
+				} else {
+					srvaddr = SRVADDR;
+					port = PORT;
+				}
+
+				conn = getConn(srvaddr, port);
 			}
 		});
-
-		flipView(ElemsLayout);
 	}
 
 	@Override
@@ -109,12 +115,20 @@ public class MainActivity extends Activity {
 	protected void onSaveInstanceState(Bundle out) {
 		super.onSaveInstanceState(out);
 		out.putLong("id", id);
+		out.putString("isbn", isbn);
+		out.putString("name", name);
+		out.putString("srvaddr", srvaddr);
+		out.putInt("port", port);
 	}
 
 	@Override
 	protected void onRestoreInstanceState(Bundle in) {
 		super.onRestoreInstanceState(in);
 		id = in.getLong("id");
+		isbn = in.getString("isbn");
+		name = in.getString("name");
+		srvaddr = in.getString("srvaddr");
+		port = in.getInt("port");
 	}
 
 	@Override
@@ -142,12 +156,12 @@ public class MainActivity extends Activity {
 		Connection conn;
 
 		try {
-			conn = new Connection(SRVADDR);
+			conn = new Connection(srvaddr, port);
 		} catch(UnknownHostException uhe) {
-			panic("Server '" + SRVADDR + "' nicht gefunden");
+			panic("Server '" + srvaddr + "' nicht gefunden");
 			return null;
 		} catch(IOException ioe) {
-			panic("Kann keine Verbindung zu '" + SRVADDR + "' aufbauen");
+			panic("Kann keine Verbindung zu '" + srvaddr + "' aufbauen");
 			return null;
 		} catch (android.os.NetworkOnMainThreadException netmain) {
 			panic("NetworkOnMainThreadException - sollte nicht passieren");
@@ -547,7 +561,7 @@ public class MainActivity extends Activity {
 		this.name = null;
 
 		TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
-		Tcopyinfo.setText("The server says: " + conn.printCopy(id));
+		Tcopyinfo.setText(conn.printCopy(id));
 		flipView(CopyInfoLayout);
 	}
 
@@ -561,7 +575,7 @@ public class MainActivity extends Activity {
 
 
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
-		Tbookinfo.setText("The server says: " + conn.printBook(isbn));
+		Tbookinfo.setText(conn.printBook(isbn));
 		flipView(BookInfoLayout);
 	}
 
@@ -574,7 +588,7 @@ public class MainActivity extends Activity {
 		this.name = name;
 
 		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
-		Tuserinfo.setText("The server says: " + conn.printUser(name));
+		Tuserinfo.setText(conn.printUser(name));
 		flipView(UserInfoLayout);
 	}
 

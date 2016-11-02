@@ -14,7 +14,6 @@ import java.net.UnknownHostException;
  * functions wrapping the protocol commands.
  */
 public class Connection {
-	private static final int PORT         = 40000;
 	private static final int VERS         = 7;
 	private static final String ENDMARKER = "---";
 
@@ -26,8 +25,8 @@ public class Connection {
 	private PrintWriter out;
 
 	/* just rethrow, we can't tell the user */
-	public Connection(String addr) throws UnknownHostException, IOException {
-		socket = new Socket(addr, PORT);
+	public Connection(String addr, int port) throws UnknownHostException, IOException {
+		socket = new Socket(addr, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream());
 	}
