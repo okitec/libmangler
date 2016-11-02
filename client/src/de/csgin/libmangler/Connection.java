@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
  * functions wrapping the protocol commands.
  */
 public class Connection {
-	private static final int VERS         = 7;
+	private static final int VERS         = 9;
 	private static final String ENDMARKER = "---";
 
 	/* protocol error strings */

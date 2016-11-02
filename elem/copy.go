@@ -50,6 +50,10 @@ func (c *Copy) Print() string {
 	return s
 }
 
+func (c *Copy) List() string {
+	return fmt.Sprintf("copy %d of (%s)", c.ID, c.Book.List())
+}
+
 func (c *Copy) Note(note string) {
 	c.Notes = append(c.Notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
 }

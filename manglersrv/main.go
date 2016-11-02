@@ -21,7 +21,7 @@ import (
 
 // Protocol constants
 const (
-	protoVersion   = 7
+	protoVersion   = 9
 	protoPort      = 40000
 	protoEndMarker = "---\n" // for determining end-of-response
 )
@@ -153,6 +153,14 @@ parse:
 			}
 
 			return ""
+
+		case 'λ':
+			sret := ""
+			for _, e := range *dot {
+				sret += e.List() + "\n"
+			}
+
+			return sret
 
 		case 'n':
 			// The note is all text after "n" and before the EOL, whitespace-trimmed.

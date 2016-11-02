@@ -29,6 +29,10 @@ func (u *User) Print() string {
 	return fmt.Sprintf(fmtstr, u.Name, strings.Join(u.Notes, "\"\n\t\t\""), sTags(u.Tags), sCopies(u.Copies))
 }
 
+func (u *User) List() string {
+	return u.Name
+}
+
 func (u *User) Note(note string) {
 	u.Notes = append(u.Notes, fmt.Sprintf("%s %s", time.Now().Format(time.RFC3339), note))
 }

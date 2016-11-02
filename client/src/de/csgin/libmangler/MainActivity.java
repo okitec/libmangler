@@ -415,18 +415,19 @@ public class MainActivity extends Activity {
 				Spinner Selemtype = (Spinner) findViewById(R.id.Selemtype);
 				EditText Esearch = (EditText) findViewById(R.id.Esearch);
 				ListView Lelems = (ListView) findViewById(R.id.Lelems);
-				String cmd, res;
+				String cmd = null;
+				String res = null;
 
 				String s = Esearch.getText().toString();
 				switch(Selemtype.getSelectedItemPosition()) {
 				case BookPos:
-					cmd = String.format("B/authors:%s, title:%s, notes:%s, tags:%s/p", s, s, s, s);
+					cmd = String.format("B/authors:%s, title:%s, notes:%s, tags:%s/λ", s, s, s, s);
 					break;
 				case CopyPos:
-					cmd = String.format("C/notes:%s, tags:%s/p", s, s, s);
+					cmd = String.format("C/notes:%s, tags:%s/λ", s, s, s);
 					break;
 				case UserPos:
-					cmd = String.format("U/name:%s, notes:%s, tags:%s/p", s, s, s);
+					cmd = String.format("U/name:%s, notes:%s, tags:%s/λ", s, s, s);
 					break;
 				}
 

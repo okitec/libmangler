@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 8
+Version: Protokollversion 9
 
 0. Index
 --------
@@ -157,6 +157,23 @@ verwendet:
 Wenn keine Tags vergeben sind, wird das durch den leeren String gezeigt.
 
 		(tags "")
+
+#### `λ` - list in single-line format
+
+Wie `p`, verwendet aber ein zeilenweises Format für die Verwendung in den Listen
+in der App.
+
+Buch:
+
+		978-0-201-07981-4 The Awk Programming Language
+
+Copy:
+
+		copy 594 of (978-0-201-07981-4 The Awk Programming Language)
+
+User:
+
+		Dominik Okwieka
 
 #### `r` - return
 
