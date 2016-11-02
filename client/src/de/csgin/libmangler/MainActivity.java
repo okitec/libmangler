@@ -23,10 +23,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends Activity {
 	/* ViewFlipper indexes */
@@ -455,7 +455,28 @@ public class MainActivity extends Activity {
 				ListView lv = (ListView) parent;
 
 				ListAdapter la = lv.getAdapter();
-				toast((String) la.getItem(pos));
+
+				String s = (String) la.getItem(pos);
+				String fld[] = s.split(" ");
+
+				if(fld[0].equals("book")) {
+					bookinfo(fld[1]);
+				} else if(fld[0].equals("copy")) {
+					try {
+						copyinfo(Integer.parseInt(fld[1]));
+					} catch(NumberFormatException nfe) {
+						notice("Interner Fehler", "'"+fld[1] + "' ist keine Zahl");
+					}
+				} else if(fld[0].equals("user")) {
+					// Of course there's no String.join() before Java 8, of course.
+					String name = "";
+
+					for(String f: fld)
+						name += f + " ";
+					name = name.trim();
+
+					userinfo(name);
+				}
 			}
 		});
 
