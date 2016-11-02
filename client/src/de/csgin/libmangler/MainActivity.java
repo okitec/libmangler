@@ -432,7 +432,11 @@ public class MainActivity extends Activity {
 				}
 
 				res = conn.transact(cmd);
-				notice("Resultat", res);
+				String ls[] = res.split("\n");
+				ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
+				aa.clear();
+				aa.addAll(ls);
+				flipView(ElemsLayout);
 			}
 		});
 	}
