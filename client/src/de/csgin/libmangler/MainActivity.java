@@ -143,6 +143,11 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		flipView(MainLayout);
+	}
+
+	@Override
 	public void onActivityResult(int req, int ans, Intent data) {
 		super.onActivityResult(req, ans, data);
 		// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
