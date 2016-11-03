@@ -29,17 +29,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainActivity extends Activity {
-	/* ViewFlipper indexes */
+	/* ViewFlipper indexes - if this were C, I'd use a enum instead of writing = 0, ... */
 	private static final int MainLayout = 0;
-	private static final int CopyInfoLayout = 1;
-	private static final int SearchLayout = 2;
-	private static final int PanicLayout = 3;
-	private static final int ElemsLayout = 4;
-	private static final int BookInfoLayout = 5;
-	private static final int UserInfoLayout = 6;
-	private static final int AddBookLayout = 7;
-	private static final int CopyInfoLayout2 = 8;
-	private static final int BookInfoLayout2 = 9;
+	private static final int SearchLayout = 1;
+	private static final int PanicLayout = 2;
+	private static final int ElemsLayout = 3;
+	private static final int AddBookLayout = 4;
+	private static final int CopyInfoLayout = 5;
+	private static final int CopyInfoLayout2 = 6;
+	private static final int BookInfoLayout = 7;
+	private static final int BookInfoLayout2 = 8;
+	private static final int UserInfoLayout = 9;
 	private static final int UserInfoLayout2 = 10;
 
 	/** Request code for QR code scanning intent */
@@ -181,19 +181,19 @@ public class MainActivity extends Activity {
 	}
 
 	/**
-	 * Initialise the buttons of the layouts.
+	 * Initialise the layouts.
 	 */
 	private void initLayouts() {
 		initMainLayout();
-		initCopyInfoLayout();
 		initSearchLayout();
 		// PanicLayout needs no initialisation, as it has no buttons.
 		initElemsLayout();
-		initBookInfoLayout();
-		initUserInfoLayout();
 		initAddBookLayout();
+		initCopyInfoLayout();
 		initCopyInfoLayout2();
+		initBookInfoLayout();
 		initBookInfoLayout2();
+		initUserInfoLayout();
 		initUserInfoLayout2();
 	}
 
@@ -280,81 +280,11 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	private void initCopyInfoLayout() {
-		final TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
-		Button Blend = (Button) findViewById(R.id.Blend);
-		Button Breturn = (Button) findViewById(R.id.Breturn);
-		Button Bretire = (Button) findViewById(R.id.Bretire);
-		Button Btocopyinfo2 = (Button) findViewById(R.id.Btocopyinfo2);
-		Button Btomain = (Button) findViewById(R.id.Btomain);
 
-		// Why can't this be done in XML? Really.
-		Tcopyinfo.setMovementMethod(new ScrollingMovementMethod());
 
-		Blend.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(id == -1)
-					return;
 
-				new StringDialog(MainActivity.this, "Zu verleihen an ...", "An wen soll das Exemplar verliehen werden?", "",
-					new StringDialog.ResultTaker() {
-						@Override
-						public void take(String res) {
-							String err = conn.lend(res, id);
-							if(err.equals("")) {
-								toast("Erfolgreich verliehen");
-								copyinfo(id);
-							} else {
-								notice("Fehler beim Verleih", err);
-							}
-						}
-					});
-			}
-		});
 
-		Breturn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(id == -1)
-					return;
 
-				conn.returnCopy(id);
-				toast("Zurückgegeben");
-				copyinfo(id);
-			}
-		});
-
-		Bretire.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(id == -1)
-					return;
-
-				conn.retire(id);
-				toast("Beiseitegestellt");
-				copyinfo(id);
-			}
-		});
-
-		Btocopyinfo2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
-				// no need for fetching data again
-				Tcopyinfo2.setText(Tcopyinfo.getText());
-				flipView(CopyInfoLayout2);
-			}
-		});
-
-		Btomain.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				flipView(MainLayout);
-			}
-		});
-
-	}
 
 	private void initSearchLayout() {
 		Spinner Selemtype = (Spinner) findViewById(R.id.Selemtype);
@@ -450,136 +380,6 @@ public class MainActivity extends Activity {
 		});
 	}
 
-	private void initBookInfoLayout() {
-		final TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
-		Button Blistcopies = (Button) findViewById(R.id.Blistcopies);
-		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
-		Button Brmbook = (Button) findViewById(R.id.Brmbook);
-		Button Btobookinfo2 = (Button) findViewById(R.id.Btobookinfo2);
-		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
-
-		Tbookinfo.setMovementMethod(new ScrollingMovementMethod());
-
-		Blistcopies.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				list(conn.listCopies(isbn).split("\n"));
-			}
-		});
-
-		Baddcopy.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				new StringDialog(MainActivity.this, "Exemplare hinzufügen", "Anzahl an neuen Exemplaren", "1",
-					new StringDialog.ResultTaker() {
-						@Override
-						public void take(String res) {
-							try {
-								int n = Integer.parseInt(res);
-								String err = conn.addCopies(isbn, n);
-								if(err.equals("")) {
-									toast("Exemplare hinzugefügt");
-									bookinfo(isbn);
-								} else {
-									notice("Fehler", err);
-								}
-							} catch(NumberFormatException nfe) {
-								notice("Fehler", "'" + res + "' ist keine Zahl");
-							}
-						}
-					});
-			}
-		});
-
-		Brmbook.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				String err = conn.deleteBook(isbn);
-				if(err.equals(""))
-					toast("Buch gelöscht");
-				else
-					notice("Fehler beim Löschen", err);
-
-				flipView(MainLayout);
-			}
-		});
-
-		Btobookinfo2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
-				// no need for fetching data again
-				Tbookinfo2.setText(Tbookinfo.getText());
-				flipView(BookInfoLayout2);
-			}
-		});
-
-		Btomain4.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				flipView(MainLayout);
-			}
-		});
-	}
-
-	private void initUserInfoLayout() {
-		final TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
-		Button Blistcopies2 = (Button) findViewById(R.id.Blistcopies2);
-		Button Breturnall = (Button) findViewById(R.id.Breturnall);
-		Button Brmuser = (Button) findViewById(R.id.Brmuser);
-		Button Btouserinfo2 = (Button) findViewById(R.id.Btouserinfo2);
-		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
-
-		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
-
-		Blistcopies2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				list(conn.listCopies(name).split("\n"));
-			}
-		});
-
-		Breturnall.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				conn.returnAll(name);
-				toast("Alle Exemplare zurückgegeben");
-				userinfo(name);
-			}
-		});
-
-		Brmuser.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				String err = conn.deleteUser(name);
-
-				if(err.equals(""))
-					toast("Nutzer gelöscht");
-				else
-					notice("Fehler beim Löschen", err);
-
-				flipView(MainLayout);
-			}
-		});
-
-		Btouserinfo2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);
-				// no need for fetching data again
-				Tuserinfo2.setText(Tuserinfo.getText());
-				flipView(UserInfoLayout2);
-			}
-		});
-
-		Btomain5.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				flipView(MainLayout);
-			}
-		});
-	}
-
 	private void initAddBookLayout() {
 		Button Bdoaddbook = (Button) findViewById(R.id.Bdoaddbook);
 		Button Btomain6 = (Button) findViewById(R.id.Btomain6);
@@ -608,6 +408,82 @@ public class MainActivity extends Activity {
 				flipView(MainLayout);
 			}
 		});
+	}
+
+	private void initCopyInfoLayout() {
+		final TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
+		Button Blend = (Button) findViewById(R.id.Blend);
+		Button Breturn = (Button) findViewById(R.id.Breturn);
+		Button Bretire = (Button) findViewById(R.id.Bretire);
+		Button Btocopyinfo2 = (Button) findViewById(R.id.Btocopyinfo2);
+		Button Btomain = (Button) findViewById(R.id.Btomain);
+
+		// Why can't this be done in XML? Really.
+		Tcopyinfo.setMovementMethod(new ScrollingMovementMethod());
+
+		Blend.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				new StringDialog(MainActivity.this, "Zu verleihen an ...", "An wen soll das Exemplar verliehen werden?", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							String err = conn.lend(res, id);
+							if(err.equals("")) {
+								toast("Erfolgreich verliehen");
+								copyinfo(id);
+							} else {
+								notice("Fehler beim Verleih", err);
+							}
+						}
+					});
+			}
+		});
+
+		Breturn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				conn.returnCopy(id);
+				toast("Zurückgegeben");
+				copyinfo(id);
+			}
+		});
+
+		Bretire.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(id == -1)
+					return;
+
+				conn.retire(id);
+				toast("Beiseitegestellt");
+				copyinfo(id);
+			}
+		});
+
+		Btocopyinfo2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
+				// no need for fetching data again
+				Tcopyinfo2.setText(Tcopyinfo.getText());
+				flipView(CopyInfoLayout2);
+			}
+		});
+
+		Btomain.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+
 	}
 
 	private void initCopyInfoLayout2() {
@@ -690,6 +566,78 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	private void initBookInfoLayout() {
+		final TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		Button Blistcopies = (Button) findViewById(R.id.Blistcopies);
+		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
+		Button Brmbook = (Button) findViewById(R.id.Brmbook);
+		Button Btobookinfo2 = (Button) findViewById(R.id.Btobookinfo2);
+		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
+
+		Tbookinfo.setMovementMethod(new ScrollingMovementMethod());
+
+		Blistcopies.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				list(conn.listCopies(isbn).split("\n"));
+			}
+		});
+
+		Baddcopy.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Exemplare hinzufügen", "Anzahl an neuen Exemplaren", "1",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							try {
+								int n = Integer.parseInt(res);
+								String err = conn.addCopies(isbn, n);
+								if(err.equals("")) {
+									toast("Exemplare hinzugefügt");
+									bookinfo(isbn);
+								} else {
+									notice("Fehler", err);
+								}
+							} catch(NumberFormatException nfe) {
+								notice("Fehler", "'" + res + "' ist keine Zahl");
+							}
+						}
+					});
+			}
+		});
+
+		Brmbook.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String err = conn.deleteBook(isbn);
+				if(err.equals(""))
+					toast("Buch gelöscht");
+				else
+					notice("Fehler beim Löschen", err);
+
+				flipView(MainLayout);
+			}
+		});
+
+		Btobookinfo2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
+				// no need for fetching data again
+				Tbookinfo2.setText(Tbookinfo.getText());
+				flipView(BookInfoLayout2);
+			}
+		});
+
+		Btomain4.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+	}
+
 	private void initBookInfoLayout2() {
 		TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
 		Button Bnote2 = (Button) findViewById(R.id.Bnote2);
@@ -752,6 +700,63 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	private void initUserInfoLayout() {
+		final TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		Button Blistcopies2 = (Button) findViewById(R.id.Blistcopies2);
+		Button Breturnall = (Button) findViewById(R.id.Breturnall);
+		Button Brmuser = (Button) findViewById(R.id.Brmuser);
+		Button Btouserinfo2 = (Button) findViewById(R.id.Btouserinfo2);
+		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
+
+		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
+
+		Blistcopies2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				list(conn.listCopies(name).split("\n"));
+			}
+		});
+
+		Breturnall.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				conn.returnAll(name);
+				toast("Alle Exemplare zurückgegeben");
+				userinfo(name);
+			}
+		});
+
+		Brmuser.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String err = conn.deleteUser(name);
+
+				if(err.equals(""))
+					toast("Nutzer gelöscht");
+				else
+					notice("Fehler beim Löschen", err);
+
+				flipView(MainLayout);
+			}
+		});
+
+		Btouserinfo2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);
+				// no need for fetching data again
+				Tuserinfo2.setText(Tuserinfo.getText());
+				flipView(UserInfoLayout2);
+			}
+		});
+
+		Btomain5.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+	}
 
 	private void initUserInfoLayout2() {
 		TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);

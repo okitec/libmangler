@@ -55,53 +55,6 @@
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/copyInfoLayout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-
-			<TextView
-				android:id="@+id/Tcopyinfo"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:minLines="3"
-				android:maxLines="12"
-				android:scrollbars="vertical"
-				android:scrollHorizontally="false"
-				android:fadeScrollbars="false" />
-
-			<Button
-				android:id="@+id/Blend"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/lend" />
-
-			<Button
-				android:id="@+id/Breturn"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/returncopy" />
-
-			<Button
-				android:id="@+id/Bretire"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/retire" />
-
-			<Button
-				android:id="@+id/Btocopyinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/morecmds" />
-
-			<Button
-				android:id="@+id/Btomain"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
-   		 </LinearLayout>
-
-		<LinearLayout
 			android:id="@+id/searchLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -165,99 +118,6 @@
 		</LinearLayout>
 
 		<LinearLayout
-			android:id="@+id/bookInfoLayout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-
-			<TextView
-				android:id="@+id/Tbookinfo"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:minLines="3"
-				android:maxLines="12"
-				android:scrollbars="vertical"
-				android:scrollHorizontally="false"
-				android:fadeScrollbars="false" />
-
-			<Button
-				android:id="@+id/Blistcopies"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/listcopies" />
-
-			<Button
-				android:id="@+id/Baddcopy"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/addcopy" />
-
-			<Button
-				android:id="@+id/Brmbook"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmbook" />
-
-			<Button
-				android:id="@+id/Btobookinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/morecmds" />
-
-			<Button
-				android:id="@+id/Btomain4"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/userInfoLayout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-
-			<TextView
-				android:id="@+id/Tuserinfo"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:minLines="3"
-				android:maxLines="12"
-				android:scrollbars="vertical"
-				android:scrollHorizontally="false" />
-
-			<Button
-				android:id="@+id/Blistcopies2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/listcopies" />
-
-			<Button
-				android:id="@+id/Breturnall"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/returnall" />
-
-			<Button
-				android:id="@+id/Brmuser"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmuser" />
-
-			<Button
-				android:id="@+id/Btouserinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/morecmds" />
-
-			<Button
-				android:id="@+id/Btomain5"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
-		</LinearLayout>
-
-		<LinearLayout
 			android:id="@+id/addBookLayout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -293,6 +153,53 @@
 				android:layout_height="wrap_content"
 				android:text="@string/tomain" />
 		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/copyInfoLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tcopyinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="12"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
+
+			<Button
+				android:id="@+id/Blend"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/lend" />
+
+			<Button
+				android:id="@+id/Breturn"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/returncopy" />
+
+			<Button
+				android:id="@+id/Bretire"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/retire" />
+
+			<Button
+				android:id="@+id/Btocopyinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/morecmds" />
+
+			<Button
+				android:id="@+id/Btomain"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+   		 </LinearLayout>
 
 		<LinearLayout
 			android:id="@+id/copyInfoLayout2"
@@ -342,6 +249,53 @@
    		 </LinearLayout>
 
 		<LinearLayout
+			android:id="@+id/bookInfoLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tbookinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="12"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
+
+			<Button
+				android:id="@+id/Blistcopies"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listcopies" />
+
+			<Button
+				android:id="@+id/Baddcopy"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addcopy" />
+
+			<Button
+				android:id="@+id/Brmbook"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmbook" />
+
+			<Button
+				android:id="@+id/Btobookinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/morecmds" />
+
+			<Button
+				android:id="@+id/Btomain4"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+		</LinearLayout>
+
+		<LinearLayout
 			android:id="@+id/bookInfoLayout2"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -380,6 +334,52 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/back" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/userInfoLayout"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tuserinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="12"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false" />
+
+			<Button
+				android:id="@+id/Blistcopies2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listcopies" />
+
+			<Button
+				android:id="@+id/Breturnall"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/returnall" />
+
+			<Button
+				android:id="@+id/Brmuser"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmuser" />
+
+			<Button
+				android:id="@+id/Btouserinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/morecmds" />
+
+			<Button
+				android:id="@+id/Btomain5"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
 		</LinearLayout>
 
 		<LinearLayout
