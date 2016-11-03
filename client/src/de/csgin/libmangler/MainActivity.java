@@ -419,7 +419,7 @@ public class MainActivity extends Activity {
 					bookinfo(fld[1]);
 				} else if(fld[0].equals("copy")) {
 					try {
-						copyinfo(Integer.parseInt(fld[1]));
+						copyinfo(Long.parseLong(fld[1]));
 					} catch(NumberFormatException nfe) {
 						notice("Interner Fehler", "'"+fld[1] + "' ist keine Zahl");
 					}
