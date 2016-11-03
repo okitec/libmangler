@@ -65,6 +65,8 @@ public class MainActivity extends Activity {
 	private String isbn;
 	private String name;
 
+	private boolean isPanicking;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -130,6 +132,7 @@ public class MainActivity extends Activity {
 		out.putString("name", name);
 		out.putString("srvaddr", srvaddr);
 		out.putInt("port", port);
+		out.putBoolean("isPanicking", isPanicking);
 	}
 
 	@Override
@@ -140,11 +143,15 @@ public class MainActivity extends Activity {
 		name = in.getString("name");
 		srvaddr = in.getString("srvaddr");
 		port = in.getInt("port");
+		isPanicking = in.getBoolean("isPanicking");
 	}
 
 	@Override
 	public void onBackPressed() {
-		flipView(MainLayout);
+		if(isPanicking)
+			finish();
+		else
+			flipView(MainLayout);
 	}
 
 	@Override
@@ -911,6 +918,7 @@ public class MainActivity extends Activity {
 	 * Bug: Does return; can't reasonably loop here.
 	 */
 	private void panic(String s) {
+		isPanicking = true;
 		Log.e("libmangler", "panic: " + s);
 		TextView Tpanic = (TextView) findViewById(R.id.Tpanic);
 		Tpanic.setText("Fataler Fehler: " + s);
