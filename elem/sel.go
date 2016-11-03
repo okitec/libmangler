@@ -89,9 +89,13 @@ var seltab = map[rune]selFn{
 					}
 				}
 			// XXX I wanted it in one function; however, we can't generalise for []Elem
-			// XXX because we need the fields of Book, User, Copy.
+			// XXX because we need the fields of Book, User, Copy. Thus the duplication (see below).
 			} else if strings.ContainsRune(s, ':') {
 				kv := strings.FieldsFunc(s, func(r rune) bool { return r == ':' })
+				if len(kv) < 2 {
+					continue
+				}
+
 				key := kv[0] // The keys are the struct field names in lowercase.
 				val := kv[1] // substring to be searched for
 
@@ -185,6 +189,10 @@ var seltab = map[rune]selFn{
 				}
 			} else if strings.ContainsRune(s, ':') {
 				kv := strings.FieldsFunc(s, func(r rune) bool { return r == ':' })
+				if len(kv) < 2 {
+					continue
+				}
+
 				key := kv[0] // The keys are the struct field names in lowercase.
 				val := kv[1] // substring to be searched for
 
@@ -281,6 +289,10 @@ var seltab = map[rune]selFn{
 				}
 			} else if strings.ContainsRune(s, ':') {
 				kv := strings.FieldsFunc(s, func(r rune) bool { return r == ':' })
+				if len(kv) < 2 {
+					continue
+				}
+
 				key := kv[0] // The keys are the struct field names in lowercase.
 				val := kv[1] // substring to be searched for
 
