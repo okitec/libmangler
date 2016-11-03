@@ -17,3 +17,7 @@ client:V:
 	ant debug
 	adb uninstall de.csgin.libmangler
 	adb install bin/libmangler-debug.apk
+
+clean:V:
+	cd client
+	ant clean
