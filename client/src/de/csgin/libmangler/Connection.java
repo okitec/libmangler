@@ -197,10 +197,9 @@ public class Connection {
 				answer.append("\n");
 			}
 
-			String s = answer.toString();
-			if(s.equals(""))
-				s = "END OF FILE\nBitte Verbindung prüfen und App erneut starten.";
-			return s;
+			if(line == null)
+				return "END OF FILE\nBitte Verbindung prüfen und App erneut starten.";
+			return answer.toString();
 		} catch(SocketTimeoutException ste) {
 			// XXX tell MainActivity to reestablish connection and show error
 			Log.e("libmangler", "Socket timeout");
