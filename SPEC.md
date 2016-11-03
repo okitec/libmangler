@@ -93,7 +93,6 @@ Bindestrichen (`---`).
 		B       Selektiert alle Bücher.
 		C       Selektiert alle Copies, d.h. Buchexemplare.
 		U       Selektiert alle Ausleiher (User).
-		L       Selektiert alle Labels.
 		/isbn/  Selektiert etwas mit dieser ISBN (Bücher, Copies, User)
 		/id/    Selektiert etwas mit dieser ID
 		/name/  Selektiert etwas mit diesem Namen
