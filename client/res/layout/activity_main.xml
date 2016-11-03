@@ -100,7 +100,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 		</LinearLayout>
@@ -173,7 +174,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
@@ -220,7 +222,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
@@ -267,7 +270,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
@@ -314,7 +318,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
@@ -355,7 +360,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 
@@ -401,7 +407,8 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="12"
+				android:maxLines="10"
+				android:textSize="18sp"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
