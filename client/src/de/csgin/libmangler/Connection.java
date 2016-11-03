@@ -142,6 +142,14 @@ public class Connection {
 		return transact("C/" + isbnOrName + "/λ");
 	}
 
+	public String listBooks() {
+		return transact("Bλ");
+	}
+
+	public String listUsers() {
+		return transact("Uλ");
+	}
+
 	public void quit(String reason) {
 		transact("q " + reason);
 	}

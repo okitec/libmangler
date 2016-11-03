@@ -7,6 +7,8 @@
 	<string name="addbook">Buch hinzufügen ...</string>
 	<string name="adduser">Nutzer hinzufügen ...</string>
 	<string name="listtags">#tags auflisten</string>
+	<string name="listbooks">Bücher auflisten</string>
+	<string name="listusers">Nutzer auflisten</string>
 
 	<string name="tomain">Zurück zum Hauptscreen</string>
 

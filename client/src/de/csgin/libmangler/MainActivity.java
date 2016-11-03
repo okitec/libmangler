@@ -203,6 +203,8 @@ public class MainActivity extends Activity {
 		Button Baddbook = (Button) findViewById(R.id.Baddbook);
 		Button Badduser = (Button) findViewById(R.id.Badduser);
 		Button Blisttags = (Button) findViewById(R.id.Blisttags);
+		Button Blistbooks = (Button) findViewById(R.id.Blistbooks);
+		Button Blistusers = (Button) findViewById(R.id.Blistusers);
 
 		// I wish lambda expressions were available in Android.
 		Bscan.setOnClickListener(new OnClickListener() {
@@ -259,14 +261,21 @@ public class MainActivity extends Activity {
 		Blisttags.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String s = conn.listTags();
-				String ls[] = s.split("\n");
+				list(conn.listTags().split("\n"));
+			}
+		});
 
-				ListView Lelems = (ListView) findViewById(R.id.Lelems);
-				ArrayAdapter aa = (ArrayAdapter) Lelems.getAdapter();
-				aa.clear();
-				aa.addAll((Object[]) ls);
-				flipView(ElemsLayout);
+		Blistbooks.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				list(conn.listBooks().split("\n"));
+			}
+		});
+
+		Blistusers.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				list(conn.listUsers().split("\n"));
 			}
 		});
 	}
@@ -293,8 +302,6 @@ public class MainActivity extends Activity {
 						@Override
 						public void take(String res) {
 							String err = conn.lend(res, id);
-							// XXX issue #35: freeze on lend error
-							Log.i("libmangler", "got here, err = " + err);
 							if(err.equals("")) {
 								toast("Erfolgreich verliehen");
 								copyinfo(id);
@@ -377,7 +384,6 @@ public class MainActivity extends Activity {
 				EditText Esearch = (EditText) findViewById(R.id.Esearch);
 				ListView Lelems = (ListView) findViewById(R.id.Lelems);
 				String cmd = null;
-				String res = null;
 
 				String s = Esearch.getText().toString();
 				switch(Selemtype.getSelectedItemPosition()) {
@@ -392,12 +398,7 @@ public class MainActivity extends Activity {
 					break;
 				}
 
-				res = conn.transact(cmd);
-				String ls[] = res.split("\n");
-				ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
-				aa.clear();
-				aa.addAll(ls);
-				flipView(ElemsLayout);
+				list(conn.transact(cmd).split("\n"));
 			}
 		});
 	}
@@ -437,7 +438,7 @@ public class MainActivity extends Activity {
 					name = name.trim();
 
 					userinfo(name);
-				}
+				} // last case: tags; ignore them
 			}
 		});
 
@@ -462,13 +463,7 @@ public class MainActivity extends Activity {
 		Blistcopies.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ListView Lelems = (ListView) findViewById(R.id.Lelems);
-				ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
-				String s = conn.listCopies(isbn);
-				String[] ls = s.split("\n");
-				aa.clear();
-				aa.addAll(ls);
-				flipView(ElemsLayout);
+				list(conn.listCopies(isbn).split("\n"));
 			}
 		});
 
@@ -540,13 +535,7 @@ public class MainActivity extends Activity {
 		Blistcopies2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ListView Lelems = (ListView) findViewById(R.id.Lelems);
-				ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
-				String s = conn.listCopies(name);
-				String[] ls = s.split("\n");
-				aa.clear();
-				aa.addAll(ls);
-				flipView(ElemsLayout);
+				list(conn.listCopies(name).split("\n"));
 			}
 		});
 
@@ -915,5 +904,16 @@ public class MainActivity extends Activity {
 		AlertDialog.Builder b = new AlertDialog.Builder(MainActivity.this);
 		b.setTitle(title).setMessage(msg);
 		b.show();
+	}
+
+	/**
+	 * Show a list in the list layout.
+	 */
+	private void list(String ls[]) {
+		ListView Lelems = (ListView) findViewById(R.id.Lelems);
+		ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
+		aa.clear();
+		aa.addAll(ls);
+		flipView(ElemsLayout);
 	}
 }

@@ -40,6 +40,18 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/listtags" />
+
+			<Button
+				android:id="@+id/Blistbooks"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listbooks" />
+
+			<Button
+				android:id="@+id/Blistusers"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listusers" />
 		</LinearLayout>
 
 		<LinearLayout
