@@ -427,7 +427,7 @@ public class MainActivity extends Activity {
 					// Of course there's no String.join() before Java 8, of course.
 					String name = "";
 
-					for(String f: fld)
+					for(String f: Arrays.copyOfRange(fld, 1, fld.length))
 						name += f + " ";
 					name = name.trim();
 
