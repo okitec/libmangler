@@ -135,19 +135,19 @@
 				android:id="@+id/Eisbn"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/isbn" />
+				android:hint="@string/isbn" />
 
 			<EditText
 				android:id="@+id/Etitle"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/title" />
+				android:hint="@string/title" />
 
 			<EditText
 				android:id="@+id/Eauthors"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/authors" />
+				android:hint="@string/authors" />
 
 			<Button
 				android:id="@+id/Bdoaddbook"
