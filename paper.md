@@ -654,5 +654,3 @@ Informationen aus dem Baum extrahiert und so das Element erzeugt.
  - The Go Authors
  - sam
 
-8. Literaturverzeichnis
------------------------
