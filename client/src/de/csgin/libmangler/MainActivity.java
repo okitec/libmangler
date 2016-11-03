@@ -446,11 +446,25 @@ public class MainActivity extends Activity {
 
 	private void initBookInfoLayout() {
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		Button Blistcopies = (Button) findViewById(R.id.Blistcopies);
 		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
 		Button Brmbook = (Button) findViewById(R.id.Brmbook);
 		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
 
 		Tbookinfo.setMovementMethod(new ScrollingMovementMethod());
+
+		Blistcopies.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ListView Lelems = (ListView) findViewById(R.id.Lelems);
+				ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
+				String s = conn.listCopies(isbn);
+				String[] ls = s.split("\n");
+				aa.clear();
+				aa.addAll(ls);
+				flipView(ElemsLayout);
+			}
+		});
 
 		Baddcopy.setOnClickListener(new OnClickListener() {
 			@Override

@@ -53,7 +53,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="20"
+				android:maxLines="12"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
@@ -129,7 +129,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="20"
+				android:maxLines="12"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 		</LinearLayout>
@@ -163,10 +163,16 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="20"
+				android:maxLines="12"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
+
+			<Button
+				android:id="@+id/Blistcopies"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listcopies" />
 
 			<Button
 				android:id="@+id/Baddcopy"
@@ -198,7 +204,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="20"
+				android:maxLines="12"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 
@@ -275,7 +281,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="20"
+				android:maxLines="12"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
