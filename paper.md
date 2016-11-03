@@ -522,6 +522,7 @@ anwendbaren Methoden enthält (`elem/sel.go`).
 	type Elem interface {
 		fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
 		Print() string            // cmd p (all info)
+		List() string             // cmd λ (single-line important info)
 		Note(note string)         // cmd n  // XXX make fmt-like
 		Delete()                  // cmd d
 		Tag(add bool, tag string) // cmd t
@@ -576,28 +577,48 @@ man also die Instanz *modifizieren* will, muss man die Methode auf einen Pointer
 definieren (`*Book`). Das nennt man dann einen *Pointer Receiver*.
 
 Man sollte einfache Receiver verwenden, keine Pointer Receiver, sofern es nicht
-nötig ist [citation needed, vllt. Effective Go]. Man könnte also auf den Gedanken kommen,
-die `String`- und `Print`-Methoden, die nichts modifizieren, auf `Book` zu
-definieren, die anderen Methoden von `Elem` auf `*Book`. Das ist jedoch nicht
+nötig ist, weil man von Pointern durch Indirektion einfach auf den Grundtyp
+schließen kann und das meist hilfreicher ist. Man könnte also auf den Gedanken
+kommen, die `String`- und `Print`-Methoden, die nichts modifizieren, auf `Book`
+zu definieren, die anderen Methoden von `Elem` auf `*Book`. Das ist jedoch nicht
 zielführend: `Book` und `*Book` sind verschiedene Typen und keiner von beiden
 würde in dem Fall das Interface `Elem` implementieren. Deswegen sind die drei
 Implementierungen von `Elem` Pointer: `*Book`, `*Copy`, `*User`.
 
 Der Server speichert alle Bücher, Copies und User in drei Maps ab, die den
-jeweiligen Identifikatoren Pointer auf die Structs zuordnen (`sel.go`).
+jeweiligen Identifikatoren Pointer auf die Structs zuordnen (`elem/sel.go`).
 
 	var Books map[ISBN]*Book
 	var Copies map[int64]*Copy
 	var Users map[string]*User
 
-Mithilfe dieser Maps ist der selektierende Teil des Protokolls recht einfach.
-XXX continue
+Wegen dieser Maps ist der selektierende Teil des Protokolls recht einfach.
+Die `Select`-Funktion in `elem/sel.go` ist öffentlich und ist nur eine
+Zwischenstufe, die die eigentlichen Selektierroutinen in `seltab` aufruft.
+`seltab` ist eine statische Map von einzelnen Unicode-Zeichen (auch *Runen*
+genannt; hier `B`, `C`, `U`) zu Funktionen vom Typ `selFn` mit folgender
+Signatur:
 
- - Beschreibung *Bottom-Up*
- - Elem
- - Book, Copy, User
- - sel.go
- - Hauptschleife und cmd.go
+	type selFn func(sel []Elem, args []string) ([]Elem, error)
+
+Eine `selFn` nimmt eine bestehende Selektion sowie die Selektionsargumente
+an und gibt eine Selektion und einen Fehlerwert zurück. Der Großteil des
+Codes in `seltab` bestimmt recht mechanisch den Typ des Arguments und
+selektiert das, was man erwarten würde [DARSTELLUNG WÄRE NEAT].
+
+Viel mehr lässt sich zum Server nicht sagen: in `manglersrv/main.go` wird für
+jede Verbindung eine Goroutine (eine Art leichter Thread
+[https://golang.org/doc/faq#goroutines]) gestartet, die dann `handle` ausführt,
+welches wiederum für alle Requests `interpret` aufrufet und den sonstigen
+Zustand der Verbindung hält – inklusive *Dot*. Das Speichern der Elemente auf
+der Festplatte wird in `manglersrv/store.go` bewertstelligt, indem der Server
+die Dateien erstellt und die Ergebnisse von `interpret("Bp", &dot)` in sie
+schreibt. Dieses `dot` ist in dem Fall ein Dummy. Beim Laden werden die
+S-Expressions der Elemente durch einen simplen *recursive-descent*
+S-Expression-Parser gehetzt. Das Resultat ist ein Baum, der pre-order
+durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des Baums, wird eine
+Funktion aufgerufen, die eine Zustandsmachine implementiert, die alle
+Informationen aus dem Baum extrahiert und so das Element erzeugt.
 
 ### Client
 
@@ -614,7 +635,7 @@ XXX continue
 ----------
 
  - Allg. Netzwerkbegriffe
- - Book, Copy, User, Elem, Dot
+ - Book, Copy, User, Elem, Dot, Selektionsargument.
 
 7. Danksagungen
 ---------------
@@ -624,3 +645,6 @@ XXX continue
  - IETF
  - The Go Authors
  - sam
+
+8. Literaturverzeichnis
+-----------------------
