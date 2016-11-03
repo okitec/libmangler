@@ -111,6 +111,13 @@ public class Connection {
 		return transact("T");
 	}
 
+	/**
+	 * List copies belonging to a book (if the server detects a ISBN) or a user.
+	 */
+	public String listCopies(String isbnOrName) {
+		return transact("C/" + isbnOrName + "/λ");
+	}
+
 	public void quit(String reason) {
 		transact("q " + reason);
 	}

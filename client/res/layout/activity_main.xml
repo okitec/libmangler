@@ -165,7 +165,8 @@
 				android:minLines="3"
 				android:maxLines="20"
 				android:scrollbars="vertical"
-				android:scrollHorizontally="false" />
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
 
 			<Button
 				android:id="@+id/Baddcopy"
@@ -200,6 +201,12 @@
 				android:maxLines="20"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
+
+			<Button
+				android:id="@+id/Blistcopies2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/listcopies" />
 
 			<Button
 				android:id="@+id/Breturnall"

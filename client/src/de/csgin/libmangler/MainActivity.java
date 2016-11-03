@@ -499,11 +499,25 @@ public class MainActivity extends Activity {
 
 	private void initUserInfoLayout() {
 		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		Button Blistcopies2 = (Button) findViewById(R.id.Blistcopies2);
 		Button Breturnall = (Button) findViewById(R.id.Breturnall);
 		Button Brmuser = (Button) findViewById(R.id.Brmuser);
 		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
 
 		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
+
+		Blistcopies2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				ListView Lelems = (ListView) findViewById(R.id.Lelems);
+				ArrayAdapter<String> aa = (ArrayAdapter<String>) Lelems.getAdapter();
+				String s = conn.listCopies(name);
+				String[] ls = s.split("\n");
+				aa.clear();
+				aa.addAll(ls);
+				flipView(ElemsLayout);
+			}
+		});
 
 		Breturnall.setOnClickListener(new OnClickListener() {
 			@Override
