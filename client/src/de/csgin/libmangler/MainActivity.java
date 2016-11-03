@@ -28,6 +28,13 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * The only Activity of the libmangler app. There's a centrail ViewFlipper flipping between
+ * ten layouts instead of multiple activities. Much of the code of MainActivity is devoted
+ * to the initialisation of said layouts and the button-handlers within them.
+ *
+ * There are also a few helper routines like list(), notice(), panic(), toast().
+ */
 public class MainActivity extends Activity {
 	/* ViewFlipper indexes - if this were C, I'd use a enum instead of writing = 0, ... */
 	private static final int MainLayout = 0;
@@ -205,6 +212,7 @@ public class MainActivity extends Activity {
 		Button Blisttags = (Button) findViewById(R.id.Blisttags);
 		Button Blistbooks = (Button) findViewById(R.id.Blistbooks);
 		Button Blistusers = (Button) findViewById(R.id.Blistusers);
+		Button Bclose = (Button) findViewById(R.id.Bclose);
 
 		// I wish lambda expressions were available in Android.
 		Bscan.setOnClickListener(new OnClickListener() {
@@ -278,13 +286,15 @@ public class MainActivity extends Activity {
 				list(conn.listUsers().split("\n"));
 			}
 		});
+
+		Bclose.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				conn.quit("app closing");
+				finish();
+			}
+		});
 	}
-
-
-
-
-
-
 
 	private void initSearchLayout() {
 		Spinner Selemtype = (Spinner) findViewById(R.id.Selemtype);
@@ -499,7 +509,7 @@ public class MainActivity extends Activity {
 		Btobook.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				bookinfo(id);
+				bookinfoOfID(id);
 			}
 		});
 
@@ -853,13 +863,13 @@ public class MainActivity extends Activity {
 	/**
 	 * Fetch info about the book this copy belongs to.
 	 */
-	private void bookinfo(long id) {
+	private void bookinfoOfID(long id) {
 		this.id = -1;
 		this.isbn = isbn;
 		this.name = null;
 
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
-		Tbookinfo.setText(conn.printBookOfId(id));
+		Tbookinfo.setText(conn.printBookOfID(id));
 		flipView(BookInfoLayout);
 	}
 

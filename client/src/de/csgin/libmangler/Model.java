@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
+ * THIS CODE OUT-OF-MEMORIES AND IS NOT USED - RETAINED FOR THE MOMENT TO SHOW HOW IT SHOULD WORK.
+ *
  * In an ideal world, the model for the app should be the same as the one
  * for the server. The go bind system allows that and generates .AAR (Android
  * Archive) files. However, ant can't use them, gradle doesn't quite work at all,

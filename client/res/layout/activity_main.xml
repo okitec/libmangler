@@ -52,6 +52,12 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/listusers" />
+
+			<Button
+				android:id="@+id/Bclose"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/close" />
 		</LinearLayout>
 
 		<LinearLayout

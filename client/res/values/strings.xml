@@ -9,6 +9,7 @@
 	<string name="listtags">#tags auflisten</string>
 	<string name="listbooks">Bücher auflisten</string>
 	<string name="listusers">Nutzer auflisten</string>
+	<string name="close">Programm schließen</string>
 
 	<string name="tomain">Zurück zum Hauptscreen</string>
 

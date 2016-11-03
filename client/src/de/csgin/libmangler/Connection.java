@@ -46,7 +46,7 @@ public class Connection {
 		return transact("B/" + mksel(isbn) + "/p");
 	}
 
-	public String printBookOfId(long id) {
+	public String printBookOfID(long id) {
 		return transact("B/" + id + "/p");
 	}
 
