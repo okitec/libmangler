@@ -197,11 +197,14 @@ public class Connection {
 				answer.append("\n");
 			}
 
-			return answer.toString();
+			String s = answer.toString();
+			if(s.equals(""))
+				s = "END OF FILE\nBitte Verbindung prüfen und App erneut starten.";
+			return s;
 		} catch(SocketTimeoutException ste) {
 			// XXX tell MainActivity to reestablish connection and show error
 			Log.e("libmangler", "Socket timeout");
-			return "TIMEOUT";
+			return "NETWORK TIMEOUT";
 		} catch(IOException ioe) {
 			Log.e("libmangler-proto", "IO EXCEPTION");
 			return "IO EXCEPTION";
