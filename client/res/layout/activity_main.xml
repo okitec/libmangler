@@ -53,7 +53,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:minLines="3"
-				android:maxLines="7"
+				android:maxLines="20"
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
@@ -71,28 +71,16 @@
 				android:text="@string/returncopy" />
 
 			<Button
-				android:id="@+id/Bnote"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/note" />
-
-			<Button
-				android:id="@+id/Baddtag"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/addtag" />
-
-			<Button
-				android:id="@+id/Brmtag"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmtag" />
-
-			<Button
 				android:id="@+id/Bretire"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/retire" />
+
+			<Button
+				android:id="@+id/Btocopyinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tocopyinfo2" />
 
 			<Button
 				android:id="@+id/Btomain"
@@ -268,4 +256,51 @@
 				android:layout_height="wrap_content"
 				android:text="@string/tomain" />
 		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/copyInfoLayout2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tcopyinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="20"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
+
+			<Button
+				android:id="@+id/Bnote"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/note" />
+
+			<Button
+				android:id="@+id/Baddtag"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addtag" />
+
+			<Button
+				android:id="@+id/Brmtag"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmtag" />
+
+			<Button
+				android:id="@+id/Btocopyinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tocopyinfo" />
+
+			<Button
+				android:id="@+id/Btomain7"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tomain" />
+   		 </LinearLayout>
 </ViewFlipper>

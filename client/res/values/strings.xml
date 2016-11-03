@@ -8,16 +8,19 @@
 	<string name="adduser">Nutzer hinzufügen ...</string>
 	<string name="listtags">#tags auflisten</string>
 
-	<string name="tomain">Zurück</string>
+	<string name="tomain">Zurück zum Hauptscreen</string>
 
 	<string name="dosearch">Suchen!</string>
 
 	<string name="lend">Entleihen an ...</string>
 	<string name="returncopy">Zurückgeben</string>
 	<string name="retire">Beiseitestellen</string>
+	<string name="tocopyinfo2">Weitere Befehle ...</string>
+
 	<string name="note">Notiz hinzufügen ...</string>
 	<string name="addtag">Tag hinzufügen ...</string>
 	<string name="rmtag">Tag entfernen ...</string>
+	<string name="tocopyinfo">Zurück</string>
 
 	<string name="addcopy">Exemplare hinzufügen ...</string>
 	<string name="rmbook">Buch löschen</string>
