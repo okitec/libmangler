@@ -408,8 +408,6 @@ werden; ein Element gilt als selektiert, wenn es eines der Teilargumente
 erfüllt. Zur einfacheren automatischen Generation kann ein Komma nach dem
 letzten Argument stehen (siehe Beispiel 3).
 
-XXX show answers to the examples
-
 Eine Menge besteht aus Elementen vom selben Typ: Bücher, Copies oder User.
 Argumente sind ISBNs, Usernamen, IDs von Copies sowie Tags. Das erste Beispiel
 selektiert das eine Buch mit dieser ISBN und gibt alle Informationen darüber
@@ -426,7 +424,7 @@ man einfach einen Server starten und eine Verbindung mit `netcat` [citation need
 aufbauen. So konnte ich schnell die Funktionalität testen; automatisiertes Testen
 kann über unkomplizierte Skripte und Testdateien von außen angebaut werden. 
 
-### Low-level stuffs
+### Low-level-Teil des Protokolls
 
 Viel hat sich im "niedrigen" Teil des Protokolls verändert, bis es zu einer
 adäquaten Lösung kam. Es gibt zwei Probleme: die Antworten müssen den Anfragen
@@ -447,8 +445,8 @@ beim Empfang einer Antwort die im Voraus für diesen Tag bestimmte
 Handlerfunktion ausführen. Da sich dies massiv auf die Komplexität der App
 auswirkte und obendrein nie funktionsfähig war, ignorierte der Autor Androids
 Warnung, nicht im UI-Thread zu netzwerken, und vereinfachte den Client wieder.
-Jetzt funktioniert er, wenngleich Wartezeiten bei einer schlechten Verbindung
-auftreten könnten.
+Jetzt funktioniert er, und da der Socket einen Timeout von drei Sekunden
+bekommen hat, gibt es keine zu großen Wartezeiten.
 
 Protokolltransaktionen arbeiten auf Zeilenbasis, wobei eine Zeile durch ein
 Newline (`\n`) begrenzt wird. Die Requests des Clients sind immer einzeilig; die
@@ -486,7 +484,7 @@ Diese Zeilenzählung wurde mit den Tags auch wieder entfernt und mit der
 `---`-Sequenz ersetzt, was auf Clientseite sehr einfach und robust funktioniert
 (`Connection:transact`):
 
-	while(!(line = in.readLine()).equals(ENDMARKER)) {
+	while((line = in.readLine()) != null && !line.equals(ENDMARKER)) {
 		Log.e("libmangler-proto", "[->proto] " + answer);
 		answer.append(line);
 	}
@@ -498,17 +496,27 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 
 ### Geschichte und Ausblick
 
- - Versions
- - v1: regex-basiert
- - v5: Tags, Payload-Zeilen
- - v6: End of answer markers
- - v7: #tags
- - Zu Beginn: regex-basiert
-
- - Tags → labels und labels → tags
-
- - Geschichte
- - Weiterentwicklung
+Das Protokoll durchlief neun Versionen, von denen einige nie implementiert
+wurden und andere wieder rückgängig gemacht wurden. Zu Beginn war die
+`sam`-Kommandosprache Hauptinspiration und in Version 1 sollte die Selektion
+funktionieren, indem über der ganzen Datenmenge mit regulären Ausdrücken
+gesucht wird. Da sich dies als schwer implementierbar erwies – der erste
+Server war in C und hatte keine Reflexionsmöglichkeiten – gab es bereits in
+Version 2 die Möglichkeit, nach ISBNs, Copy-IDs und Nutzernamen zu suchen, der
+`p`-Befehl lieferte aber noch JSON statt S-Expressions; mehrzeilige Antworten
+des Servers wurden mit einem einfachen Punkt begrenzt (vgl. SMTP) und hatten
+eine Statuszeile zu Beginn. Version 3 bringt S-Expressions. Version 4 bringt
+#tags, die Büchern, Copies und Nutzern hinzugefügt werden können. Version 5
+nennt #tags in *Labels* um und fügt allen Requests und Responses Message-Tags
+wie in IMAP hinzu. Version 6 macht diese Änderungen, die große Komplexität im
+Client hervorriefen, wieder rückgängig und macht am eine einer Antwort eine
+Zeile aus drei Strichen (`---`). Version 7 bringt die Kommandos, um #tags
+aufzulisten, zu erstellen und zu löschen. Version 8 erlaubt Suche nach
+Metadaten, Version 9 fügt einen Befehl zum Auflisten von Selektionen hinzu. Das
+Protokoll ist einem stetigen Wandel unterworfen, um der Entwicklung der App und
+des Servers entgegenzukommen; gleichzeitig hat sich zentral seit Version 3
+nichts geändert. Zukünftige Änderungen werden wohl einen ähnlich kleinen
+Maßstab haben.
 
 5. Detailbetrachtung des Servers und des Clients
 ------------------------------------------------
