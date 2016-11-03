@@ -39,6 +39,7 @@ public class MainActivity extends Activity {
 	private static final int UserInfoLayout = 6;
 	private static final int AddBookLayout = 7;
 	private static final int CopyInfoLayout2 = 8;
+	private static final int BookInfoLayout2 = 9;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -191,6 +192,7 @@ public class MainActivity extends Activity {
 		initUserInfoLayout();
 		initAddBookLayout();
 		initCopyInfoLayout2();
+		initBookInfoLayout2();
 	}
 
 	private void initMainLayout() {
@@ -278,23 +280,6 @@ public class MainActivity extends Activity {
 		// Why can't this be done in XML? Really.
 		Tcopyinfo.setMovementMethod(new ScrollingMovementMethod());
 
-		Btocopyinfo2.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
-				// no need for fetching data again
-				Tcopyinfo2.setText(Tcopyinfo.getText());
-				flipView(CopyInfoLayout2);
-			}
-		});
-
-		Btomain.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				flipView(MainLayout);
-			}
-		});
-
 		Blend.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -342,6 +327,24 @@ public class MainActivity extends Activity {
 				copyinfo(id);
 			}
 		});
+
+		Btocopyinfo2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
+				// no need for fetching data again
+				Tcopyinfo2.setText(Tcopyinfo.getText());
+				flipView(CopyInfoLayout2);
+			}
+		});
+
+		Btomain.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				flipView(MainLayout);
+			}
+		});
+
 	}
 
 	private void initSearchLayout() {
@@ -445,10 +448,11 @@ public class MainActivity extends Activity {
 	}
 
 	private void initBookInfoLayout() {
-		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		final TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
 		Button Blistcopies = (Button) findViewById(R.id.Blistcopies);
 		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
 		Button Brmbook = (Button) findViewById(R.id.Brmbook);
+		Button Btobookinfo2 = (Button) findViewById(R.id.Btobookinfo2);
 		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
 
 		Tbookinfo.setMovementMethod(new ScrollingMovementMethod());
@@ -500,6 +504,16 @@ public class MainActivity extends Activity {
 					notice("Fehler beim Löschen", err);
 
 				flipView(MainLayout);
+			}
+		});
+
+		Btobookinfo2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
+				// no need for fetching data again
+				Tbookinfo2.setText(Tbookinfo.getText());
+				flipView(BookInfoLayout2);
 			}
 		});
 
@@ -595,8 +609,8 @@ public class MainActivity extends Activity {
 	}
 
 	private void initCopyInfoLayout2() {
-		TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo);
-		Button Btobookinfo = (Button) findViewById(R.id.Btobookinfo);
+		TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
+		Button Btobook = (Button) findViewById(R.id.Btobook);
 		Button Bnote = (Button) findViewById(R.id.Bnote);
 		Button Baddtag = (Button) findViewById(R.id.Baddtag);
 		Button Brmtag = (Button) findViewById(R.id.Brmtag);
@@ -604,7 +618,7 @@ public class MainActivity extends Activity {
 
 		Tcopyinfo2.setMovementMethod(new ScrollingMovementMethod());
 
-		Btobookinfo.setOnClickListener(new OnClickListener() {
+		Btobook.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				bookinfo(id);
@@ -621,7 +635,7 @@ public class MainActivity extends Activity {
 					new StringDialog.ResultTaker() {
 						@Override
 						public void take(String res) {
-							conn.note(res, id);
+							conn.noteCopy(res, id);
 							toast("Notiz hinzugefügt");
 							copyinfo(id);
 						}
@@ -639,7 +653,7 @@ public class MainActivity extends Activity {
 					new StringDialog.ResultTaker() {
 						@Override
 						public void take(String res) {
-							conn.addTag(res, id);
+							conn.addTagCopy(res, id);
 							toast("Tag hinzugefügt");
 							copyinfo(id);
 						}
@@ -657,7 +671,7 @@ public class MainActivity extends Activity {
 					new StringDialog.ResultTaker() {
 						@Override
 						public void take(String res) {
-							conn.rmTag(res, id);
+							conn.rmTagCopy(res, id);
 							toast("Tag entfernt");
 							copyinfo(id);
 						}
@@ -673,6 +687,69 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
+
+	private void initBookInfoLayout2() {
+		TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
+		Button Bnote2 = (Button) findViewById(R.id.Bnote2);
+		Button Baddtag2 = (Button) findViewById(R.id.Baddtag2);
+		Button Brmtag2 = (Button) findViewById(R.id.Brmtag2);
+		Button Btobookinfo = (Button) findViewById(R.id.Btobookinfo);
+
+		Tbookinfo2.setMovementMethod(new ScrollingMovementMethod());
+
+		Bnote2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Notiz hinzufügen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.noteBook(res, isbn);
+							toast("Notiz hinzugefügt");
+							bookinfo(isbn);
+						}
+					});
+			}
+		});
+
+		Baddtag2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Tag hinzufügen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.addTagBook(res, isbn);
+							toast("Tag hinzugefügt");
+							bookinfo(isbn);
+						}
+					});
+			}
+		});
+
+		Brmtag2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Tag entfernen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.rmTagBook(res, isbn);
+							toast("Tag entfernt");
+							bookinfo(isbn);
+						}
+					});
+			}
+		});
+
+		Btobookinfo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				bookinfo(isbn);
+			}
+		});
+	}
+
 
 	/**
 	 * Fetch info about a Copy and show it in the CopyInfoLayout.

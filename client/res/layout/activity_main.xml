@@ -80,7 +80,7 @@
 				android:id="@+id/Btocopyinfo2"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/tocopyinfo2" />
+				android:text="@string/morecmds" />
 
 			<Button
 				android:id="@+id/Btomain"
@@ -187,6 +187,12 @@
 				android:text="@string/rmbook" />
 
 			<Button
+				android:id="@+id/Btobookinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/morecmds" />
+
+			<Button
 				android:id="@+id/Btomain4"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -287,10 +293,10 @@
 				android:fadeScrollbars="false" />
 
 			<Button
-				android:id="@+id/Btobookinfo"
+				android:id="@+id/Btobook"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/tobookinfo" />
+				android:text="@string/tobook" />
 
 			<Button
 				android:id="@+id/Bnote"
@@ -314,6 +320,47 @@
 				android:id="@+id/Btocopyinfo"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="@string/tocopyinfo" />
+				android:text="@string/back" />
    		 </LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/bookInfoLayout2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tbookinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="12"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
+
+			<Button
+				android:id="@+id/Bnote2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/note" />
+
+			<Button
+				android:id="@+id/Baddtag2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addtag" />
+
+			<Button
+				android:id="@+id/Brmtag2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmtag" />
+
+			<Button
+				android:id="@+id/Btobookinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/back" />
+		</LinearLayout>
 </ViewFlipper>

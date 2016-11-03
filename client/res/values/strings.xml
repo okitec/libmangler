@@ -15,13 +15,13 @@
 	<string name="lend">Entleihen an ...</string>
 	<string name="returncopy">Zurückgeben</string>
 	<string name="retire">Beiseitestellen</string>
-	<string name="tocopyinfo2">Weitere Befehle ...</string>
+	<string name="morecmds">Weitere Befehle ...</string>
 
-	<string name="tobookinfo">Buchinfo ...</string>
+	<string name="tobook">Buchinfo ...</string>
 	<string name="note">Notiz hinzufügen ...</string>
 	<string name="addtag">Tag hinzufügen ...</string>
 	<string name="rmtag">Tag entfernen ...</string>
-	<string name="tocopyinfo">Zurück</string>
+	<string name="back">Zurück</string>
 
 	<string name="listcopies">Exemplarliste ...</string>
 	<string name="addcopy">Exemplare hinzufügen ...</string>

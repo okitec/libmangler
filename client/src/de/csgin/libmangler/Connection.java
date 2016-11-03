@@ -66,16 +66,40 @@ public class Connection {
 		return transact("U/" + mksel(name) + "/d");
 	}
 
-	public void note(String note, long... id) {
+	public void noteCopy(String note, long... id) {
 		transact("C/" + mksel(id) + "/n " + note);
 	}
 
-	public void addTag(String tag, long... id) {
+	public void noteBook(String note, String isbn) {
+		transact("B/" + isbn + "/n " + note);
+	}
+
+	public void noteUser(String note, String name) {
+		transact("U/" + name + "/n " + note);
+	}
+
+	public void addTagCopy(String tag, long... id) {
 		transact("C/" + mksel(id) + "/t + " + tag);
 	}
 
-	public void rmTag(String tag, long... id) {
+	public void rmTagCopy(String tag, long... id) {
 		transact("C/" + mksel(id) + "/t - " + tag);
+	}
+
+	public void addTagBook(String tag, String isbn) {
+		transact("B/" + isbn + "/t + " + tag);
+	}
+
+	public void rmTagBook(String tag, String isbn) {
+		transact("B/" + isbn + "/t - " + tag);
+	}
+
+	public void addTagUser(String tag, String name) {
+		transact("U/" + name + "/t + " + tag);
+	}
+
+	public void rmTagUser(String tag, String name) {
+		transact("U/" + name + "/t - " + tag);
 	}
 
 	/* lend: lend copy to user; return an error string if any lend failed, null otherwise */
