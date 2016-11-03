@@ -13,7 +13,12 @@ import java.net.UnknownHostException;
 
 /**
  * Connction provides an interface to the server's RPC library, i.e. provides
- * functions wrapping the protocol commands.
+ * functions wrapping the protocol commands. The socket has a timeout to prevent
+ * freezing; thus the synchronous nature of IO in the main thread is not as bad
+ * as it would be.
+ *
+ * There's a wild assortment of small functions. Each of these is needed somewhere;
+ * unneeded functions have not been implemented.
  */
 public class Connection {
 	private static final int VERS         = 9;
@@ -24,7 +29,6 @@ public class Connection {
 	private BufferedReader in;
 	private PrintWriter out;
 
-	/* just rethrow, we can't tell the user */
 	public Connection(String addr, int port) throws UnknownHostException, IOException, SocketTimeoutException {
 		socket = new Socket();
 		socket.setSoTimeout(TIMEOUT);
@@ -40,6 +44,10 @@ public class Connection {
 
 	public String printBook(String... isbn) {
 		return transact("B/" + mksel(isbn) + "/p");
+	}
+
+	public String printBookOfId(long id) {
+		return transact("B/" + id + "/p");
 	}
 
 	public String printUser(String... name) {
@@ -131,7 +139,9 @@ public class Connection {
 		return Integer.parseInt(args[2]);
 	}
 
-	/* transact: send request line, return multi-line answer */
+	/**
+	 * Send a request line and return a multi-line answer.
+	 */
 	public String transact(String req) {
 		out.println(req);
 		out.flush();

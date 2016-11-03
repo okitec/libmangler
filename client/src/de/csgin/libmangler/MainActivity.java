@@ -568,13 +568,20 @@ public class MainActivity extends Activity {
 
 	private void initCopyInfoLayout2() {
 		TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo);
+		Button Btobookinfo = (Button) findViewById(R.id.Btobookinfo);
 		Button Bnote = (Button) findViewById(R.id.Bnote);
 		Button Baddtag = (Button) findViewById(R.id.Baddtag);
 		Button Brmtag = (Button) findViewById(R.id.Brmtag);
 		Button Btocopyinfo = (Button) findViewById(R.id.Btocopyinfo);
-		Button Btomain7 = (Button) findViewById(R.id.Btomain7);
 
 		Tcopyinfo2.setMovementMethod(new ScrollingMovementMethod());
+
+		Btobookinfo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				bookinfo(id);
+			}
+		});
 
 		Bnote.setOnClickListener(new OnClickListener() {
 			@Override
@@ -637,13 +644,6 @@ public class MainActivity extends Activity {
 				copyinfo(id);
 			}
 		});
-
-		Btomain7.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				flipView(MainLayout);
-			}
-		});
 	}
 
 	/**
@@ -673,6 +673,19 @@ public class MainActivity extends Activity {
 
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
 		Tbookinfo.setText(conn.printBook(isbn));
+		flipView(BookInfoLayout);
+	}
+
+	/**
+	 * Fetch info about the book this copy belongs to.
+	 */
+	private void bookinfo(long id) {
+		this.id = -1;
+		this.isbn = isbn;
+		this.name = null;
+
+		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		Tbookinfo.setText(conn.printBookOfId(id));
 		flipView(BookInfoLayout);
 	}
 

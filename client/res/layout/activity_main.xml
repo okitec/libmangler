@@ -274,6 +274,12 @@
 				android:fadeScrollbars="false" />
 
 			<Button
+				android:id="@+id/Btobookinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/tobookinfo" />
+
+			<Button
 				android:id="@+id/Bnote"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -296,11 +302,5 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/tocopyinfo" />
-
-			<Button
-				android:id="@+id/Btomain7"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
    		 </LinearLayout>
 </ViewFlipper>
