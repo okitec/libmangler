@@ -233,6 +233,12 @@
 				android:text="@string/rmuser" />
 
 			<Button
+				android:id="@+id/Btouserinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/morecmds" />
+
+			<Button
 				android:id="@+id/Btomain5"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -359,6 +365,47 @@
 
 			<Button
 				android:id="@+id/Btobookinfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/back" />
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/userInfoLayout2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical" >
+
+			<TextView
+				android:id="@+id/Tuserinfo2"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:minLines="3"
+				android:maxLines="12"
+				android:scrollbars="vertical"
+				android:scrollHorizontally="false"
+				android:fadeScrollbars="false" />
+
+			<Button
+				android:id="@+id/Bnote3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/note" />
+
+			<Button
+				android:id="@+id/Baddtag3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/addtag" />
+
+			<Button
+				android:id="@+id/Brmtag3"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="@string/rmtag" />
+
+			<Button
+				android:id="@+id/Btouserinfo"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:text="@string/back" />

@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
 	private static final int AddBookLayout = 7;
 	private static final int CopyInfoLayout2 = 8;
 	private static final int BookInfoLayout2 = 9;
+	private static final int UserInfoLayout2 = 10;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -193,6 +194,7 @@ public class MainActivity extends Activity {
 		initAddBookLayout();
 		initCopyInfoLayout2();
 		initBookInfoLayout2();
+		initUserInfoLayout2();
 	}
 
 	private void initMainLayout() {
@@ -526,10 +528,11 @@ public class MainActivity extends Activity {
 	}
 
 	private void initUserInfoLayout() {
-		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		final TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
 		Button Blistcopies2 = (Button) findViewById(R.id.Blistcopies2);
 		Button Breturnall = (Button) findViewById(R.id.Breturnall);
 		Button Brmuser = (Button) findViewById(R.id.Brmuser);
+		Button Btouserinfo2 = (Button) findViewById(R.id.Btouserinfo2);
 		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
 
 		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
@@ -567,6 +570,16 @@ public class MainActivity extends Activity {
 					notice("Fehler beim Löschen", err);
 
 				flipView(MainLayout);
+			}
+		});
+
+		Btouserinfo2.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);
+				// no need for fetching data again
+				Tuserinfo2.setText(Tuserinfo.getText());
+				flipView(UserInfoLayout2);
 			}
 		});
 
@@ -750,6 +763,68 @@ public class MainActivity extends Activity {
 		});
 	}
 
+
+	private void initUserInfoLayout2() {
+		TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);
+		Button Bnote3 = (Button) findViewById(R.id.Bnote3);
+		Button Baddtag3 = (Button) findViewById(R.id.Baddtag3);
+		Button Brmtag3 = (Button) findViewById(R.id.Brmtag3);
+		Button Btouserinfo = (Button) findViewById(R.id.Btouserinfo);
+
+		Tuserinfo2.setMovementMethod(new ScrollingMovementMethod());
+
+		Bnote3.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Notiz hinzufügen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.noteUser(res, name);
+							toast("Notiz hinzugefügt");
+							userinfo(name);
+						}
+					});
+			}
+		});
+
+		Baddtag3.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Tag hinzufügen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.addTagUser(res, name);
+							toast("Tag hinzugefügt");
+							userinfo(name);
+						}
+					});
+			}
+		});
+
+		Brmtag3.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new StringDialog(MainActivity.this, "Tag entfernen", "", "",
+					new StringDialog.ResultTaker() {
+						@Override
+						public void take(String res) {
+							conn.rmTagBook(res, name);
+							toast("Tag entfernt");
+							userinfo(name);
+						}
+					});
+			}
+		});
+
+		Btouserinfo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				userinfo(name);
+			}
+		});
+	}
 
 	/**
 	 * Fetch info about a Copy and show it in the CopyInfoLayout.
