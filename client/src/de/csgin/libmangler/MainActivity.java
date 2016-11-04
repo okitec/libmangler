@@ -867,8 +867,15 @@ public class MainActivity extends Activity {
 		this.isbn = null;
 		this.name = null;
 
+		String info = conn.printCopy(id);
+		if(info.equals("")) {
+			notice("Fehler", "'" + id + "' existiert nicht");
+			flipView(MainLayout);
+			return;
+		}
+
 		TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
-		Tcopyinfo.setText(conn.printCopy(id));
+		Tcopyinfo.setText(info);
 		flipView(CopyInfoLayout);
 	}
 
@@ -880,9 +887,15 @@ public class MainActivity extends Activity {
 		this.isbn = isbn;
 		this.name = null;
 
+		String info = conn.printBook(isbn);
+		if(info.equals("")) {
+			notice("Fehler", "'" + isbn + "' existiert nicht");
+			flipView(MainLayout);
+			return;
+		}
 
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
-		Tbookinfo.setText(conn.printBook(isbn));
+		Tbookinfo.setText(info);
 		flipView(BookInfoLayout);
 	}
 
@@ -894,8 +907,17 @@ public class MainActivity extends Activity {
 		this.isbn = isbn;
 		this.name = null;
 
+		String info = conn.printBookOfID(id);
+		if(info.equals("")) {
+			// Every copy *must* have a book. If we don't find a book,
+			// we can assume the copy doesn't exist.
+			notice("Fehler", "'" + id + "' existiert nicht");
+			flipView(MainLayout);
+			return;
+		}
+
 		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
-		Tbookinfo.setText(conn.printBookOfID(id));
+		Tbookinfo.setText(info);
 		flipView(BookInfoLayout);
 	}
 
@@ -907,8 +929,15 @@ public class MainActivity extends Activity {
 		this.isbn = null;
 		this.name = name;
 
+		String info = conn.printUser(name);
+		if(info.equals("")) {
+			notice("Fehler", "'" + name + "' existiert nicht");
+			flipView(MainLayout);
+			return;
+		}
+
 		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
-		Tuserinfo.setText(conn.printUser(name));
+		Tuserinfo.setText(info);
 		flipView(UserInfoLayout);
 	}
 
