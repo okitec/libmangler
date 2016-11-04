@@ -153,7 +153,11 @@ parse:
 			if start != -1 {
 				hasarg = true
 				start++                                     // +1: skip the slash
-				end = strings.IndexRune(s[start:], '/') + 2 // +2: used as slice end
+				endslash := strings.IndexRune(s[start:], '/')
+				if endslash < 0 {
+					return "missing closing slash\n"
+				}
+				end = endslash + 2                          // +2: used as slice end
 				csvr := csv.NewReader(strings.NewReader(s[start:end]))
 
 				args, err = csvr.Read()
