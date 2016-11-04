@@ -22,7 +22,7 @@ import (
 
 // Protocol constants
 const (
-	protoVersion   = 10
+	protoVersion   = 11
 	protoPort      = 40000
 	protoEndMarker = "---\n" // for determining end-of-response
 )
@@ -44,7 +44,7 @@ parse:
 		case '\n':
 			return ""
 
-		case 'A':
+		case 'b':
 			// input: A (Book 978-0-201-141-03614-4 (authors "George Orwell") (title "Nineteen Eighty-Four"))
 			type bookinfo struct {
 				isbn       string
@@ -108,7 +108,7 @@ parse:
 			}
 			return ""
 
-		case 'a':
+		case 'c':
 			var b *elem.Book
 			var n int
 			var ok bool
