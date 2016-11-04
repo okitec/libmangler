@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 10
+Version: Protokollversion 11
 
 0. Index
 --------
@@ -263,11 +263,11 @@ XXX einfach #retired-Tag hinzufügen – ist dann dieser Command nötig?
 Löscht Selektion. Bücher mit existierenden Copies können nicht gelöscht
 werden, User mit ausgeliehenen Copies auch nicht.
 
-#### `A` - add book
+#### `b` - add book
 
 *Synopsis*
 
-		A (book <ISBN> (authors <A 1> <A 2>) (title <Titel>))
+		b (book <ISBN> (authors <A 1> <A 2>) (title <Titel>))
 
 *Beschreibung*
 
@@ -275,11 +275,11 @@ Erzeugt ein neues Buch mit dieser ISBN, diesen Autoren und diesem Titel.
 Fehler können auftreten, wenn das Buch schon existiert oder die ISBN ungültig
 ist.
 
-#### `a` - add copy of a book
+#### `c` - add copy of a book
 
 *Synopsis*
 
-		a isbn n
+		c isbn n
 
 *Beschreibung*
 
