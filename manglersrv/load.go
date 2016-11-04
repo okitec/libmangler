@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/okitec/libmangler/elem"
 	"github.com/okitec/libmangler/sexps"
@@ -266,22 +266,20 @@ func getCopies(sexp sexps.Sexp) (ls []int64, err error) {
 	return ls, nil
 }
 
-func load() (nbooks, nusers, ncopies int) {
+func load() (nbooks, nusers, ncopies int, err error) {
 	// Copies must be read last so that they can be connected to their users.
 	fnames := []string{"books", "users", "copies"}
 
 	for _, fname := range fnames {
 		input, err := os.Open(fname)
 		if err != nil {
-			log.Printf("can't open %s: %v", input, err)
-			return
+			return 0, 0, 0, fmt.Errorf("can't open '%s': %v", fname, err)
 		}
 
 		// slurp whole file
 		buf, err := ioutil.ReadAll(input)
 		if err != nil {
-			log.Printf("io error when reading %s: %v", input, err)
-			return
+			return 0, 0, 0, fmt.Errorf("io error when reading '%s': %v", fname, err)
 		}
 		input.Close()
 
@@ -291,18 +289,24 @@ func load() (nbooks, nusers, ncopies int) {
 			var err error
 			sexp, tail, err = sexps.Parse(tail)
 			if err != nil {
-				log.Printf("parse error in %s: %v", input.Name(), err)
-				return
+				pos := len(string(buf)) - len(tail)
+				nlines := strings.Count(string(buf[:pos]), "\n") + 1
+				return nbooks, nusers, ncopies, fmt.Errorf("parse error in '%s', line %d: %v", fname, nlines, err)
 			}
 
 			switch fname {
 			case "books":
 				b := bookctx{}
 				sexps.Apply(sexp, handleBook, &b)
+				if b.state == "err" {
+					pos := len(string(buf)) - len(tail)
+					nlines := strings.Count(string(buf[:pos]), "\n") + 1
+					return nbooks, nusers, ncopies, fmt.Errorf("malformed book entry around line %d in '%s'", nlines, fname)
+				}
+
 				bp, err := elem.NewBook(b.isbn, b.title, b.authors)
 				if err != nil {
-					log.Printf("can't create book: %v", err)
-					break
+					return nbooks, nusers, ncopies, fmt.Errorf("can't create book: %v", err)
 				}
 
 				// Must be last, clears any notes produced by NewBook.
@@ -314,10 +318,15 @@ func load() (nbooks, nusers, ncopies int) {
 			case "users":
 				u := userctx{}
 				sexps.Apply(sexp, handleUser, &u)
+				if u.state == "err" {
+					pos := len(string(buf)) - len(tail)
+					nlines := strings.Count(string(buf[:pos]), "\n") + 1
+					return nbooks, nusers, ncopies, fmt.Errorf("malformed user entry around line %d in '%s'", nlines, fname)
+				}
+
 				up, err := elem.NewUser(u.name)
 				if err != nil {
-					log.Printf("can't create user: %v", err)
-					break
+					return nbooks, nusers, ncopies, fmt.Errorf("can't create user: %v", err)
 				}
 
 				// Must be last, clears any notes produced by NewUser.
@@ -329,17 +338,21 @@ func load() (nbooks, nusers, ncopies int) {
 			case "copies":
 				c := copyctx{}
 				sexps.Apply(sexp, handleCopy, &c)
+				if c.state == "err" {
+					pos := len(string(buf)) - len(tail)
+					nlines := strings.Count(string(buf[:pos]), "\n") + 1
+					return nbooks, nusers, ncopies, fmt.Errorf("malformed copy entry around line %d in '%s'", nlines, fname)
+				}
+
 				cp, err := elem.NewCopy(c.id, elem.Books[elem.ISBN(c.isbn)])
 				if err != nil {
-					log.Printf("can't create copy: %v", err)
-					break
+					return nbooks, nusers, ncopies, fmt.Errorf("can't create copy: %v", err)
 				}
 
 				if len(c.user) > 0 && elem.Users[c.user] != nil {
 					err := cp.Lend(elem.Users[c.user])
 					if err != nil {
-						log.Printf("can't associate copy with user anymore: %v", err)
-						break
+						return nbooks, nusers, ncopies, fmt.Errorf("can't associate copy with user anymore: %v", err)
 					}
 				}
 
@@ -352,5 +365,5 @@ func load() (nbooks, nusers, ncopies int) {
 		}
 	}
 
-	return
+	return nbooks, nusers, ncopies, nil
 }

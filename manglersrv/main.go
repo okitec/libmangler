@@ -391,7 +391,12 @@ func main() {
 		log.Panicln("net.Listen failed:", err)
 	}
 
-	nbooks, nusers, ncopies := load()
+	nbooks, nusers, ncopies, err := load()
+	if err != nil {
+		log.Printf("can't load data: %v", err)
+		log.Fatalf("quitting without overwriting old data")
+	}
+
 	log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)
 
 	//cf. https://golang.org/pkg/os/signal/#Notify
@@ -401,7 +406,7 @@ func main() {
 	go func() {
 		for _ = range sc {
 			store()
-			log.Println("Saved data, exiting now...")
+			log.Println("saved data by overwriting old data, exiting now...")
 			os.Exit(0)
 		}
 	}()
