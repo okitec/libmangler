@@ -29,9 +29,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * The only Activity of the libmangler app. There's a centrail ViewFlipper flipping between
+ * The only Activity of the libmangler app. There's a central ViewFlipper flipping between
  * ten layouts instead of multiple activities. Much of the code of MainActivity is devoted
  * to the initialisation of said layouts and the button-handlers within them.
+ *
+ * The user interface is only initialised after a network connection has been opened.
  *
  * There are also a few helper routines like list(), notice(), panic(), toast().
  */
@@ -65,7 +67,12 @@ public class MainActivity extends Activity {
 	private String isbn;
 	private String name;
 
-	private boolean isPanicking;
+	/**
+	 * When this is false, the back button closes the app instead of returning
+	 * to the main screen. This is the case when panic has been called, but also
+	 * before a connection has been established.
+	 */
+	private boolean canReturnToMain;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +85,15 @@ public class MainActivity extends Activity {
 		StrictMode.ThreadPolicy p = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 		StrictMode.setThreadPolicy(p); 
 
-		initLayouts();
+		srvaddr = SRVADDR;
+		port = PORT;
+		canReturnToMain = false;
+
+		// The Panic Layout is used now so that the user doesn't click any buttons
+		// that don't have any effect because no connection is open. The layouts
+		// are initialised only after the connection is open.
+		((TextView) findViewById(R.id.Tpanic)).setText("Keine Verbindung aufgebaut");
+		flipView(PanicLayout);
 
 		new StringDialog(this, "Serveradresse", "Format: Adresse[:Port]", SRVADDR, new StringDialog.ResultTaker() {
 			@Override
@@ -101,6 +116,14 @@ public class MainActivity extends Activity {
 				}
 
 				conn = getConn(srvaddr, port);
+
+				if(conn != null) {
+					toast("Verbindung geöffnet");
+					// Only now initialise the Buttons, after conn is != null and we know
+					// that clicking them won't crash the app.
+					initLayouts();
+					flipView(MainLayout);
+				}
 			}
 		});
 	}
@@ -120,7 +143,7 @@ public class MainActivity extends Activity {
 		out.putString("name", name);
 		out.putString("srvaddr", srvaddr);
 		out.putInt("port", port);
-		out.putBoolean("isPanicking", isPanicking);
+		out.putBoolean("canReturnToMain", canReturnToMain);
 	}
 
 	@Override
@@ -131,15 +154,15 @@ public class MainActivity extends Activity {
 		name = in.getString("name");
 		srvaddr = in.getString("srvaddr");
 		port = in.getInt("port");
-		isPanicking = in.getBoolean("isPanicking");
+		canReturnToMain = in.getBoolean("canReturnToMain");
 	}
 
 	@Override
 	public void onBackPressed() {
-		if(isPanicking)
-			finish();
-		else
+		if(canReturnToMain)
 			flipView(MainLayout);
+		else
+			finish();
 	}
 
 	@Override
@@ -909,7 +932,7 @@ public class MainActivity extends Activity {
 	 * Bug: Does return; can't reasonably loop here.
 	 */
 	private void panic(String s) {
-		isPanicking = true;
+		canReturnToMain = false;
 		Log.e("libmangler", "panic: " + s);
 		TextView Tpanic = (TextView) findViewById(R.id.Tpanic);
 		Tpanic.setText("Fataler Fehler: " + s);
