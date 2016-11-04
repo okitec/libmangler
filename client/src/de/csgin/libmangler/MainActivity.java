@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
 					id = Long.parseLong(s);
 					copyinfo(id);
 				} catch(NumberFormatException nfe) {
-					toast("QR code is not a valid copy ID");
+					toast("QR-Code ist keine Zahl");
 				}
 			}
 			/* don't do anything on failure */
@@ -239,10 +239,9 @@ public class MainActivity extends Activity {
 					i.putExtra("SCAN_MODE", "QR_CODE_MODE");
 					i.putExtra("SAVE_HISTORY", false);
 					startActivityForResult(i, SCANREQ);
-				} catch(Exception e) {
-					// XXX handle specific exception
-					// XXX localisations
-					panic("ZXing Barcode scanner app not installed. Please install it to scan QR codes.");
+				} catch(android.content.ActivityNotFoundException anfe) {
+					notice("Fehler", "Der ZXing-Barcodescanner ist nicht installiert. Bitte installieren, um QR-Codes lesen zu können.");
+					flipView(MainLayout);
 				}
 			}
 		});
