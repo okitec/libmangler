@@ -625,16 +625,17 @@ selektiert das, was man erwarten würde [DARSTELLUNG WÄRE NEAT].
 Viel mehr lässt sich zum Server nicht sagen: in `manglersrv/main.go` wird für
 jede Verbindung eine Goroutine (eine Art leichter Thread
 [https://golang.org/doc/faq#goroutines]) gestartet, die dann `handle` ausführt,
-welches wiederum für alle Requests `interpret` aufrufet und den sonstigen
+welches wiederum für alle Requests `interpret` aufruft und den sonstigen
 Zustand der Verbindung hält – inklusive *Dot*. Das Speichern der Elemente auf
 der Festplatte wird in `manglersrv/store.go` bewertstelligt, indem der Server
-die Dateien erstellt und die Ergebnisse von `interpret("Bp", &dot)` in sie
-schreibt. Dieses `dot` ist in dem Fall ein Dummy. Beim Laden werden die
-S-Expressions der Elemente durch einen simplen *recursive-descent*
-S-Expression-Parser gehetzt. Das Resultat ist ein Baum, der pre-order
-durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des Baums, wird eine
-Funktion aufgerufen, die eine Zustandsmachine implementiert, die alle
-Informationen aus dem Baum extrahiert und so das Element erzeugt.
+für Bücher, Copies und User jeweils eine Datei erstellt und das Ergebnis von
+`interpret(`*X*`, &dot)` in die entsprechende Datei schreibt, wobei *X*
+bei Büchern `Bp`, bei Copies `Cp` und bei Usern `Cp` ist. Das `dot` ist in dem
+Fall ein Dummy. Beim Laden werden die S-Expressions der Elemente durch einen
+simplen *recursive-descent* S-Expression-Parser gehetzt. Das Resultat ist ein
+Baum, der pre-order durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des
+Baums, wird eine Funktion aufgerufen, die eine Zustandsmachine implementiert,
+die alle Informationen aus dem Baum extrahiert und so das Element erzeugt.
 
 ### Client
 
