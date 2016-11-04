@@ -32,7 +32,7 @@ Inhaltsverzeichnis
 *libmangler* ist ein Verwaltungssystem für Lernmittelbüchereien. Es besteht
 aus einem Server und einem Android-Client, die mithilfe eines einfachen
 Protokolls Daten austauschen. Dieses Protokoll ist jedoch trotz der Einfachheit
-generell und ist vergleichbar mit einer Datenbanksprache wie SQL, jedoch
+generell und vergleichbar mit einer Datenbanksprache wie SQL, jedoch
 zugeschnitten auf die Anwendung.
 
 Jedes Buchexemplar hat eine einzigartige Identifikationsnummer, welche als
@@ -213,7 +213,7 @@ einer *Era Number*, einem in Sekunden gemessenen *Era Offset* und einem Bruch
 besteht. Die *Era Number* bezeichnet den Bereich, in dem der 32-bit Offset nicht
 überläuft. Momentan sind wir in Era 0; ab dem 08. Februar 2036 werden wir in
 Era 1 sein. Das im Protokoll verwendete *Timestamp*-Format hat einen 32-bit
-Sekundenzähler und einen Bruch; das *Short*-Format ist ähnlich, hat aber nur
+Sekundenzähler und einen Bruch[für Millisekunden? nicht ganz klar]; das *Short*-Format ist ähnlich, hat aber nur
 16 Bit Präzision.
 
 XXX Absatz präzisieren; siehe Beispielcode-Datendefinitionen in RFC 5905.
@@ -222,10 +222,16 @@ TCP kann hier nicht verwendet werden, weil es verlorene Pakete wieder
 überträgt und dadurch die Zeitstempel in diesen verfälscht [citation needed],
 deswegen wird UDP auf Port 123 verwendet. NTP verwendet konventionelle binäre
 Pakete mit einem Header und einem aus vier Timestamps bestehenden Payload. Ein
-invalider Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket, mit
+invalider Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket[warum der Name], mit
 welchem Kontrollcodes übertragen werden; diese sind Vier-Zeichen-ASCII-Strings
 an der Stelle, an der sonst die Referenz-ID des Zeitgebers steht (z.B. "GPS").
 
+<<<<<<< HEAD
+=======
+
+XXX mehr Fokus auf Protokoll, weniger auf Umstände?[Ich fand die Umstände interessant]
+
+>>>>>>> 30be153dfa10f52033161b145d6ff59364a8f37e
  - src: RFC 5905, Wikipedia
 
 #### 3.2.3 HTTP – Hypertext Transfer Protocol
@@ -260,7 +266,7 @@ hier nicht. Newsseiten sind häufige Übeltäter.
 
 HTTP ist nicht für bidirektionale Kommunikation gedacht, da die
 Zustandslosigkeit im Weg steht. Cookies sind ein Hack, um diese zu umgehen, und
-niemand mag Cookies. Ein anderer Weg sind Parameter in der URL, die den ganzen
+niemand mag Cookies[lol]. Ein anderer Weg sind Parameter in der URL, die den ganzen
 Zustand übertragen und leicht zu manipulieren sind; mitunter wird grob
 fahrlässig ein verschlüsseltes Passwort übertragen [Fahrenlernen Max].
 
@@ -287,7 +293,7 @@ verwalten; dadurch kann man von mehreren Geräten auf denselben Baum zugreifen.
 Der Client cacht die Mails nur; der Server hat die relevante Kopie.
 Verständlicherweise ist IMAP komplexer als POP3.
 
-Ich will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie es auch das
+Ich["zu vermeiden", in dem Fall aber wohl sinnvoll] will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie es auch das
 *libmangler*-Protokoll zeitweise getan hat, und weil der Server von sich aus
 senden kann. Das folgende Exzerpt in [RFC 3501, Sektion 8] soll das nun
 verdeutlichen. Zeilen mit einem `*` werden vom Server in Eigeninitiative
@@ -312,9 +318,15 @@ sein; Anfrage und Antwort haben denselben Tag. Bei Antworten folgt dann `OK`
 #### 3.2.5 mpmp
 
 *mpmp* ist kein Internetstandard. Es ist ein noch unfertiger Monopoly-Klon im
+<<<<<<< HEAD
 Stil der Weimarer Republik, bei dem man über ein Netzwerk spielen kann. Entstanden
 als Informatikprojekt der elften Klasse, das einige aus dem Seminar erstellt
 haben, wird es nun von mir instandgehalten. Das Protokoll ist meine Schöpfung,
+=======
+Stil der Weimarer Republik, bei dem man über ein Netzwerk spielen kann. Es ist[Wiederholung]
+das Informatikprojekt der elften Klasse, das einige aus dem Seminar erstellt
+haben und nun von mir instandgehalten wird. Das Protokoll ist meine Schöpfung,
+>>>>>>> 30be153dfa10f52033161b145d6ff59364a8f37e
 weswegen ich über die speziellen Entscheidungen schreiben will, die in das
 Protokoll einflossen.
 
@@ -330,7 +342,7 @@ dass einige der `+JAWOHL`s noch fehlen. Außerdem sieht man den einzigartigen
 erste Argument nennt, hier `1`. Durch einen Mitschnitt des Protokolls ab dem
 Beginn kann man den gesamten Verlauf des Spiels nachvollziehen.
 
-	S: +JAWOHL Willkommen, Genosse! Subscriben Sie!
+	S: +JAWOHL Willkommen, Genosse! Subscriben Sie![so happy about that]
 	C: subscribe player #0f0f0f oki
 	S: playerlist-update 1
 	S: #0F0F0F: Player: oki
@@ -414,7 +426,7 @@ selektiert das eine Buch mit dieser ISBN und gibt alle Informationen darüber
 aus. Im zweiten Beispiel werden alle Copies selektiert, die die User `Hans` und
 `Max Mustermann` ausgeliehen haben; diese werden zurückgegeben (`r`) und dann
 ganz aus dem System gelöscht (`d`), weil Hans und Max eine Bücherverbrennung
-veranstaltet haben. Das dritte Beispiel selektiert die Ausleiher der Copies mit
+veranstaltet haben[omg]. Das dritte Beispiel selektiert die Ausleiher der Copies mit
 den IDs `0`, `405` und `3050` und gibt alle Informationen zu ihnen aus. Diese
 zwei Beispiele zeigen, dass die Selektionsargumente kontextgemäß interpretiert
 werden. Es wird immer das selektiert, was man erwartet.
@@ -443,7 +455,7 @@ Ansatz: Vom Client frei wählbare *Tags* wie in 9P und IMAP werden vor jedem
 Request angefügt. Die Serverantwort enthält denselben Tag. Der Client sollte
 beim Empfang einer Antwort die im Voraus für diesen Tag bestimmte
 Handlerfunktion ausführen. Da sich dies massiv auf die Komplexität der App
-auswirkte und obendrein nie funktionsfähig war, ignorierte der Autor Androids
+auswirkte und obendrein nie funktionsfähig war, ignorierte der Autor[vorher noch "ich", jetzt "der Autor"?] Androids
 Warnung, nicht im UI-Thread zu netzwerken, und vereinfachte den Client wieder.
 Jetzt funktioniert er, und da der Socket einen Timeout von drei Sekunden
 bekommen hat, gibt es keine zu großen Wartezeiten.
