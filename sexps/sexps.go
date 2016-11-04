@@ -75,7 +75,7 @@ func (ap *atom) String() string {
 // Return possibly quoted atom.
 func (ap *atom) Print() string {
 	s := string(*ap)
-	if strings.ContainsAny(s, " \t") {
+	if strings.ContainsAny(s, " \t") || s == "" {
 		return fmt.Sprintf("%q", s)
 	}
 	return s
@@ -193,10 +193,6 @@ func sexpr(s string) (sexp Sexp, tail string, err error) {
 // sexprlist → | sexpr sexprlist
 func sexprlist(s string) (sexp Sexp, tail string, err error) {
 	t, tail := tok(s)
-	if t == "" {
-		return mkatom(t), tail, nil
-	}
-
 	if t == ")" {
 		return nil, untok(t, tail), nil
 	}
@@ -256,6 +252,12 @@ func tok(s string) (tok string, tail string) {
 }
 
 func untok(s string, tail string) string {
+	// Issue #40: If s is the empty string, *do* append `""` again, else we'd
+	// lose this information.
+	if s == "" {
+		return `""` + tail
+	}
+
 	// Need to re-add quotes or else we have nuclear fission, which is wrong.
 	// (Issue #26) However, don't do that if there are braces in there; they
 	// are part of the syntax structure.
