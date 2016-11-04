@@ -496,7 +496,7 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 
 ### Geschichte und Ausblick
 
-Das Protokoll durchlief zehn Versionen, von denen die ersten nie implementiert
+Das Protokoll durchlief elf Versionen, von denen die ersten nie implementiert
 wurden und andere wieder rückgängig gemacht wurden. Zu Beginn war die
 `sam`-Kommandosprache Hauptinspiration und in Version 1 sollte die Selektion
 funktionieren, indem über der ganzen Datenmenge mit regulären Ausdrücken
@@ -505,18 +505,23 @@ Server war in C und hatte keine Reflexionsmöglichkeiten – gab es bereits in
 Version 2 die Möglichkeit, nach ISBNs, Copy-IDs und Nutzernamen zu suchen, der
 `p`-Befehl lieferte aber noch JSON statt S-Expressions; mehrzeilige Antworten
 des Servers wurden mit einem einfachen Punkt begrenzt (vgl. SMTP) und hatten
-eine Statuszeile zu Beginn. Version 3 bringt S-Expressions. Version 4 bringt
-#tags, die Büchern, Copies und Nutzern hinzugefügt werden können. Version 5
-nennt #tags in *Labels* um und fügt allen Requests und Responses Message-Tags
-wie in IMAP hinzu. Version 6 macht diese Änderungen, die große Komplexität im
-Client hervorriefen, wieder rückgängig und macht am eine einer Antwort eine
-Zeile aus drei Strichen (`---`). Version 7 bringt die Kommandos, um #tags
-aufzulisten, zu erstellen und zu löschen. Version 8 erlaubt Suche nach
-Metadaten, Version 9 fügt einen Befehl zum Auflisten von Selektionen hinzu.
-Version 10 implementiert *endlich* den Befehl zum Hinzufügen von Büchern
-vollständig; davor hat der nur die ISBN angenommen, weil es schwer ist, Titel
-und Autoren auf der "Kommandozeile" des Befehls abugrenzen. Jetzt verwendet der
-Befehl einfach eine S-Expression. Das Protokoll ist einem stetigen Wandel
+eine Statuszeile zu Beginn.
+
+Version 3 bringt S-Expressions. Version 4 bringt #tags, die Büchern, Copies und
+Nutzern hinzugefügt werden können. Version 5 nennt #tags in *Labels* um und
+fügt allen Requests und Responses Message-Tags wie in IMAP hinzu. Version 6
+macht diese Änderungen, die große Komplexität im Client hervorriefen, wieder
+rückgängig und macht am eine einer Antwort eine Zeile aus drei Strichen
+(`---`). Version 7 bringt die Kommandos, um #tags aufzulisten, zu erstellen und
+zu löschen. Version 8 erlaubt Suche nach Metadaten, Version 9 fügt einen
+Befehl zum Auflisten von Selektionen hinzu. Version 10 implementiert *endlich*
+den Befehl zum Hinzufügen von Büchern vollständig; davor hat der nur die ISBN
+angenommen, weil es schwer ist, Titel und Autoren auf der "Kommandozeile" des
+Befehls abzugrenzen. Jetzt verwendet der Befehl einfach eine S-Expression.
+Version 11 benannte die Kommandos `A` (Buch erstellen) und `a` (Copy erstellen)
+in `b` und `c` um, um, sich `u` (User erstellen) anzupassen.
+
+Wie im letzten Absatz kurz abgerissen, ist das Protokoll einem stetigen Wandel
 unterworfen, um der Entwicklung der App und des Servers entgegenzukommen;
 gleichzeitig hat sich zentral seit Version 3 nichts geändert. Zukünftige
 Änderungen werden wohl einen ähnlich kleinen Maßstab haben.
