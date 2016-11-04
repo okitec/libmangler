@@ -1,7 +1,7 @@
 Spezifikation der Bibliotheksverwaltung
 =======================================
 
-Version: Protokollversion 9
+Version: Protokollversion 10
 
 0. Index
 --------
@@ -267,23 +267,24 @@ werden, User mit ausgeliehenen Copies auch nicht.
 
 *Synopsis*
 
-		A isbn
+		A (book <ISBN> (authors <A 1> <A 2>) (title <Titel>))
 
 *Beschreibung*
 
-Erzeugt ein neues Buch, das diese ISBN hat.
-
-XXX Titel, *Autoren* (wie abgrenzen?)
+Erzeugt ein neues Buch mit dieser ISBN, diesen Autoren und diesem Titel.
+Fehler können auftreten, wenn das Buch schon existiert oder die ISBN ungültig
+ist.
 
 #### `a` - add copy of a book
 
 *Synopsis*
 
-		a book n
+		a isbn n
 
 *Beschreibung*
 
-Erzeugt `n` Exemplare dieses Buchs.
+Erzeugt `n` Exemplare des Buchs mit dieser ISBN.
+
 
 #### `u` - add user
 
