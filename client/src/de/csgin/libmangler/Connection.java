@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
  * unneeded functions have not been implemented.
  */
 public class Connection {
-	private static final int VERS         = 9;
+	private static final int VERS         = 10;
 	private static final String ENDMARKER = "---";
 	private static final int TIMEOUT      = 3000;  /* in ms */
 
@@ -124,7 +124,13 @@ public class Connection {
 	}
 
 	public String addBook(String isbn, String title, String[] authors) {
-		return transact("A " + isbn); // XXX add other info to the A command
+		String as = "";
+		for(String a: authors)
+			as += "\"" + a + "\" ";
+		as = as.trim();
+
+		String s = String.format("(book %s (authors %s) (title \"%s\"))", isbn, as, title);
+		return transact("A " + s);
 	}
 
 	public String addUser(String name) {

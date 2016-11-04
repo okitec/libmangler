@@ -17,11 +17,12 @@ import (
 	"unicode"
 
 	"github.com/okitec/libmangler/elem"
+	"github.com/okitec/libmangler/sexps"
 )
 
 // Protocol constants
 const (
-	protoVersion   = 9
+	protoVersion   = 10
 	protoPort      = 40000
 	protoEndMarker = "---\n" // for determining end-of-response
 )
@@ -44,12 +45,67 @@ parse:
 			return ""
 
 		case 'A':
+			// input: A (Book 978-0-201-141-03614-4 (authors "George Orwell") (title "Nineteen Eighty-Four"))
+			type bookinfo struct {
+				isbn       string
+				authors    []string
+				title      string
+
+				isbnFilled bool
+				state      string
+				skip       int
+			}
+			bi := bookinfo{"", nil, "", false, "", 0}
+
+			// Remove cmd A from line
 			args := strings.Fields(s)
-			if len(args) < 2 {
-				return "Can't create book: missing ISBN\n"
+			t := strings.Join(args[1:], " ")
+			sexp, _, err := sexps.Parse(t)
+			if err != nil {
+				return fmt.Sprintf("can't create book: parsing error: %v\n", err)
 			}
 
-			_, err = elem.NewBook(args[1], "foo", nil) // XXX fetch or ask for title and author
+			sexps.Apply(sexp, func(atom sexps.Sexp, parent sexps.Sexp, data interface{}) {
+				b := data.(*bookinfo)
+
+				if b.skip > 0 {
+					b.skip--
+					return
+				}
+
+				switch b.state {
+				case "":
+					switch atom.String() {
+					case "book":
+						b.state = "get-isbn"
+					case "authors":
+						b.authors = sexps.List(parent.Cdr())
+						b.skip = len(b.authors)
+					case "title":
+						b.state = "get-title"
+					default:
+						// just ignore unknown atoms
+					}
+
+				case "get-isbn":
+					b.isbn = atom.String()
+					b.isbnFilled = true
+					b.state = ""
+
+				case "get-title":
+					b.title = atom.String()
+					b.state = ""
+				}
+			}, &bi)
+
+			if !bi.isbnFilled {
+				return fmt.Sprintf("can't create book: not even an ISBN? Really?\n")
+			}
+
+			_, err = elem.NewBook(bi.isbn, bi.title, bi.authors)
+			if err != nil {
+				return fmt.Sprintf("can't create book: NewBook: %v\n", err)
+			}
 			return ""
 
 		case 'a':

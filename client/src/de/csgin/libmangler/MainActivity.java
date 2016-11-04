@@ -414,6 +414,9 @@ public class MainActivity extends Activity {
 				String sauthors = ((EditText) findViewById(R.id.Eauthors)).getText().toString();
 				String authors[] = sauthors.split(",");
 
+				for(int i = 0; i < authors.length; i++)
+					authors[i] = authors[i].trim();
+
 				String err = conn.addBook(isbn, title, authors);
 				if(err.equals(""))
 					toast("Buch erstellt");
