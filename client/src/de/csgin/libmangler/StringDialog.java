@@ -1,6 +1,5 @@
 package de.csgin.libmangler;
 
-import android.app.Dialog;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
