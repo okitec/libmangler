@@ -30,7 +30,7 @@ import java.util.Arrays;
 
 /**
  * The only Activity of the libmangler app. There's a central ViewFlipper flipping between
- * ten layouts instead of multiple activities. Much of the code of MainActivity is devoted
+ * seven layouts instead of multiple activities. Much of the code of MainActivity is devoted
  * to the initialisation of said layouts and the button-handlers within them.
  *
  * The user interface is only initialised after a network connection has been opened.
@@ -45,11 +45,8 @@ public class MainActivity extends Activity {
 	private static final int ElemsLayout = 3;
 	private static final int AddBookLayout = 4;
 	private static final int CopyInfoLayout = 5;
-	private static final int CopyInfoLayout2 = 6;
-	private static final int BookInfoLayout = 7;
-	private static final int BookInfoLayout2 = 8;
-	private static final int UserInfoLayout = 9;
-	private static final int UserInfoLayout2 = 10;
+	private static final int BookInfoLayout = 6;
+	private static final int UserInfoLayout = 7;
 
 	/** Request code for QR code scanning intent */
 	private static final int SCANREQ = 0;
@@ -220,11 +217,8 @@ public class MainActivity extends Activity {
 		initElemsLayout();
 		initAddBookLayout();
 		initCopyInfoLayout();
-		initCopyInfoLayout2();
 		initBookInfoLayout();
-		initBookInfoLayout2();
 		initUserInfoLayout();
-		initUserInfoLayout2();
 	}
 
 	private void initMainLayout() {
@@ -447,12 +441,18 @@ public class MainActivity extends Activity {
 	}
 
 	private void initCopyInfoLayout() {
-		final TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
+		TextView Tcopyinfo = (TextView) findViewById(R.id.Tcopyinfo);
+		final ViewFlipper Fcopyinfo = (ViewFlipper) findViewById(R.id.Fcopyinfo);
 		Button Blend = (Button) findViewById(R.id.Blend);
 		Button Breturn = (Button) findViewById(R.id.Breturn);
 		Button Bretire = (Button) findViewById(R.id.Bretire);
-		Button Btocopyinfo2 = (Button) findViewById(R.id.Btocopyinfo2);
+		Button Bflipcopy2 = (Button) findViewById(R.id.Bflipcopy2);
 		Button Btomain = (Button) findViewById(R.id.Btomain);
+		Button Btobook = (Button) findViewById(R.id.Btobook);
+		Button Bnote = (Button) findViewById(R.id.Bnote);
+		Button Baddtag = (Button) findViewById(R.id.Baddtag);
+		Button Brmtag = (Button) findViewById(R.id.Brmtag);
+		Button Bflipcopy1 = (Button) findViewById(R.id.Bflipcopy1);
 
 		// Why can't this be done in XML? Really.
 		Tcopyinfo.setMovementMethod(new ScrollingMovementMethod());
@@ -503,13 +503,10 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Btocopyinfo2.setOnClickListener(new OnClickListener() {
+		Bflipcopy2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
-				// no need for fetching data again
-				Tcopyinfo2.setText(Tcopyinfo.getText());
-				flipView(CopyInfoLayout2);
+				Fcopyinfo.showNext();
 			}
 		});
 
@@ -519,18 +516,6 @@ public class MainActivity extends Activity {
 				flipView(MainLayout);
 			}
 		});
-
-	}
-
-	private void initCopyInfoLayout2() {
-		TextView Tcopyinfo2 = (TextView) findViewById(R.id.Tcopyinfo2);
-		Button Btobook = (Button) findViewById(R.id.Btobook);
-		Button Bnote = (Button) findViewById(R.id.Bnote);
-		Button Baddtag = (Button) findViewById(R.id.Baddtag);
-		Button Brmtag = (Button) findViewById(R.id.Brmtag);
-		Button Btocopyinfo = (Button) findViewById(R.id.Btocopyinfo);
-
-		Tcopyinfo2.setMovementMethod(new ScrollingMovementMethod());
 
 		Btobook.setOnClickListener(new OnClickListener() {
 			@Override
@@ -594,21 +579,26 @@ public class MainActivity extends Activity {
 		});
 
 
-		Btocopyinfo.setOnClickListener(new OnClickListener() {
+		Bflipcopy1.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				copyinfo(id);
+				Fcopyinfo.showNext();
 			}
 		});
 	}
 
 	private void initBookInfoLayout() {
-		final TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		TextView Tbookinfo = (TextView) findViewById(R.id.Tbookinfo);
+		final ViewFlipper Fbookinfo = (ViewFlipper) findViewById(R.id.Fbookinfo);
 		Button Blistcopies = (Button) findViewById(R.id.Blistcopies);
 		Button Baddcopy = (Button) findViewById(R.id.Baddcopy);
 		Button Brmbook = (Button) findViewById(R.id.Brmbook);
-		Button Btobookinfo2 = (Button) findViewById(R.id.Btobookinfo2);
+		Button Bflipbook2 = (Button) findViewById(R.id.Bflipbook2);
 		Button Btomain4 = (Button) findViewById(R.id.Btomain4);
+		Button Bnote2 = (Button) findViewById(R.id.Bnote2);
+		Button Baddtag2 = (Button) findViewById(R.id.Baddtag2);
+		Button Brmtag2 = (Button) findViewById(R.id.Brmtag2);
+		Button Bflipbook1 = (Button) findViewById(R.id.Bflipbook1);
 
 		Tbookinfo.setMovementMethod(new ScrollingMovementMethod());
 
@@ -656,13 +646,10 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Btobookinfo2.setOnClickListener(new OnClickListener() {
+		Bflipbook2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
-				// no need for fetching data again
-				Tbookinfo2.setText(Tbookinfo.getText());
-				flipView(BookInfoLayout2);
+				Fbookinfo.showNext();
 			}
 		});
 
@@ -672,16 +659,6 @@ public class MainActivity extends Activity {
 				flipView(MainLayout);
 			}
 		});
-	}
-
-	private void initBookInfoLayout2() {
-		TextView Tbookinfo2 = (TextView) findViewById(R.id.Tbookinfo2);
-		Button Bnote2 = (Button) findViewById(R.id.Bnote2);
-		Button Baddtag2 = (Button) findViewById(R.id.Baddtag2);
-		Button Brmtag2 = (Button) findViewById(R.id.Brmtag2);
-		Button Btobookinfo = (Button) findViewById(R.id.Btobookinfo);
-
-		Tbookinfo2.setMovementMethod(new ScrollingMovementMethod());
 
 		Bnote2.setOnClickListener(new OnClickListener() {
 			@Override
@@ -728,21 +705,26 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Btobookinfo.setOnClickListener(new OnClickListener() {
+		Bflipbook1.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				bookinfo(isbn);
+				Fbookinfo.showNext();
 			}
 		});
 	}
 
 	private void initUserInfoLayout() {
-		final TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		TextView Tuserinfo = (TextView) findViewById(R.id.Tuserinfo);
+		final ViewFlipper Fuserinfo = (ViewFlipper) findViewById(R.id.Fuserinfo);
 		Button Blistcopies2 = (Button) findViewById(R.id.Blistcopies2);
 		Button Breturnall = (Button) findViewById(R.id.Breturnall);
 		Button Brmuser = (Button) findViewById(R.id.Brmuser);
-		Button Btouserinfo2 = (Button) findViewById(R.id.Btouserinfo2);
+		Button Bflipuser2 = (Button) findViewById(R.id.Bflipuser2);
 		Button Btomain5 = (Button) findViewById(R.id.Btomain5);
+		Button Bnote3 = (Button) findViewById(R.id.Bnote3);
+		Button Baddtag3 = (Button) findViewById(R.id.Baddtag3);
+		Button Brmtag3 = (Button) findViewById(R.id.Brmtag3);
+		Button Bflipuser1 = (Button) findViewById(R.id.Bflipuser1);
 
 		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
 
@@ -776,13 +758,10 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Btouserinfo2.setOnClickListener(new OnClickListener() {
+		Bflipuser2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);
-				// no need for fetching data again
-				Tuserinfo2.setText(Tuserinfo.getText());
-				flipView(UserInfoLayout2);
+				Fuserinfo.showNext();
 			}
 		});
 
@@ -792,16 +771,6 @@ public class MainActivity extends Activity {
 				flipView(MainLayout);
 			}
 		});
-	}
-
-	private void initUserInfoLayout2() {
-		TextView Tuserinfo2 = (TextView) findViewById(R.id.Tuserinfo2);
-		Button Bnote3 = (Button) findViewById(R.id.Bnote3);
-		Button Baddtag3 = (Button) findViewById(R.id.Baddtag3);
-		Button Brmtag3 = (Button) findViewById(R.id.Brmtag3);
-		Button Btouserinfo = (Button) findViewById(R.id.Btouserinfo);
-
-		Tuserinfo2.setMovementMethod(new ScrollingMovementMethod());
 
 		Bnote3.setOnClickListener(new OnClickListener() {
 			@Override
@@ -848,10 +817,10 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		Btouserinfo.setOnClickListener(new OnClickListener() {
+		Bflipuser1.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				userinfo(name);
+				Fuserinfo.showNext();
 			}
 		});
 	}

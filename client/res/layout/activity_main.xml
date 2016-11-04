@@ -180,83 +180,85 @@
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
 
-			<Button
-				android:id="@+id/Blend"
+			<ViewFlipper
+				android:id="@+id/Fcopyinfo"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/lend" />
+				android:layout_height="wrap_content" >
 
-			<Button
-				android:id="@+id/Breturn"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/returncopy" />
+				<LinearLayout
+					android:id="@+id/copycmd1"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
 
-			<Button
-				android:id="@+id/Bretire"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/retire" />
+					<Button
+						android:id="@+id/Blend"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/lend" />
+		
+					<Button
+						android:id="@+id/Breturn"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/returncopy" />
+		
+					<Button
+						android:id="@+id/Bretire"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/retire" />
+		
+					<Button
+						android:id="@+id/Bflipcopy2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/morecmds" />
+		
+					<Button
+						android:id="@+id/Btomain"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/tomain" />
+				</LinearLayout>
 
-			<Button
-				android:id="@+id/Btocopyinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/morecmds" />
+				<LinearLayout
+					android:id="@+id/copycmd2"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
 
-			<Button
-				android:id="@+id/Btomain"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
-   		 </LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/copyInfoLayout2"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-
-			<TextView
-				android:id="@+id/Tcopyinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:minLines="3"
-				android:maxLines="10"
-				android:textSize="18sp"
-				android:scrollbars="vertical"
-				android:scrollHorizontally="false"
-				android:fadeScrollbars="false" />
-
-			<Button
-				android:id="@+id/Btobook"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tobook" />
-
-			<Button
-				android:id="@+id/Bnote"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/note" />
-
-			<Button
-				android:id="@+id/Baddtag"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/addtag" />
-
-			<Button
-				android:id="@+id/Brmtag"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmtag" />
-
-			<Button
-				android:id="@+id/Btocopyinfo"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/back" />
+					<Button
+						android:id="@+id/Btobook"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/tobook" />
+		
+					<Button
+						android:id="@+id/Bnote"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/note" />
+		
+					<Button
+						android:id="@+id/Baddtag"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/addtag" />
+		
+					<Button
+						android:id="@+id/Brmtag"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/rmtag" />
+		
+					<Button
+						android:id="@+id/Bflipcopy1"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/back" />
+				</LinearLayout>
+			</ViewFlipper>
    		 </LinearLayout>
 
 		<LinearLayout
@@ -276,77 +278,78 @@
 				android:scrollHorizontally="false"
 				android:fadeScrollbars="false" />
 
-			<Button
-				android:id="@+id/Blistcopies"
+			<ViewFlipper
+				android:id="@+id/Fbookinfo"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/listcopies" />
+				android:layout_height="wrap_content" >
 
-			<Button
-				android:id="@+id/Baddcopy"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/addcopy" />
+				<LinearLayout
+					android:id="@+id/bookcmd1"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
 
-			<Button
-				android:id="@+id/Brmbook"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmbook" />
+					<Button
+						android:id="@+id/Blistcopies"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/listcopies" />
+		
+					<Button
+						android:id="@+id/Baddcopy"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/addcopy" />
+		
+					<Button
+						android:id="@+id/Brmbook"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/rmbook" />
+		
+					<Button
+						android:id="@+id/Bflipbook2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/morecmds" />
+		
+					<Button
+						android:id="@+id/Btomain4"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/tomain" />
+				</LinearLayout>
 
-			<Button
-				android:id="@+id/Btobookinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/morecmds" />
-
-			<Button
-				android:id="@+id/Btomain4"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/bookInfoLayout2"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-
-			<TextView
-				android:id="@+id/Tbookinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:minLines="3"
-				android:maxLines="10"
-				android:textSize="18sp"
-				android:scrollbars="vertical"
-				android:scrollHorizontally="false"
-				android:fadeScrollbars="false" />
-
-			<Button
-				android:id="@+id/Bnote2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/note" />
-
-			<Button
-				android:id="@+id/Baddtag2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/addtag" />
-
-			<Button
-				android:id="@+id/Brmtag2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmtag" />
-
-			<Button
-				android:id="@+id/Btobookinfo"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/back" />
+				<LinearLayout
+					android:id="@+id/bookcmd2"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
+		
+					<Button
+						android:id="@+id/Bnote2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/note" />
+					<Button
+						android:id="@+id/Baddtag2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/addtag" />
+		
+					<Button
+						android:id="@+id/Brmtag2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/rmtag" />
+		
+					<Button
+						android:id="@+id/Bflipbook1"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/back" />
+				</LinearLayout>
+			</ViewFlipper>
 		</LinearLayout>
 
 		<LinearLayout
@@ -365,76 +368,78 @@
 				android:scrollbars="vertical"
 				android:scrollHorizontally="false" />
 
-			<Button
-				android:id="@+id/Blistcopies2"
+			<ViewFlipper
+				android:id="@+id/Fuserinfo"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/listcopies" />
+				android:layout_height="wrap_content" >
 
-			<Button
-				android:id="@+id/Breturnall"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/returnall" />
+				<LinearLayout
+					android:id="@+id/usercmd1"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
 
-			<Button
-				android:id="@+id/Brmuser"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmuser" />
+					<Button
+						android:id="@+id/Blistcopies2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/listcopies" />
+		
+					<Button
+						android:id="@+id/Breturnall"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/returnall" />
+		
+					<Button
+						android:id="@+id/Brmuser"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/rmuser" />
+		
+					<Button
+						android:id="@+id/Bflipuser2"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/morecmds" />
+		
+					<Button
+						android:id="@+id/Btomain5"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/tomain" />
+				</LinearLayout>
 
-			<Button
-				android:id="@+id/Btouserinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/morecmds" />
-
-			<Button
-				android:id="@+id/Btomain5"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/tomain" />
-		</LinearLayout>
-
-		<LinearLayout
-			android:id="@+id/userInfoLayout2"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-
-			<TextView
-				android:id="@+id/Tuserinfo2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:minLines="3"
-				android:maxLines="10"
-				android:textSize="18sp"
-				android:scrollbars="vertical"
-				android:scrollHorizontally="false"
-				android:fadeScrollbars="false" />
-
-			<Button
-				android:id="@+id/Bnote3"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/note" />
-
-			<Button
-				android:id="@+id/Baddtag3"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/addtag" />
-
-			<Button
-				android:id="@+id/Brmtag3"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/rmtag" />
-
-			<Button
-				android:id="@+id/Btouserinfo"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/back" />
+				<LinearLayout
+					android:id="@+id/usercmd2"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="vertical" >
+		
+					<Button
+						android:id="@+id/Bnote3"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/note" />
+		
+					<Button
+						android:id="@+id/Baddtag3"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/addtag" />
+		
+					<Button
+						android:id="@+id/Brmtag3"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/rmtag" />
+		
+					<Button
+						android:id="@+id/Bflipuser1"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/back" />
+				</LinearLayout>
+			</ViewFlipper>
 		</LinearLayout>
 </ViewFlipper>
