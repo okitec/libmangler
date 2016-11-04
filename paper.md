@@ -496,7 +496,7 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 
 ### Geschichte und Ausblick
 
-Das Protokoll durchlief neun Versionen, von denen einige nie implementiert
+Das Protokoll durchlief zehn Versionen, von denen die ersten nie implementiert
 wurden und andere wieder rückgängig gemacht wurden. Zu Beginn war die
 `sam`-Kommandosprache Hauptinspiration und in Version 1 sollte die Selektion
 funktionieren, indem über der ganzen Datenmenge mit regulären Ausdrücken
@@ -512,11 +512,14 @@ wie in IMAP hinzu. Version 6 macht diese Änderungen, die große Komplexität im
 Client hervorriefen, wieder rückgängig und macht am eine einer Antwort eine
 Zeile aus drei Strichen (`---`). Version 7 bringt die Kommandos, um #tags
 aufzulisten, zu erstellen und zu löschen. Version 8 erlaubt Suche nach
-Metadaten, Version 9 fügt einen Befehl zum Auflisten von Selektionen hinzu. Das
-Protokoll ist einem stetigen Wandel unterworfen, um der Entwicklung der App und
-des Servers entgegenzukommen; gleichzeitig hat sich zentral seit Version 3
-nichts geändert. Zukünftige Änderungen werden wohl einen ähnlich kleinen
-Maßstab haben.
+Metadaten, Version 9 fügt einen Befehl zum Auflisten von Selektionen hinzu.
+Version 10 implementiert *endlich* den Befehl zum Hinzufügen von Büchern
+vollständig; davor hat der nur die ISBN angenommen, weil es schwer ist, Titel
+und Autoren auf der "Kommandozeile" des Befehls abugrenzen. Jetzt verwendet der
+Befehl einfach eine S-Expression. Das Protokoll ist einem stetigen Wandel
+unterworfen, um der Entwicklung der App und des Servers entgegenzukommen;
+gleichzeitig hat sich zentral seit Version 3 nichts geändert. Zukünftige
+Änderungen werden wohl einen ähnlich kleinen Maßstab haben.
 
 5. Detailbetrachtung des Servers und des Clients
 ------------------------------------------------
