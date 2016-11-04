@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/okitec/libmangler/elem"
@@ -25,6 +26,10 @@ const (
 	protoVersion   = 11
 	protoPort      = 40000
 	protoEndMarker = "---\n" // for determining end-of-response
+)
+
+const (
+	autosaveTime = 10 * time.Minute  // time between two autosaves
 )
 
 // The function interpret executes the line and returns a string that should be
@@ -393,11 +398,19 @@ func main() {
 
 	nbooks, nusers, ncopies, err := load()
 	if err != nil {
-		log.Printf("can't load data: %v", err)
-		log.Fatalf("quitting without overwriting old data")
+		// If we couldn't open the file, it's nothing; create them on exit
+		_, ok := err.(*os.PathError)
+		if ok {
+			log.Println("no input files found; new 'books', 'copies', and 'users' files will be created on close")
+			log.Println("[ATTENZIONE, PREGO] Check whether the user manglersrv runs as has permission to create files in the current directory")
+			log.Println("[ATTENZIONE, PREGO] and whether any existing 'books', 'copies', and 'users' files can be read and written.")
+		} else {
+			log.Printf("can't load data: %v", err)
+			log.Fatalf("quitting without overwriting old data")
+		}
+	} else {
+		log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)
 	}
-
-	log.Printf("loading data: %v books, %v users, %v copies", nbooks, nusers, ncopies)
 
 	//cf. https://golang.org/pkg/os/signal/#Notify
 	//cf. http://stackoverflow.com/questions/11268943/golang-is-it-possible-to-capture-a-ctrlc-signal-and-run-a-cleanup-function-in
@@ -405,11 +418,20 @@ func main() {
 	signal.Notify(sc, os.Interrupt)
 	go func() {
 		for _ = range sc {
-			store()
+			store("books", "copies", "users")
 			log.Println("saved data by overwriting old data, exiting now...")
 			os.Exit(0)
 		}
 	}()
+
+	// Autosave loop
+	tc := time.Tick(autosaveTime);
+	go func(tc <-chan time.Time) {
+		for _ = range tc {
+			store("books.autosave", "copies.autosave", "user.autosave")
+			log.Println("autosaving data to *.autosave")
+		}
+	}(tc)
 
 	for {
 		conn, err := ln.Accept()

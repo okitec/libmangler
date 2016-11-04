@@ -273,7 +273,7 @@ func load() (nbooks, nusers, ncopies int, err error) {
 	for _, fname := range fnames {
 		input, err := os.Open(fname)
 		if err != nil {
-			return 0, 0, 0, fmt.Errorf("can't open '%s': %v", fname, err)
+			return 0, 0, 0, err
 		}
 
 		// slurp whole file
