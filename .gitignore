@@ -1,6 +1,9 @@
 # HTMLs are usually generated from Markdown files.
 *.html
 
+# Generated with pandoc from Markdown.
+*.odt
+
 # This is just an example file tree for the books.
 data/
 

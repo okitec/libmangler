@@ -681,9 +681,8 @@ Vordergrund: das Protokoll war synchron und zustandsbehaftet, Android erlaubt
 jedoch blockierendes Netzwerken im EDT im Standardfall nicht. Der Versuch,
 Message-Tags wie in IMAP einzuführen und damit die Zustandshaftigkeit zu
 begrenzen, blähte den Code immens auf und wurde wieder verworfen. Der
-Durchbruch passierte mit dem Erlauben synchronen Netzwerkens auf dem EDT ^[How
-to fix android.os.NetworkOnMainThreadException?, Aufruf am
-05.11.2016, http://stackoverflow.com/a/9289190] entgegen der Android-Prinzipien.
+Durchbruch passierte mit dem Erlauben synchronen Netzwerkens auf dem EDT ^[
+vgl. @NetworkOnMainThreadException] entgegen der Android-Prinzipien.
 
 Diesen Regelbruch will ich kurz rechtfertigen. Man sollte nicht im zeichnenden
 Thread blockierende Operationen durchführen, weil das Aktualisierung der GUI
@@ -739,7 +738,7 @@ erstellt, in dem ein String eingegeben werden kann. Der zu viel Speicher
 verbrauchende Code in `Model.java` ist eine Übersetzung des Go-Codes für das
 Einlesen der S-Expressions von Büchern, Copies und Usern und hätte erlaubt,
 auf den Infoscreens eine schönere Darstellung anstatt der rohen S-Expression zu
-zeigen; das Testhandy konnte aufgrund der Rekursin im Parser nicht mithalten.
+zeigen; das Testhandy konnte aufgrund der Rekursion im Parser nicht mithalten.
 Die Datei ist inzwischen veraltet und nur im System, um zu demonstrieren, wie es
 hätte gehen sollen. Ohne `Model.java` hat der Client überhaupt kein
 Verständnis von den Daten, welche er handhabt. Das stellte sich aber als ein
@@ -763,4 +762,7 @@ soll.
  - IETF
  - The Go Authors
  - sam
+
+9. Bibliographie
+----------------
 
