@@ -651,14 +651,14 @@ einer zweiseitigen Liste an Befehlen wie "Ausleihen ..." oder "Beiseitestellen".
 Die Ellipse zeigt an, dass weitere Eingaben des Nutzers gefordert sind oder dass
 der aktuelle Screen verlassen wird, um einen anderen anzuzeigen.
 
-Die besondere Fähigkeit, weswegen es sinnvoll ist, den Client auf einem
-Mobilgerät zu implementieren, liegt im Scannen von QR-Codes. Man bringt an
-jeder physikalischen Buchexemplar seine ID in Stringform als QR-Code an und kann
-diesen Code mit der App scannen, um Informationen zu diesem Exemplar einzuholen
-und Befehle wie das Verleihen auszuführen. Die gebräuchiche Variante ist es in
-Android, auf [*ZXing*](https://github.com/zxing/zxing) zurückzugreifen, einer
-App, die eine Vielzahl von ein- und zweidimensionalen Barcode-Formaten lesen
-kann und einen Intent dafür bereitstellt (`com.google.zxing.client.android.SCAN`).
+Das Feature, weswegen es sinnvoll ist, den Client auf einem Mobilgerät zu
+implementieren, ist das Scannen von QR-Codes. Man bringt an jeder Exemplar seine
+ID in Stringform als QR-Code an und kann diesen Code mit der App scannen, um
+Informationen zu diesem Exemplar einzuholen und Befehle wie das Verleihen
+auszuführen. Die gebräuchiche Variante ist es in Android, auf
+[*ZXing*](https://github.com/zxing/zxing) zurückzugreifen, einer App, die eine
+Vielzahl von ein- und zweidimensionalen Barcode-Formaten lesen kann und einen
+Intent dafür bereitstellt (`com.google.zxing.client.android.SCAN`).
 
 Bei der Programmierung der App wurde auf möglichst geringe Code-Komplexität
 Wert gelegt, in Übereinstimmung mit der *New Jersey*-Denkweise
@@ -670,7 +670,7 @@ Wert gelegt, in Übereinstimmung mit der *New Jersey*-Denkweise
 
 Schlussendlich wurde dieses Ziel erreicht, aber die App hat einen steinigen Weg
 hinter sich – Entwicklungsschwierigkeiten, überkomplexe Teillösungen und
-Vernachlässigung wegen einem anderen Projekt. Die Entwicklungsschwierigkeiten
+Vernachlässigung wegen eines anderen Projekts. Die Entwicklungsschwierigkeiten
 rühren daher, dass der Autor zu Beginn kein funktionierendes Smartphone zum
 Testen hatte, und dass der Server in der Schule, wo zu Beginn entwickelt wurde,
 nicht funktionierte, der Go-Compiler als Virus eingestuft wurde und wird und die
@@ -714,7 +714,7 @@ kleine private Methode, die dieses Array an IDs zu einem String vereint, der
 dann an den Server gesendet werden kann.
 
 Ein weiteres Merkmal der Simplizität des Clients sind die verschiedenen
-Ansichten beziehungsweise Layouts. In *libnangler* gibt es nur eine Activity,
+Ansichten beziehungsweise Layouts. In *libmangler* gibt es nur eine Activity,
 die `MainActivity`. Zwischen den Layouts wird mit einem `ViewFlipper`
 umgeschaltet, dem man mit dessen Methode `setDisplayedChild` mitteilen kann, die
 wievielte Ansicht angezeigt werden soll. Da das häufig vorkommt, gibt es eine
@@ -731,16 +731,17 @@ kleine Helferprozedur.
 Die Informationsscreens für Bücher, Copies und Nutzer haben jeweils zwei
 Seiten voller Befehle; auch hier wurde ein `ViewFlipper` verwendet.
 
-Der Großteil des Codes von `MainActivity` ist in den
-`init*Layout`-Prozeduren zu finden, in denen den Buttons ihre Aktion
-zugewiesen wird. Da es in Java 5 noch keine Lambda-Ausdrücke gibt, ist die
-Notation recht umständlich und mechanisch. Zuletzt ist noch `StringDialog`
-nennenswert, welches einen Dialog erstellt, in dem ein String eingegeben werden
-kann. Der zu viel Speicher verbrauchende Code in `Model.java` ist eine
-Übersetzung des Go-Codes für das Einlesen der S-Expressions von Büchern,
-Copies und Usern und hätte erlaubt, auf den Infoscreens eine schönere
-Darstellung anstatt der rohen S-Expression zu zeigen. Ohne `Model.java` hat der
-Client überhaupt kein Verständnis von den Daten, welche er handhabt.
+Der Großteil des Codes von `MainActivity` ist in den `initLayout`-Prozeduren zu
+finden, in denen den Buttons ihre Aktion zugewiesen wird. Da es in Java 5 noch
+keine Lambda-Ausdrücke gibt, ist die Notation recht umständlich und
+mechanisch. Zuletzt ist noch `StringDialog` nennenswert, welches einen Dialog
+erstellt, in dem ein String eingegeben werden kann. Der zu viel Speicher
+verbrauchende Code in `Model.java` ist eine Übersetzung des Go-Codes für das
+Einlesen der S-Expressions von Büchern, Copies und Usern und hätte erlaubt,
+auf den Infoscreens eine schönere Darstellung anstatt der rohen S-Expression zu
+zeigen. Ohne `Model.java` hat der Client überhaupt kein Verständnis von den
+Daten, welche er handhabt. Das stellte sich aber als ein Non-Problem heraus,
+weil das Protokoll alles abdeckt, was der Client können soll.
 
 6. Ausblick
 -----------
