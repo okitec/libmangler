@@ -1,19 +1,3 @@
-Christoph-Scheiner-Gymnasium Ingolstadt
-=======================================
-
-Seminararbeit aus dem wissenschaftspropädeutischen Seminar Android-Apps im Fach Informatik
-
-Ein Lernmittelbibliothekssystem mit Fokus auf klar strukturierten Kommunikationsprotokollen
-
-Verfasst von Dominik Okwieka
-
-Reifeprüfungsjahrgang 2017
-
-Kursleiter OStR Pabst
-
-Inhaltsverzeichnis
-------------------
-
 1. Einleitung
 2. Überblick über das Projekt
 3. Gesichtspunkte von Protokollen
@@ -24,6 +8,8 @@ Inhaltsverzeichnis
 8. Danksagungen
 9. Literaturverzeichnis
 10. Eidesstattliche Erklärung
+
+
 
 1. Einleitung
 -------------
