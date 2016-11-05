@@ -154,21 +154,22 @@ der Rest ist textbasiert.
 
 #### 3.2.1 9P
 
-*9P* ist das Dateisystemprotokoll des Betriebssystems *Plan 9 from Bell Labs*
-[plan9]. Plan 9 wurde entwickelt, um das Unix-Prinzip *Everything is a file*
-weiterzutreiben: alles – Geräte, Mailboxen, das Netzwerksystem, das
-Grafiksystem und viel mehr – wird durch *Dateisysteme* repräsentiert, deren
-Daten zumeist on-the-fly generiert werden (vgl. `/proc`). Jeder Prozess hat
-einen eigenen sogenannten *Namespace*, der die Ansammlung aller von diesem
-Prozess gemounteten Dateisysteme ist. Der Zugriff auf diese findet über 9P
-statt; zur Implementierung eines eigenen Dateisystems muss man nur einen
-9P-Server schreiben, was durch Hilfsfunktionen sehr einfach ist [citation
-needed]. Die 9P-Verbindung wird zumeist über TCP getunnelt, wenn der Server
-nicht lokal ist. Man kann das `/proc`-Verzeichnis eines anderen Systems mounten
-und dann die dortigen Prozesse debuggen. Man kann den Bildschirm, die Maus und
-die Tastatur eines anderen Systems mounten und diesen dann als Terminal
-verwenden. Man kann die Zwischenablage eines anderen Systems mounten und so
-auslesen oder modifizieren.
+*9P*^[vgl. @9P] ist das Dateisystemprotokoll des Betriebssystems *Plan 9 from
+Bell Labs* ^[vgl. @Pike90plan9]. Plan 9 wurde entwickelt, um das Unix-Prinzip
+*Everything is a file* weiterzutreiben: alles – Geräte, Mailboxen, das
+Netzwerksystem, das Grafiksystem und viel mehr – wird durch *Dateisysteme*
+repräsentiert, deren Daten zumeist on-the-fly generiert werden (vgl. `/proc`
+^[vgl. @Killian84procfs]). Jeder Prozess hat einen eigenen sogenannten
+*Namespace*, der die Ansammlung aller von diesem Prozess gemounteten
+Dateisysteme ist. Der Zugriff auf diese findet über 9P statt; zur
+Implementierung eines eigenen Dateisystems muss man nur einen 9P-Server
+schreiben, was durch Hilfsfunktionen sehr einfach ist [citation needed]. Die
+9P-Verbindung wird zumeist über TCP getunnelt, wenn der Server nicht lokal ist.
+Man kann das `/proc`-Verzeichnis eines anderen Systems mounten und dann die
+dortigen Prozesse debuggen. Man kann den Bildschirm, die Maus und die Tastatur
+eines anderen Systems mounten und diesen dann als Terminal verwenden. Man kann
+die Zwischenablage eines anderen Systems mounten und so auslesen oder
+modifizieren.
 
 Das Protokoll kümmert sich um das Navigieren im Verzeichnisbaum sowie dem
 Erstellen, Öffnen, Lesen, Schreiben und Löschen von Dateien. Die Belastung des
@@ -176,16 +177,15 @@ Protokolls ist vielseitig: manchmal werden wenige, große Pakete versendet, so
 z.B. beim Lesen großer Dateien von einer Festplatte. Meist jedoch werden viele
 kleine Pakete versendet, da kurze Strings in die Kontrolldateien von Geräten
 geschrieben werden. In diesem Fall kann die Größe der Paket-Header Überhand
-nehmen. Die Entwickler haben darauf geachtet, den Header möglichst kurz zu
-halten [citation needed].
+nehmen, jedoch tragen diese nur das Nötigste an Information.
 
 9P verwendet binär kodierte Header und identifiziert offene Dateien mit
-eindeutigen Ganzzahlen, die *Fids* genannt werden, ist also zustandsbasiert. Der
-Client beginnt jede "Transaktion" mit einer T-Message (*T* steht für
+eindeutigen Ganzzahlen, die *Fids* genannt werden; 9P ist also zustandsbasiert.
+Der Client beginnt jede "Transaktion" mit einer T-Message (*T* steht für
 *transmit*) und der Server antwortet mit einer R-Message (*R* steht für
 *reply*). Jede T-Message erhält vom Client einen eindeutigen *Tag*; die Antwort
 des Servers hat denselben. *Tags* finden sich auch in IMAP und im
-*libmangler*-Protokoll [9p]. Fehler werden gemeldet, indem ein spezielles Paket,
+*libmangler*-Protokoll. Fehler werden gemeldet, indem ein spezielles Paket,
 `Rerror`, gesendet wird; dieses enthält einen String, das den Fehler
 beschreibt.
 
@@ -193,9 +193,10 @@ beschreibt.
 
 Wenngleich moderne Computer zumeist eine batteriebetriebene Echtzeituhr
 besitzen, muss diese mit genaueren Uhren synchronisiert werden, damit sie
-korrekt bleibt. Schon 1985 hatte das Network Time Protocol eine
-Referenzimplementierung und wurde in RFC 958 dokumentiert. In weiterentwickelter
-Form wird das Protokoll in fast allen internetfähigen Systemen verwendet.
+korrekt bleibt ^[vgl. @cmosClock] ^[vgl. @pcClockError]. Schon 1985 hatte das
+Network Time Protocol eine Referenzimplementierung und wurde in RFC 958
+dokumentiert. In weiterentwickelter Form wird das Protokoll in fast allen
+internetfähigen Systemen verwendet.
 
 Die NTP-Hierarchie ist in sogenannte Strata eingeteilt: Stratum 1 bezeichnet die
 an genauen Zeitgebern angeschlossenen Computer (primäre Zeitserver). Generell

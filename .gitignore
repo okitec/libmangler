@@ -4,6 +4,10 @@
 # Generated with pandoc from Markdown.
 *.odt
 
+*lock*
+
+!ref.odt
+
 # This is just an example file tree for the books.
 data/
 
