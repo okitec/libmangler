@@ -19,10 +19,11 @@ Inhaltsverzeichnis
 3. Gesichtspunkte von Protokollen
 4. Das Protokoll
 5. Detailbetrachtung des Servers und des Clients
-6. Glossar
-7. Danksagungen
-8. Literaturverzeichnis
-9. Eidesstattliche Erklärung
+6. Ausblick
+7. Glossar
+8. Danksagungen
+9. Literaturverzeichnis
+10. Eidesstattliche Erklärung
 
 1. Einleitung
 -------------
@@ -63,12 +64,12 @@ Der Client ist vergleichbar mit einem Fenster in die Daten des Servers: er
 scannt einen QR-Code oder lässt den Nutzer eine Suchanfrage eintippen, fragt
 den Server nach dem Gesuchten, speichert nur dieses und erlaubt dann einige
 Aktionen bezüglich dieser Daten. Trotz einfacher Anforderungen stellte sich der
-Client als schwieriger heraus als der Server, da blockierende Netzwerkkommunikation
-in Android nicht erwünscht ist; am Ende wurde die Komplexität jedoch ersetzt mit
-einer blockierenden und funktionierenden Lösung, wenngleich das nicht zu den
-*best practices* gehört. Zudem ist es schwer, Daten lebendig zu halten, weil der
-User die App pausieren oder rotieren könnte und auf diese Weise immer einen neuen
-Prozess (*Activity*) startet [citation needed].
+Client als schwieriger heraus als der Server, da blockierende
+Netzwerkkommunikation in Android nicht erwünscht ist; am Ende wurde die
+Komplexität jedoch ersetzt mit einer blockierenden und funktionierenden
+Lösung, wenngleich das nicht zu den *best practices* gehört. Zudem ist es
+schwer, Daten lebendig zu halten, weil der User die App rotieren könnte und auf
+diese Weise immer einen neuen Prozess (*Activity*) startet [citation needed].
 
 Bevor wir zu einer genaueren Beschreibung der Komponenten kommen können, muss
 das Protokoll verstanden sein. Seine Struktur ist die Struktur des Servers;
@@ -539,7 +540,7 @@ anwendbaren Methoden enthält (`elem/sel.go`).
 		fmt.Stringer              // returns the id (copies), ISBN (books) or name (users)
 		Print() string            // cmd p (all info)
 		List() string             // cmd λ (single-line important info)
-		Note(note string)         // cmd n  // XXX make fmt-like
+		Note(note string)         // cmd n
 		Delete()                  // cmd d
 		Tag(add bool, tag string) // cmd t
 	}
@@ -639,22 +640,118 @@ die alle Informationen aus dem Baum extrahiert und so das Element erzeugt.
 
 ### Client
 
- - Komplexität
- - Vermeidung der Komplexität durch synchrones Netzwerken
- - ViewFlipper statt Activities
- - Verwendung von ZXing
- - Panic-Screen
- - Rationale für synchrones Netzwerken: man kann sowieso nichts anderes machen,
-   während eine Anfrage gestellt wird; da es kein Pollen gibt, wird die Verbindung
-   nur zu vorhersehbaren Zeitpunkten benutzt.
+Die Android-App ist der Client, mit welchem dem Protokoll eine grafische und
+mobile Nutzerschnittstelle verliehen wird. Aus der Nutzerperspektive ist die App
+aus verschiedenen Teilen aufgebaut: dem Hauptscreen, der ein Menü bildet, von
+dem aus man alle Teile des Clients erreichen kann; den drei Infoscreens für
+Bücher, Copies und User; und ein Auflistungsscreen, dessen Bücher-, Copy- oder
+User-Einträge man anklicken kann, um auf den jeweiligen Infoscreen zu schalten.
+Die Infoscreens bestehen aus einem Textfeld, welches das Element anzeigt, und
+einer zweiseitigen Liste an Befehlen wie "Ausleihen ..." oder "Beiseitestellen".
+Die Ellipse zeigt an, dass weitere Eingaben des Nutzers gefordert sind oder dass
+der aktuelle Screen verlassen wird, um einen anderen anzuzeigen.
 
-6. Glossar
+Die besondere Fähigkeit, weswegen es sinnvoll ist, den Client auf einem
+Mobilgerät zu implementieren, liegt im Scannen von QR-Codes. Man bringt an
+jeder physikalischen Buchexemplar seine ID in Stringform als QR-Code an und kann
+diesen Code mit der App scannen, um Informationen zu diesem Exemplar einzuholen
+und Befehle wie das Verleihen auszuführen. Die gebräuchiche Variante ist es in
+Android, auf [*ZXing*](https://github.com/zxing/zxing) zurückzugreifen, einer
+App, die eine Vielzahl von ein- und zweidimensionalen Barcode-Formaten lesen
+kann und einen Intent dafür bereitstellt (`com.google.zxing.client.android.SCAN`).
+
+Bei der Programmierung der App wurde auf möglichst geringe Code-Komplexität
+Wert gelegt, in Übereinstimmung mit der *New Jersey*-Denkweise
+[\[Richard P Gabriel: The Rise of Worse Is Better, Aufruf am 05.11.2016\]](http://dreamsongs.com/RiseOfWorseIsBetter.html):
+
+> Simplicity – the design must be simple, both in implementation and interface.
+> It is more important for the implementation to be simple than the interface.
+> Simplicity is the most important consideration in a design.
+
+Schlussendlich wurde dieses Ziel erreicht, aber die App hat einen steinigen Weg
+hinter sich – Entwicklungsschwierigkeiten, überkomplexe Teillösungen und
+Vernachlässigung wegen einem anderen Projekt. Die Entwicklungsschwierigkeiten
+rühren daher, dass der Autor zu Beginn kein funktionierendes Smartphone zum
+Testen hatte, und dass der Server in der Schule, wo zu Beginn entwickelt wurde,
+nicht funktionierte, der Go-Compiler als Virus eingestuft wurde und wird und die
+Rechnerleistung zu wünschen übrig lies. Nachdem die Entwicklung auf Linux
+fortgesetzt wurde, ohne IDE und mit einem Texteditor ohne Syntax Highlighting,
+waren diese Nebenprobleme beseitigt und das Hauptproblem trat in den
+Vordergrund: das Protokoll war synchron und zustandsbehaftet, Android erlaubt
+jedoch blockierendes Netzwerken im EDT im Standardfall nicht. Der Versuch,
+Message-Tags wie in IMAP einzuführen und damit die Zustandshaftigkeit zu
+begrenzen, blähte den Code immens auf und wurde wieder verworfen. Der
+Durchbruch passierte mit dem Erlauben synchronen Netzwerkens auf dem EDT [\[How
+to fix android.os.NetworkOnMainThreadException?, Aufruf am
+05.11.2016\]](http://stackoverflow.com/a/9289190) entgegen der Android-Prinzipien.
+
+Diesen Regelbruch will ich kurz rechtfertigen. Man sollte nicht im zeichnenden
+Thread blockierende Operationen durchführen, weil das Aktualisierung der GUI
+dann nicht geschehen kann. Stattdessen soll man Netzwerkoperationen asynchron
+starten und dann in einem Callback, wenn das Ergebnis angekommen ist, dieses
+auswerten. Nun ist meine App so geschrieben, dass man vor der Antwort des
+Servers nichts, *nichts*, Sinnvolles tun kann. Die Zeitpunkte, an denen die App
+eine Anfrage stellt, sind vorhersehbar: nach dem Scannen einer ID, nachdem eine
+Suche gestartet wurde, nachdem nach einer Auflistung verlangt wurde und wenn
+Detailinformationen zu einem Element angezeigt werden sollen. Es gibt kein
+Pollen und keine Initiative vom Server; der Client initiiert jeglichen
+Protokollaustausch. Zudem ist auf dem Socket ein Timeout von drei Sekunden
+gesetzt: wenn die Verbindung schlecht ist, wird der Versuch abgebrochen und die
+UI wird wieder aktualisiert.
+
+Die `transact`-Funktion in `Connection.java` bildet die Basis für die
+Netzwerkoperationen. Sie nimmt einen zu sendenden String an und liefert die
+Antwort als String zurück. Auf dieser Basis existieren viele kleine Routinen in
+`Connection.java`, wie zum Beispiel `printCopy`:
+
+	public String printCopy(long... id) {
+		return transact("C/" + mksel(id) + "/p");
+	}
+
+In der App wurde die Möglichkeit nicht genutzt, mehrere IDs hier anzugeben,
+aber in den Signaturen ist immer noch `long...` zu finden. `mksel` ist eine
+kleine private Methode, die dieses Array an IDs zu einem String vereint, der
+dann an den Server gesendet werden kann.
+
+Ein weiteres Merkmal der Simplizität des Clients sind die verschiedenen
+Ansichten beziehungsweise Layouts. In *libnangler* gibt es nur eine Activity,
+die `MainActivity`. Zwischen den Layouts wird mit einem `ViewFlipper`
+umgeschaltet, dem man mit dessen Methode `setDisplayedChild` mitteilen kann, die
+wievielte Ansicht angezeigt werden soll. Da das häufig vorkommt, gibt es eine
+kleine Helferprozedur.
+
+	/**
+	 * Flip to a linear layout. See indexes at the top of MainActivity.
+	 */
+	private void flipView(int layout) {
+		ViewFlipper vf = (ViewFlipper) findViewById(R.id.flipper);
+		vf.setDisplayedChild(layout);
+	}
+
+Die Informationsscreens für Bücher, Copies und Nutzer haben jeweils zwei
+Seiten voller Befehle; auch hier wurde ein `ViewFlipper` verwendet.
+
+Der Großteil des Codes von `MainActivity` ist in den
+`init*Layout`-Prozeduren zu finden, in denen den Buttons ihre Aktion
+zugewiesen wird. Da es in Java 5 noch keine Lambda-Ausdrücke gibt, ist die
+Notation recht umständlich und mechanisch. Zuletzt ist noch `StringDialog`
+nennenswert, welches einen Dialog erstellt, in dem ein String eingegeben werden
+kann. Der zu viel Speicher verbrauchende Code in `Model.java` ist eine
+Übersetzung des Go-Codes für das Einlesen der S-Expressions von Büchern,
+Copies und Usern und hätte erlaubt, auf den Infoscreens eine schönere
+Darstellung anstatt der rohen S-Expression zu zeigen. Ohne `Model.java` hat der
+Client überhaupt kein Verständnis von den Daten, welche er handhabt.
+
+6. Ausblick
+-----------
+
+7. Glossar
 ----------
 
  - Allg. Netzwerkbegriffe
  - Book, Copy, User, Elem, Dot, Selektionsargument.
 
-7. Danksagungen
+8. Danksagungen
 ---------------
 
  - Leander, Klaus

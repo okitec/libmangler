@@ -20,6 +20,9 @@ Zum Builden benötigte Software:
  - [Android SDK](https://developer.android.com/studio/index.html#downloads)
  - (nur evtl.) (Unix) mk aus [Plan 9 from User Space](https://github.com/9fans/plan9port)
 
+Auf dem Handy muss zudem [ZXing](https://github.com/zxing/zxing) installiert sein, um
+QR-Codes zu lesen.
+
 Nachdem man Go installiert hat, muss man den [GOPATH setzen](https://golang.org/cmd/go/#hdr-GOPATH_environment_variable)
 und den `libmangler`-Ordner in `$GOPATH/src/github.com/okitec/` verschieben. Dann wird
 der Server, `manglersrv`, nach dem Kompilieren in `$GOPATH/bin` zu finden sein.
