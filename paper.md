@@ -392,6 +392,8 @@ den IDs `0`, `405` und `3050` und gibt alle Informationen zu ihnen aus. Diese
 zwei Beispiele zeigen, dass die Selektionsargumente kontextgemäß interpretiert
 werden. Es wird immer das selektiert, was man erwartet.
 
+
+
 Dokumentiert ist die Sprache in der Spezifikation (`SPEC.md`); zum Testen kann
 man einfach einen Server starten und eine Verbindung mit `netcat` ^[@netcat]
 aufbauen. So konnte ich schnell die Funktionalität testen; automatisiertes Testen
@@ -501,7 +503,9 @@ in `b` und `c` um, um, sich `u` (User erstellen) anzupassen.
 Wie im letzten Absatz kurz abgerissen, ist das Protokoll einem stetigen Wandel
 unterworfen, um der Entwicklung der App und des Servers entgegenzukommen;
 gleichzeitig hat sich zentral seit Version 3 nichts geändert. Zukünftige
-Änderungen werden wohl einen ähnlich kleinen Maßstab haben.
+Änderungen an der Sprache werden wohl einen ähnlich kleinen Maßstab haben.
+Die einzige größere Änderung wäre die Einführung eines
+Authentifizierungssystems und Verschlüsselung mit TLS.
 
 5. Detailbetrachtung des Servers und des Clients
 ------------------------------------------------
@@ -598,7 +602,7 @@ Signatur:
 Eine `selFn` nimmt eine bestehende Selektion sowie die Selektionsargumente
 an und gibt eine Selektion und einen Fehlerwert zurück. Der Großteil des
 Codes in `seltab` bestimmt recht mechanisch den Typ des Arguments und
-selektiert das, was man erwarten würde [DARSTELLUNG WÄRE NEAT].
+selektiert das, was man erwarten würde (siehe Tabelle in Sektion 4.1).
 
 Viel mehr lässt sich zum Server nicht sagen: in `manglersrv/main.go` wird für
 jede Verbindung eine Goroutine (eine Art leichter Thread ^[@goroutines])
@@ -612,7 +616,7 @@ in die entsprechende Datei schreibt, wobei *X* bei Büchern `Bp`, bei Copies
 werden die S-Expressions der Elemente durch einen simplen *recursive-descent*
 S-Expression-Parser gehetzt. Das Resultat ist ein Baum, der pre-order
 durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des Baums, wird eine
-Funktion aufgerufen, die eine Zustandsmachine implementiert, die alle
+Funktion aufgerufen, die eine Zustandsmachine weiterschaltet, die alle
 Informationen aus dem Baum extrahiert und so das Element erzeugt.
 
 ### Client
@@ -640,9 +644,11 @@ Barcode-Formaten lesen kann und einen Intent dafür bereitstellt
 Bei der Programmierung der App wurde auf möglichst geringe Code-Komplexität
 Wert gelegt, in Übereinstimmung mit der *New Jersey*-Denkweise ^[@worse-is-better]:
 
+> [...]
 > Simplicity – the design must be simple, both in implementation and interface.
 > It is more important for the implementation to be simple than the interface.
 > Simplicity is the most important consideration in a design.
+> [...]
 
 Schlussendlich wurde dieses Ziel erreicht, aber die App hat einen steinigen Weg
 hinter sich – Entwicklungsschwierigkeiten, überkomplexe Teillösungen und
@@ -672,7 +678,7 @@ Detailinformationen zu einem Element angezeigt werden sollen. Es gibt kein
 Pollen und keine Initiative vom Server; der Client initiiert jeglichen
 Protokollaustausch. Zudem ist auf dem Socket ein Timeout von drei Sekunden
 gesetzt: wenn die Verbindung schlecht ist, wird der Versuch abgebrochen und die
-UI wird wieder aktualisiert.
+UI kann wieder aktualisiert werden.
 
 Die `transact`-Funktion in `Connection.java` bildet die Basis für die
 Netzwerkoperationen. Sie nimmt einen zu sendenden String an und liefert die
@@ -724,13 +730,8 @@ soll.
 6. Ausblick
 -----------
 
-7. Glossar
-----------
 
- - Allg. Netzwerkbegriffe
- - Book, Copy, User, Elem, Dot, Selektionsargument.
-
-8. Danksagungen
+7. Danksagungen
 ---------------
 
  - Leander, Klaus
@@ -739,6 +740,34 @@ soll.
  - The Go Authors
  - sam
 
+8. Glossar
+----------
+
+|      Begriff    |                          Erläuterung                                     |
+|:----------------|:-------------------------------------------------------------------------|
+| Buch (Book).    | Eine Veröffentlichung, identifiziert durch ISBN.                         |
+| Dot             | Aktuelle Selektion im Protokoll: Menge an Büchern, Copies oder Usern.    |
+| Element         | Kann Teil der Selektion sein: entweder ein Buch, eine Copy oder ein User.|
+| Exemplar (Copy) | Physikalisches Medium, einen Buch zugeordnet. Das System vergibt eine ID.|
+| Infoscreen      | Screen, auf dem ein Element zu sehen ist sowie eine Befehlsliste.        |
+| Nutzer (User)   | Potentieller Ausleiher von Copies, identifiziert durch den Namen.        |
+| Screen          | Ansicht der App. Jedes Layout im zentralen ViewFlipper ist ein Screen.   |
+| Selektionsarg.  | ISBN, Copy-ID, User, #tag, Metadaten-*Name:Wert*-Paar.                   |
+| S-Expression    | (das (ist eine (verschachtelte) (S-Expression)) (siehe Lisp))            |
+| synchron        | nicht asynchron, blockierend                                             |
+
+ 
+
+ - Allg. Netzwerkbegriffe
+ - Book, Copy, User, Elem, Dot, Selektionsargument.
+
 9. Bibliographie
 ----------------
 
+### Verwendete Hilfsmittel/Programme
+
+ - Eclipse (zu Beginn)
+ - sam, awk, mk, sowie weitere Unix-Befehle
+ - Android SDK 15
+ - Apache Ant
+ - pandoc, pandoc-citeproc, BibLaTeX

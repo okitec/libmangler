@@ -32,6 +32,7 @@ per USB anschließen (Entwicklermodus einschalten und USB-Zugriff erlauben!) und
 dann im Hauptverzeichnis der Repo tippen:
 
 	mk
+	mk install
 
 Wenn man kein Unix hat und damit kein `mk`, kann man das Android-Projekt `client`
 in Eclipse öffnen und dann auch kompilieren, oder man importiert es in Android Studio.
