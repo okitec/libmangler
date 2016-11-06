@@ -1,5 +1,7 @@
 ---
-bibliography: local.bib
+bibliography:
+ - local.bib
+ - /home/oki/bib/rfc.bib
 csl: chicago-annotated-bibliography.csl
 locale: de-DE
 ---

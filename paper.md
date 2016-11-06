@@ -1,17 +1,4 @@
 1. Einleitung
-2. Überblick über das Projekt
-3. Gesichtspunkte von Protokollen
-4. Das Protokoll
-5. Detailbetrachtung des Servers und des Clients
-6. Ausblick
-7. Glossar
-8. Danksagungen
-9. Literaturverzeichnis
-10. Eidesstattliche Erklärung
-
-
-
-1. Einleitung
 -------------
 
 > some quote?
@@ -19,8 +6,8 @@
 *libmangler* ist ein Verwaltungssystem für Lernmittelbüchereien. Es besteht
 aus einem Server und einem Android-Client, die mithilfe eines einfachen
 Protokolls Daten austauschen. Dieses Protokoll ist jedoch trotz der Einfachheit
-generell und ist vergleichbar mit einer Datenbanksprache wie SQL, jedoch
-zugeschnitten auf die Anwendung.
+generell und ist vergleichbar mit einer Datenbanksprache wie SQL
+^[@Chamberlin74sql], jedoch zugeschnitten auf die Anwendung.
 
 Jedes Buchexemplar hat eine einzigartige Identifikationsnummer, welche als
 QR-Code auf diesem befestigt wird. Die App kann diesen Code auslesen; der Nutzer
@@ -30,7 +17,7 @@ für die Leiter der Lernmittelbücherei, für die Lehrer, die Beschädigungen
 notieren müssen, sowie für alle, die bei der Buchausgabe und der Rücknahme
 beschäftigt sind.
 
-Es gibt eine klare Trennung der Begriffe Buchexemplar (*Copy*) und Buch:
+Es gibt eine klare Trennung der Begriffe (Buch-)Exemplar (*Copy*) und Buch:
 ersteres ist ein physikalisches Medium, letzteres bezieht sich auf eine
 Ansammlung von Medien mit derselben ISBN. Zum Beispiel gibt es ein Buch
 *Mathematik 8. Klasse*, aber 200 Exemplare, *Copies*, davon.
@@ -40,11 +27,9 @@ Ansammlung von Medien mit derselben ISBN. Zum Beispiel gibt es ein Buch
 -----------------------------
 
 Wie anfangs erwähnt, besteht *libmangler* aus einem Server und einem Client.
-Der Server ist in Go geschrieben und speichert alle Bücher, Copies und User
-(Ausleiher, also die Schüler) in einem Dateibaum in einem Textformat ab, das
-sich leicht von Hand verändern lässt. Verglichen mit dem Client ist der Server
-einfach; es werden Gos Stärken ausgespielt, zudem fehlt die Komplexität von
-Android.
+Der Server ist in Go ^[@go] geschrieben und speichert alle Bücher, Copies und
+User (Ausleiher, also die Schüler) in drei Textdateien ab, in einem
+Lisp-ähnlichen Format, *S-Expressions*, das intuitiv verständlich ist.
 
 Der Client ist vergleichbar mit einem Fenster in die Daten des Servers: er
 scannt einen QR-Code oder lässt den Nutzer eine Suchanfrage eintippen, fragt
@@ -53,9 +38,7 @@ Aktionen bezüglich dieser Daten. Trotz einfacher Anforderungen stellte sich der
 Client als schwieriger heraus als der Server, da blockierende
 Netzwerkkommunikation in Android nicht erwünscht ist; am Ende wurde die
 Komplexität jedoch ersetzt mit einer blockierenden und funktionierenden
-Lösung, wenngleich das nicht zu den *best practices* gehört. Zudem ist es
-schwer, Daten lebendig zu halten, weil der User die App rotieren könnte und auf
-diese Weise immer einen neuen Prozess (*Activity*) startet [citation needed].
+Lösung, wenngleich das nicht zu den *best practices* gehört.
 
 Bevor wir zu einer genaueren Beschreibung der Komponenten kommen können, muss
 das Protokoll verstanden sein. Seine Struktur ist die Struktur des Servers;
@@ -86,23 +69,23 @@ vergleichen.
 Nichts ist wichtiger als die Funktionsfähigkeit des Protokolls: es muss eine
 sinnvolle Kommunikation zwischen Hosts erlauben. Dazu gehört natürlich, dass
 nichts in falscher Reihenfolge, unvollständig, korrumpiert, oder am falschen
-Ziel ankommt. Deshalb verwenden die meisten Protokolle TCP als Unterbau, dass
-all diese Dinge garantieren kann. Böswillige Betrachtung und Manipulation der
-Daten kann man z.B. durch SSL/TLS verhindern, das leicht integrierbar ist.
-Protokolle, die TCP verwenden, sind stream-basiert, das heißt, es scheint für
-sie eine bidirektionale Verbindung der Hosts zu bestehen. Solch ein Stream wird
-durch den sogenannten Three-Way-Handshake aufgebaut: der Client sendet ein
-SYN-Paket, der Server antwortet mit SYN-ACK, der Client antwortet darauf mit
-einem ACK.
+Ziel ankommt. Deshalb verwenden die meisten Protokolle TCP ^[@rfc793] als
+Unterbau, dass all diese Dinge garantieren kann. Böswillige Betrachtung und
+Manipulation der Daten kann man z.B. durch SSL/TLS verhindern, das leicht
+integrierbar ist. Protokolle, die TCP verwenden, sind stream-basiert, das
+heißt, es scheint für sie eine bidirektionale Verbindung der Hosts zu
+bestehen. Solch ein Stream wird durch den sogenannten Three-Way-Handshake
+aufgebaut: der Client sendet ein SYN-Paket, der Server antwortet mit SYN-ACK,
+der Client antwortet darauf mit einem ACK.
 
 Doch nicht immer laufen Protokolle über TCP. Prominentes Beispiel ist das
 Domain Name System (DNS), das primär der Auflösung von Hostnamen in
 IP-Adressen dient. Das DNS-Protokoll verwendet UDP (User Datagram Protocol), die
-verbindungslose Alternative zu TCP. Bei UDP werden einzelne Pakete übertragen, von
-denen man nicht weiß, ob und in welcher Reihenfolge sie ankommen. Die Pakete werden
-auch *Datagramme* genannt, daher der Protokollname. DNS verwendet UDP, um die
-Kosten des Three-Way-Handshake zu vermeiden; zudem muss der DNS-Server sich nicht
-um offene Verbindungen sorgen [citation needed].
+verbindungslose Alternative zu TCP. Bei UDP werden einzelne Pakete übertragen,
+von denen man nicht weiß, ob und in welcher Reihenfolge sie ankommen. Die
+Pakete werden auch *Datagramme* genannt, daher der Protokollname. DNS verwendet
+UDP, um die Kosten des Three-Way-Handshake zu vermeiden; zudem muss der
+DNS-Server sich nicht um offene Verbindungen sorgen, weil es keine gibt.
 
 Viele Protokolle haben also Performanceanforderungen. Es gibt hier zwei
 Größen: Bandbreite und Latenzzeit. Bandbreite ist die Datenmenge pro
@@ -123,20 +106,14 @@ Dokumentation ist der Mörtel, der diese Tugenden zusammenhält.
 
 Um das Protokoll korrekt implementieren zu können, muss es einfach sein, denn
 einfache Protokolle führen zu einfachen Implementierungen. Einfacher Code
-lässt sich vollständiger testen, ist wartbar und portierbar.
+lässt sich vollständiger testen, ist daher wartbar und zumeist portierbar.
 
 ### 3.2 Ansätze
 
-Es ist Zeit, mehrere Ansätze zu vergleichen; jeder hat bestimmte Vor- und
+Es ist Zeit, mehrere Ansätze zu benennen; jeder hat bestimmte Vor- und
 Nachteile. Die folgende Liste enthält verschiedenartige Protokolle, manche mehr
 und manche weniger bekannt. Die ersten zwei Beispiele werden binär codiert,
 der Rest ist textbasiert.
-
- - 9P
- - NTP
- - HTTP
- - IMAP
- - mpmp
 
 #### 3.2.1 9P
 
@@ -149,7 +126,7 @@ repräsentiert, deren Daten zumeist on-the-fly generiert werden (vgl. `/proc`
 *Namespace*, der die Ansammlung aller von diesem Prozess gemounteten
 Dateisysteme ist. Der Zugriff auf diese findet über 9P statt; zur
 Implementierung eines eigenen Dateisystems muss man nur einen 9P-Server
-schreiben, was durch Hilfsfunktionen sehr einfach ist [citation needed]. Die
+schreiben, was durch Hilfsfunktionen sehr einfach ist ^[vgl. @9P-helpers]. Die
 9P-Verbindung wird zumeist über TCP getunnelt, wenn der Server nicht lokal ist.
 Man kann das `/proc`-Verzeichnis eines anderen Systems mounten und dann die
 dortigen Prozesse debuggen. Man kann den Bildschirm, die Maus und die Tastatur
@@ -165,61 +142,62 @@ kleine Pakete versendet, da kurze Strings in die Kontrolldateien von Geräten
 geschrieben werden. In diesem Fall kann die Größe der Paket-Header Überhand
 nehmen, jedoch tragen diese nur das Nötigste an Information.
 
-9P verwendet binär kodierte Header und identifiziert offene Dateien mit
-eindeutigen Ganzzahlen, die *Fids* genannt werden; 9P ist also zustandsbasiert.
-Der Client beginnt jede "Transaktion" mit einer T-Message (*T* steht für
-*transmit*) und der Server antwortet mit einer R-Message (*R* steht für
+9P verwendet binär kodierte Header. Clients vergeben an ihre offene Dateien in
+der 9P-Session eindeutige Ganzzahlen, die *Fids* genannt werden; 9P ist also
+zustandsbasiert. Der Client beginnt jede Transaktion mit einer T-Message (*T*
+steht für *transmit*), der Server antwortet mit einer R-Message (*R* steht für
 *reply*). Jede T-Message erhält vom Client einen eindeutigen *Tag*; die Antwort
-des Servers hat denselben. *Tags* finden sich auch in IMAP und im
-*libmangler*-Protokoll. Fehler werden gemeldet, indem ein spezielles Paket,
-`Rerror`, gesendet wird; dieses enthält einen String, das den Fehler
-beschreibt.
+des Servers hat denselben. *Tags* finden sich auch in IMAP und in der früheren
+Version 5 des *libmangler*-Protokolls. Fehler werden gemeldet, indem ein
+spezielles Paket, `Rerror`, gesendet wird; dieses enthält einen String, das den
+Fehler beschreibt.
 
 #### 3.2.2 NTP – Network Time Protocol
 
 Wenngleich moderne Computer zumeist eine batteriebetriebene Echtzeituhr
 besitzen, muss diese mit genaueren Uhren synchronisiert werden, damit sie
-korrekt bleibt ^[vgl. @cmosClock] ^[vgl. @pcClockError]. Schon 1985 hatte das
-Network Time Protocol eine Referenzimplementierung und wurde in RFC 958
+korrekt bleibt ^[@cmos-clock] ^[@pc-clock-error]. Schon 1985 hatte das Network
+Time Protocol eine Referenzimplementierung und wurde in RFC 958 ^[@rfc958]
 dokumentiert. In weiterentwickelter Form wird das Protokoll in fast allen
 internetfähigen Systemen verwendet.
 
 Die NTP-Hierarchie ist in sogenannte Strata eingeteilt: Stratum 1 bezeichnet die
 an genauen Zeitgebern angeschlossenen Computer (primäre Zeitserver). Generell
-greifen Stratum n-Rechner jeweils auf Stratum (n-1)-Rechner zu und gleichen sich
-zudem untereinander ab. Das System versucht, einen möglichst minimalen Baum an
-Verbindungen aufzubauen, um die Latenzzeiten zu Stratum 1 gering zu halten. Der
-restliche Fehler wird durch eine auf Statistiken basierenden Formel entfernt.
+greifen Stratum *n*-Rechner jeweils auf Stratum (*n-1*)-Rechner zu und gleichen
+sich zudem untereinander ab. Das System versucht, einen möglichst minimalen
+Baum an Verbindungen aufzubauen, um die Latenzzeiten zu Stratum 1 gering zu
+halten. Der restliche Fehler wird durch eine auf Statistiken basierenden Formel
+entfernt.
 
 Je nach Anwendung kommt eine der drei Betriebsmodi zum Einsatz: Client/Server,
 bei dem der Client vom Server pullt; der symmetrische Modus, bei dem sich zwei
 *Peers* gegenseitig synchronisieren; Broadcast, bei dem der Server an mehrere
 Clients Pakete sendet. Mit jedem Paket wird ein *Packet Mode*-Wert übertragen,
 der den Modus identifiziert. Es gibt drei Zeitformate: *Short*, *Timestamp* und
-*Date*. Wenn möglich, wird das Datumsformat verwendet [RC5905, 6], das aus
-einer *Era Number*, einem in Sekunden gemessenen *Era Offset* und einem Bruch
-besteht. Die *Era Number* bezeichnet den Bereich, in dem der 32-bit Offset nicht
-überläuft. Momentan sind wir in Era 0; ab dem 08. Februar 2036 werden wir in
-Era 1 sein. Das im Protokoll verwendete *Timestamp*-Format hat einen 32-bit
-Sekundenzähler und einen Bruch; das *Short*-Format ist ähnlich, hat aber nur
-16 Bit Präzision.
-
-XXX Absatz präzisieren; siehe Beispielcode-Datendefinitionen in RFC 5905.
+*Date*. Wenn möglich, wird das Datumsformat verwendet ^[@rfc5905, Sektion 6],
+das aus einer *Era Number*, einem in Sekunden gemessenen *Era Offset* und einem
+Bruch besteht. Die *Era Number* bezeichnet den Bereich, in dem der 32-bit Offset
+nicht überläuft. Momentan sind wir in Era 0; ab dem 08. Februar 2036 werden
+wir in Era 1 sein. Das im Protokoll verwendete *Timestamp*-Format hat einen
+32-bit Sekundenzähler und einen Bruch; das *Short*-Format ist ähnlich, hat
+aber nur 16 Bit Präzision. Diese Brüche sind wie folgt zu verstehen: im
+*Short*-Format, das insgesamt 32 Bit groß ist, bilden die ersten 16 Bit den
+ganzzahligen Teil, die anderen 16 Bit den Bruchteil einer Festkommazahl, dessen
+Komma nach dem sechzehnten Bit zu finden ist.
 
 TCP kann hier nicht verwendet werden, weil es verlorene Pakete wieder
-überträgt und dadurch die Zeitstempel in diesen verfälscht [citation needed],
-deswegen wird UDP auf Port 123 verwendet. NTP verwendet konventionelle binäre
-Pakete mit einem Header und einem aus vier Timestamps bestehenden Payload. Ein
-invalider Wert im Header, Stratum 0, initiiert ein *Kiss-o'-Death*-Paket, mit
-welchem Kontrollcodes übertragen werden; diese sind Vier-Zeichen-ASCII-Strings
-an der Stelle, an der sonst die Referenz-ID des Zeitgebers steht (z.B. "GPS").
-
- - src: RFC 5905, Wikipedia
+überträgt und dadurch die Zeitstempel in diesen verfälscht ^[@rfc5905,
+Sektion 1], deswegen wird UDP auf Port 123 verwendet. NTP verwendet
+konventionelle binäre Pakete mit einem Header und einem aus vier Timestamps
+bestehenden Payload. Ein invalider Wert im Header, Stratum 0, initiiert ein
+sogenanntes *Kiss-o'-Death*-Paket, mit welchem Kontrollcodes übertragen werden;
+diese sind Vier-Zeichen-ASCII-Strings an der Stelle, an der sonst die
+Referenz-ID des Zeitgebers steht (z.B. `GPS`).
 
 #### 3.2.3 HTTP – Hypertext Transfer Protocol
 
-Das Web ist die *Killer application* des Internets, so wie die Glühbirne die
-*Killer application* der Elektrizität war. Viele Laien können heute die
+Das Web ist die *Killer Application* des Internets, so wie die Glühbirne die
+*Killer Application* der Elektrizität war. Viele Laien können heute die
 Begriffe "Web" und "Internet" nicht mehr auseinanderhalten. Das Hypertext
 Transfer Protocol ist so erfolgreich, dass es als Transportprotokoll für alles
 gebraucht wird, obwohl es nicht auf generelle Kommunikation ausgerichtet ist.
@@ -236,8 +214,7 @@ einen neue Verbindung geöffnet. Persistente Verbindungen, die der Normalzustand
 seit HTTP/1.1 sind, erlauben einen Request nach dem anderen in der Verbindung;
 die Latenzzeit durch das Verbindungsöffnen entfällt. *Pipelining*, d.h. das
 Senden mehrerer Requests auf einmal und das Empfangen der Antworten auf einmal,
-optimiert den Prozess weiter. Pipelining erwies sich als Fehlschlag auf
-Clientseite; nur Opera hat eine aktivierte und stabile Implementierung [citation needed].
+optimiert den Prozess weiter.
 
 Im Kern ist HTTP ideal für die Aufgabe, nicht interaktive Webseiten und andere
 Dateien zu übertragen. Ein Client gibt den Dateipfad auf dem Server an, der
@@ -250,25 +227,26 @@ HTTP ist nicht für bidirektionale Kommunikation gedacht, da die
 Zustandslosigkeit im Weg steht. Cookies sind ein Hack, um diese zu umgehen, und
 niemand mag Cookies. Ein anderer Weg sind Parameter in der URL, die den ganzen
 Zustand übertragen und leicht zu manipulieren sind; mitunter wird grob
-fahrlässig ein verschlüsseltes Passwort übertragen [Fahrenlernen Max].
+fahrlässig ein verschlüsseltes Passwort übertragen (ich denke an eine
+bestimmte Webseite, die ich jedoch nicht nennen werde).
 
-Ein neuer binärer Standard, HTTP/2, wurde inzwischen veröffentlicht und wird
+Ein neuer binärer Standard, HTTP/2 ^[@rfc7540], wurde inzwischen veröffentlicht und wird
 von allen weit verwendeten Browsern unterstützt. Neben mehreren anderen
 Änderunge kann der Server nun Dateien pushen, für die der Client
 wahrscheinlich sowieso eine Anfrage gestellt hätte; z.B. würden beim Aufruf
 einer Seite gleich die CSS-Dateien und etwaiger Javascript-Code neben dem
-HTML-Text gesendet. Anfang September 2016 verwendeten 9.8% der 10 Millionen
-meistbesuchten Websites HTTP/2 [src](https://w3techs.com/technologies/details/ce-http2/all/all).
-
+HTML-Text gesendet. Anfang November 2016 verwendeten 10.4% der 10 Millionen
+meistbesuchten Websites HTTP/2 ^[@http2-usage].
 
 #### 3.2.4 IMAP – Internet Message Access Protocol
 
-Mailboxen lassen sich mit dem *Post Office Protocol* (POP), dem *Internet
-Message Access Protocol* (IMAP) oder via einem Webmail-Interface im Browser
-verwalten, falls man nicht selbst Admin eines Mailservers ist. Bei POP ist es
-Konvention, die Nachrichten auf dem Server nach dem Abrufen zu löschen; die
-Mails residieren auf dem Client, wie auch der Verzeichnisbaum mit dem
-Posteingang, dem Postausgang und nutzererzeugten Ordnern.
+Mailboxen lassen sich mit dem *Post Office Protocol* (POP) ^[@rfc1939], dem
+*Internet Message Access Protocol* (IMAP) ^[@rfc3501] oder via einem
+Webmail-Interface im Browser verwalten, falls man nicht selbst Admin eines
+Mailservers ist. Bei POP ist es Konvention, die Nachrichten auf dem Server nach
+dem Abrufen zu löschen; die Mails residieren auf dem Client, wie auch der
+Verzeichnisbaum mit dem Posteingang, dem Postausgang und nutzererzeugten
+Ordnern.
 
 IMAP ist eine neuere Entwicklung, um seine Nachrichtenordner auf dem Server zu
 verwalten; dadurch kann man von mehreren Geräten auf denselben Baum zugreifen.
@@ -277,12 +255,18 @@ Verständlicherweise ist IMAP komplexer als POP3.
 
 Ich will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie es auch das
 *libmangler*-Protokoll zeitweise getan hat, und weil der Server von sich aus
-senden kann. Das folgende Exzerpt in [RFC 3501, Sektion 8] soll das nun
+senden kann. Das folgende Exzerpt in ^[@rfc3501, Sektion 8] soll das nun
 verdeutlichen. Zeilen mit einem `*` werden vom Server in Eigeninitiative
 gesendet (Zeile 1), oder deuten die Kontinuation des Outputs an. Die vom Client
 generierten alphanumerischen Tags, hier `a001` und `a002`, müssen eindeutig
 sein; Anfrage und Antwort haben denselben Tag. Bei Antworten folgt dann `OK`
 (Erfolg), `NO` (Fehlschlag), oder `BAD` (formaler Fehler).
+
+Zudem verwendet IMAP wie *libmangler* S-Expressions, eine aus der Lisp-Welt
+stammende Notation für beliebig verschachtelte Listen, aus denen Lisp-Code und
+-Daten bestehen. Ein Beispiel aus einer Lisp-Sprache: `(define square (lambda
+(x) (* x x)))`. Das folgende Listing enthält auch eine S-Expression. Wo ist
+sie?
 
 	S:   * OK IMAP4rev1 Service Ready
 	C:   a001 login mrc secret
@@ -361,20 +345,21 @@ eigentlichen Informationen beschäftigt, sowie der *kleinen Sprache*, in der die
 Anfragen gestellt werden. Um diese soll es vordergründig gehen. Dafür ist
 jedoch ein kleiner Exkurs vonnöten.
 
-### Die Anfragensprache
+### 4.1 Die Anfragensprache
 
 Die Anfragensprache ist von den Kommandosprache des Unix-Editors `sam`
-inspiriert, der eine Weiterentwicklung von `ed` ist. Befehle sind einzelne
-Buchstaben. Die aktuelle Selektion, welche in `ed` zeilenweise und in `sam`
-zeichennweise Granularität hat, wird in einem Zwischenspeicher namens *Dot*
-gespeichert, der mithilfe eines Punktes (`.`) dargestellt wird. Befehle arbeiten
-entweder mit dem Inhalt von Dot oder setzen `Dot` zu einer neuen Selektion. In
-`sam` kann man auch mit der Maus Text selektieren und so *Dot* setzen.
+^[@Pike87sam] inspiriert, der eine Weiterentwicklung von `ed` ist. Befehle sind
+einzelne Buchstaben. Die aktuelle Selektion, welche in `ed` zeilenweise und in
+`sam` zeichenweise Granularität hat, wird in einem Zwischenspeicher namens
+*Dot* gespeichert, der mithilfe eines Punktes (`.`) dargestellt wird. Befehle
+arbeiten entweder mit dem Inhalt von Dot oder setzen Dot zu einer neuen
+Selektion. In `sam` kann man auch mit der Maus Text selektieren und so *Dot*
+setzen.
 
 	x/^ /d
 
 Diese `sam`-Schleife führt den `d` (*delete*)-Befehl für jedes Vorkommen des
-regulären Ausdrucks `^ ` in der Selektion aus; dieser Befehl entfernt ein
+regulären Ausdrucks `^ ` in der Selektion aus; dieser Befehl entfernt also ein
 Einrückungslevel. Dot ist zu Beginn der Operation die gesamte bisherige
 Selektion; dann wird Dot zu den jeweiligen Vorkommnissen des Ausdrucks gesetzt.
 Hier ist Dot am Ende leer, weil der Löschbefehl Dot löscht.
@@ -408,11 +393,15 @@ zwei Beispiele zeigen, dass die Selektionsargumente kontextgemäß interpretiert
 werden. Es wird immer das selektiert, was man erwartet.
 
 Dokumentiert ist die Sprache in der Spezifikation (`SPEC.md`); zum Testen kann
-man einfach einen Server starten und eine Verbindung mit `netcat` [citation needed]
+man einfach einen Server starten und eine Verbindung mit `netcat` ^[@netcat]
 aufbauen. So konnte ich schnell die Funktionalität testen; automatisiertes Testen
-kann über unkomplizierte Skripte und Testdateien von außen angebaut werden. 
+kann über unkomplizierte Skripte und Testdateien von außen angebaut werden.
 
-### Low-level-Teil des Protokolls
+### 4.2 Outputformat des print-Befehls
+
+XXX S-Expressions blah
+
+### 4.3 Low-level-Teil des Protokolls
 
 Viel hat sich im "niedrigen" Teil des Protokolls verändert, bis es zu einer
 adäquaten Lösung kam. Es gibt zwei Probleme: die Antworten müssen den Anfragen
@@ -442,7 +431,7 @@ Antworten des Servers mitunter auch mehrzeilig. Das kann man mit jeder
 beliebigen Shell vergleichen. Es stellt sich die Frage, wie die Größe einer
 Nachricht kommuniziert werden soll; dieses Problem nennt sich *Framing*. Es gibt
 bei der Konstruktion von Anwendungsprotokollen mehrere Denkweisen, um eine
-Nachricht "einzuboxen" [vgl. RFC 3117]:
+Nachricht "einzuboxen" ^[vgl. @rfc3117]:
 
 1. Alle Pakete gleich groß machen.
 
@@ -458,9 +447,9 @@ Nachricht "einzuboxen" [vgl. RFC 3117]:
    es für sinnvoll, sie zu erwähnen.
 
 5. *connection-blasting*: man öffnet eine neue Verbindung, sendet die Nachricht
-   und schließt die Verbindung wieder (FTP). Heutzutage nicht weit verbreitet,
-   weil es *sehr* ineffizient ist, viele neue TCP-Streams zu öffnen und zu
-   schließen.
+   und schließt die Verbindung wieder (FTP ^[@rfc959]). Heutzutage nicht weit
+   verbreitet, weil es *sehr* ineffizient ist, viele neue TCP-Streams zu öffnen
+   und zu schließen.
 
 Das aktuelle libmangler-Protokoll verwendet eine Variante des *octet-stuffing*:
 drei Bindestriche auf der letzten Zeile signalisieren das Ende der Antwort. Da
@@ -492,8 +481,8 @@ gesucht wird. Da sich dies als schwer implementierbar erwies – der erste
 Server war in C und hatte keine Reflexionsmöglichkeiten – gab es bereits in
 Version 2 die Möglichkeit, nach ISBNs, Copy-IDs und Nutzernamen zu suchen, der
 `p`-Befehl lieferte aber noch JSON statt S-Expressions; mehrzeilige Antworten
-des Servers wurden mit einem einfachen Punkt begrenzt (vgl. SMTP) und hatten
-eine Statuszeile zu Beginn.
+des Servers wurden mit einem einfachen Punkt begrenzt (vgl. SMTP ^[@rfc2821])
+und hatten eine Statuszeile zu Beginn.
 
 Version 3 bringt S-Expressions. Version 4 bringt #tags, die Büchern, Copies und
 Nutzern hinzugefügt werden können. Version 5 nennt #tags in *Labels* um und
@@ -580,14 +569,15 @@ man eine Kopie der Instanz, weil Go *Pass-by-Value* bei Parametern nutzt. Wenn
 man also die Instanz *modifizieren* will, muss man die Methode auf einen Pointer
 definieren (`*Book`). Das nennt man dann einen *Pointer Receiver*.
 
-Man sollte einfache Receiver verwenden, keine Pointer Receiver, sofern es nicht
-nötig ist, weil man von Pointern durch Indirektion einfach auf den Grundtyp
-schließen kann und das meist hilfreicher ist. Man könnte also auf den Gedanken
-kommen, die `String`- und `Print`-Methoden, die nichts modifizieren, auf `Book`
-zu definieren, die anderen Methoden von `Elem` auf `*Book`. Das ist jedoch nicht
-zielführend: `Book` und `*Book` sind verschiedene Typen und keiner von beiden
-würde in dem Fall das Interface `Elem` implementieren. Deswegen sind die drei
-Implementierungen von `Elem` Pointer: `*Book`, `*Copy`, `*User`.
+Man sollte einfache Receiver verwenden, keine *Pointer Receiver*, sofern es
+nicht nötig ist, weil man von Pointern durch Indirektion einfach auf den
+Grundtyp schließen kann und das meist hilfreicher ist. Man könnte also auf den
+Gedanken kommen, die `String`-, `Print` und `List`-Methoden, die nichts
+modifizieren, auf `Book` zu definieren, die anderen Methoden von `Elem` auf
+`*Book`. Das ist jedoch nicht zielführend: `Book` und `*Book` sind verschiedene
+Typen und keiner von beiden würde in dem Fall das Interface `Elem`
+implementieren. Deswegen sind die drei Implementierungen von `Elem` Pointer:
+`*Book`, `*Copy`, `*User`.
 
 Der Server speichert alle Bücher, Copies und User in drei Maps ab, die den
 jeweiligen Identifikatoren Pointer auf die Structs zuordnen (`elem/sel.go`).
@@ -611,19 +601,19 @@ Codes in `seltab` bestimmt recht mechanisch den Typ des Arguments und
 selektiert das, was man erwarten würde [DARSTELLUNG WÄRE NEAT].
 
 Viel mehr lässt sich zum Server nicht sagen: in `manglersrv/main.go` wird für
-jede Verbindung eine Goroutine (eine Art leichter Thread
-[https://golang.org/doc/faq#goroutines]) gestartet, die dann `handle` ausführt,
-welches wiederum für alle Requests `interpret` aufruft und den sonstigen
-Zustand der Verbindung hält – inklusive *Dot*. Das Speichern der Elemente auf
-der Festplatte wird in `manglersrv/store.go` bewertstelligt, indem der Server
-für Bücher, Copies und User jeweils eine Datei erstellt und das Ergebnis von
-`interpret(`*X*`, &dot)` in die entsprechende Datei schreibt, wobei *X*
-bei Büchern `Bp`, bei Copies `Cp` und bei Usern `Cp` ist. Das `dot` ist in dem
-Fall ein Dummy. Beim Laden werden die S-Expressions der Elemente durch einen
-simplen *recursive-descent* S-Expression-Parser gehetzt. Das Resultat ist ein
-Baum, der pre-order durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des
-Baums, wird eine Funktion aufgerufen, die eine Zustandsmachine implementiert,
-die alle Informationen aus dem Baum extrahiert und so das Element erzeugt.
+jede Verbindung eine Goroutine (eine Art leichter Thread ^[@goroutines])
+gestartet, die dann `handle` ausführt, welches wiederum für alle Requests
+`interpret` aufruft und den sonstigen Zustand der Verbindung hält – inklusive
+*Dot*. Das Speichern der Elemente auf der Festplatte wird in
+`manglersrv/store.go` bewertstelligt, indem der Server für Bücher, Copies und
+User jeweils eine Datei erstellt und das Ergebnis von `interpret(`*X*`, &dot)`
+in die entsprechende Datei schreibt, wobei *X* bei Büchern `Bp`, bei Copies
+`Cp` und bei Usern `Cp` ist. Das `dot` ist in dem Fall ein Dummy. Beim Laden
+werden die S-Expressions der Elemente durch einen simplen *recursive-descent*
+S-Expression-Parser gehetzt. Das Resultat ist ein Baum, der pre-order
+durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des Baums, wird eine
+Funktion aufgerufen, die eine Zustandsmachine implementiert, die alle
+Informationen aus dem Baum extrahiert und so das Element erzeugt.
 
 ### Client
 
@@ -642,14 +632,13 @@ Das Feature, weswegen es sinnvoll ist, den Client auf einem Mobilgerät zu
 implementieren, ist das Scannen von QR-Codes. Man bringt an jeder Exemplar seine
 ID in Stringform als QR-Code an und kann diesen Code mit der App scannen, um
 Informationen zu diesem Exemplar einzuholen und Befehle wie das Verleihen
-auszuführen. Die gebräuchiche Variante ist es in Android, auf
-[*ZXing*](https://github.com/zxing/zxing) zurückzugreifen, einer App, die eine
-Vielzahl von ein- und zweidimensionalen Barcode-Formaten lesen kann und einen
-Intent dafür bereitstellt (`com.google.zxing.client.android.SCAN`).
+auszuführen. Die gebräuchiche Variante ist es in Android, auf ZXing ^[@zxing]
+zurückzugreifen, einer App, die eine Vielzahl von ein- und zweidimensionalen
+Barcode-Formaten lesen kann und einen Intent dafür bereitstellt
+(`com.google.zxing.client.android.SCAN`).
 
 Bei der Programmierung der App wurde auf möglichst geringe Code-Komplexität
-Wert gelegt, in Übereinstimmung mit der *New Jersey*-Denkweise
-[\[Richard P Gabriel: The Rise of Worse Is Better, Aufruf am 05.11.2016\]](http://dreamsongs.com/RiseOfWorseIsBetter.html):
+Wert gelegt, in Übereinstimmung mit der *New Jersey*-Denkweise ^[@worse-is-better]:
 
 > Simplicity – the design must be simple, both in implementation and interface.
 > It is more important for the implementation to be simple than the interface.
@@ -668,8 +657,8 @@ Vordergrund: das Protokoll war synchron und zustandsbehaftet, Android erlaubt
 jedoch blockierendes Netzwerken im EDT im Standardfall nicht. Der Versuch,
 Message-Tags wie in IMAP einzuführen und damit die Zustandshaftigkeit zu
 begrenzen, blähte den Code immens auf und wurde wieder verworfen. Der
-Durchbruch passierte mit dem Erlauben synchronen Netzwerkens auf dem EDT ^[
-vgl. @NetworkOnMainThreadException] entgegen der Android-Prinzipien.
+Durchbruch passierte mit dem Erlauben synchronen Netzwerkens auf dem EDT
+^[@NetworkOnMainThreadException] entgegen der Android-Prinzipien.
 
 Diesen Regelbruch will ich kurz rechtfertigen. Man sollte nicht im zeichnenden
 Thread blockierende Operationen durchführen, weil das Aktualisierung der GUI
