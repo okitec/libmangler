@@ -1,3 +1,7 @@
+/*
+Greenspun's Tenth Rule of Programming: any sufficiently complicated C or Fortran program
+contains an ad hoc informally-specified bug-ridden slow implementation of half of Common Lisp.
+*/
 package sexps
 
 // XXX move into separate Git repo (github.com/okitec/sexps)
