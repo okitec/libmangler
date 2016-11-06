@@ -6,7 +6,9 @@
 
 *lock*
 
+!header.odt
 !ref.odt
+!footer.odt
 
 # This is just an example file tree for the books.
 data/
