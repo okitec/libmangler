@@ -6,8 +6,7 @@
 > a paragraph no unnecessary sentences, for the same reason that a drawing
 > should not have unnecessary lines and a machine no unnecessary parts.
 > This requires not that the writer make all sentences short, or avoid all
-> detail and treat subjects only in outline, but that every word tell. 
-^[@the-elements-of-style]
+> detail and treat subjects only in outline, but that every word tell. ^[@the-elements-of-style]
 
 *libmangler* ist ein Verwaltungssystem für Lernmittelbüchereien. Es besteht
 aus einem Server und einem Android-Client, die mithilfe eines einfachen
@@ -148,22 +147,22 @@ kleine Pakete versendet, da kurze Strings in die Kontrolldateien von Geräten
 geschrieben werden. In diesem Fall kann die Größe der Paket-Header Überhand
 nehmen, jedoch tragen diese nur das Nötigste an Information.
 
-9P verwendet binär kodierte Header. Clients vergeben an ihre offene Dateien in
+9P verwendet binär kodierte Header. Clients vergeben an ihre offenen Dateien in
 der 9P-Session eindeutige Ganzzahlen, die *Fids* genannt werden; 9P ist also
 zustandsbasiert. Der Client beginnt jede Transaktion mit einer T-Message (*T*
 steht für *transmit*), der Server antwortet mit einer R-Message (*R* steht für
 *reply*). Jede T-Message erhält vom Client einen eindeutigen *Tag*; die Antwort
 des Servers hat denselben. *Tags* finden sich auch in IMAP und in der früheren
 Version 5 des *libmangler*-Protokolls. Fehler werden gemeldet, indem ein
-spezielles Paket, `Rerror`, gesendet wird; dieses enthält einen String, das den
+spezielles Paket, `Rerror`, gesendet wird; dieses enthält einen String, der den
 Fehler beschreibt.
 
 #### 3.2.2 NTP – Network Time Protocol
 
 Wenngleich moderne Computer zumeist eine batteriebetriebene Echtzeituhr
 besitzen, muss diese mit genaueren Uhren synchronisiert werden, damit sie
-korrekt bleibt ^[@cmos-clock] ^[@pc-clock-error]. Schon 1985 hatte das Network
-Time Protocol eine Referenzimplementierung und wurde in RFC 958 ^[@rfc958]
+korrekt bleibt ^[@cmos-clock] ^,^ ^[@pc-clock-error]. Schon 1985 hatte das
+Network Time Protocol eine Referenzimplementierung und wurde in RFC 958 ^[@rfc958]
 dokumentiert. In weiterentwickelter Form wird das Protokoll in fast allen
 internetfähigen Systemen verwendet.
 
@@ -238,7 +237,7 @@ bestimmte Webseite, die ich jedoch nicht nennen werde).
 
 Ein neuer binärer Standard, HTTP/2 ^[@rfc7540], wurde inzwischen veröffentlicht und wird
 von allen weit verwendeten Browsern unterstützt. Neben mehreren anderen
-Änderunge kann der Server nun Dateien pushen, für die der Client
+Änderungen kann der Server nun Dateien pushen, für die der Client
 wahrscheinlich sowieso eine Anfrage gestellt hätte; z.B. würden beim Aufruf
 einer Seite gleich die CSS-Dateien und etwaiger Javascript-Code neben dem
 HTML-Text gesendet. Anfang November 2016 verwendeten 10.4% der 10 Millionen
@@ -261,7 +260,7 @@ Verständlicherweise ist IMAP komplexer als POP3.
 
 Ich will IMAP deswegen ansprechen, weil es *Tags* verwendet, wie es auch das
 *libmangler*-Protokoll zeitweise getan hat, und weil der Server von sich aus
-senden kann. Das folgende Exzerpt in ^[@rfc3501, Sektion 8] soll das nun
+senden kann. Das folgende Exzerpt aus RFC3501 ^[@rfc3501, Sektion 8] soll das nun
 verdeutlichen. Zeilen mit einem `*` werden vom Server in Eigeninitiative
 gesendet (Zeile 1), oder deuten die Kontinuation des Outputs an. Die vom Client
 generierten alphanumerischen Tags, hier `a001` und `a002`, müssen eindeutig
@@ -452,7 +451,7 @@ Irritating Stupid Parentheses* einbrachte.
 
 Viel hat sich im "niedrigen" Teil des Protokolls verändert, bis es zu einer
 adäquaten Lösung kam. Es gibt zwei Probleme: die Antworten müssen den Anfragen
-zugeordnet werden und die Größen mehrzeiliger Antworten mössen bekanntgemacht
+zugeordnet werden und die Größen mehrzeiliger Antworten müssen bekanntgemacht
 werden.
 
 Die Zuordnung ist in einem zustandsbasierten synchronen Protokoll ein
@@ -535,7 +534,7 @@ Version 3 bringt S-Expressions. Version 4 bringt #tags, die Büchern, Copies und
 Nutzern hinzugefügt werden können. Version 5 nennt #tags in *Labels* um und
 fügt allen Requests und Responses Message-Tags wie in IMAP hinzu. Version 6
 macht diese Änderungen, die große Komplexität im Client hervorriefen, wieder
-rückgängig und macht am eine einer Antwort eine Zeile aus drei Strichen
+rückgängig und macht am Ende einer Antwort eine Zeile aus drei Strichen
 (`---`). Version 7 bringt die Kommandos, um #tags aufzulisten, zu erstellen und
 zu löschen. Version 8 erlaubt Suche nach Metadaten, Version 9 fügt einen
 Befehl zum Auflisten von Selektionen hinzu. Version 10 implementiert *endlich*
@@ -572,7 +571,7 @@ anwendbaren Methoden enthält (`elem/sel.go`).
 
 Die erste Zeile, `fmt.Stringer`, bettet das Interface `fmt.Stringer` in `Elem`
 ein, wodurch alle Methoden, die in `fmt.Stringer` sind, nun auch durch `Elem`
-gefordert werden. Da `fmt` bezeichnet die Package, in der `Stringer` definiert
+gefordert werden. Das `fmt` bezeichnet das Package, in dem `Stringer` definiert
 ist. Wie viele Go-Interfaces, enthält `fmt.Stringer` nur eine einzige Methode
 `String() string`, welche also einen String zurückgibt; es ist das Equivalent
 zu Javas `toString`. Der Name solcher Ein-Methoden-Interfaces ist der
