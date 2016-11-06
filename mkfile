@@ -18,7 +18,7 @@ note:V:
 	echo 'Diese ODT-Datei wurde aus `paper.md` um `' >>note
 	date >>note
 	echo '` durch den Befehl' >>note
-	echo '`pandoc --filter pandoc-citeproc --biblatex -o paper.odt paper.md metadata.yaml --reference-odt ref.odt`' >>note
+	echo '`mk note && cat paper.md note metadata.yaml | pandoc --filter pandoc-citeproc --biblatex -o paper.odt --reference-odt ref.odt`' >>note
 	echo 'generiert.' >>note
 	echo >>note
 	echo '### Quellen' >>note

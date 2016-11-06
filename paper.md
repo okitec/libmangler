@@ -1,7 +1,7 @@
 1. Einleitung
 -------------
 
-> some quote?
+> **[Rule] 17. Omit needless words.** ^[@the-elements-of-style]
 
 *libmangler* ist ein Verwaltungssystem für Lernmittelbüchereien. Es besteht
 aus einem Server und einem Android-Client, die mithilfe eines einfachen
@@ -117,16 +117,16 @@ der Rest ist textbasiert.
 
 #### 3.2.1 9P
 
-*9P*^[vgl. @9P] ist das Dateisystemprotokoll des Betriebssystems *Plan 9 from
-Bell Labs* ^[vgl. @Pike90plan9]. Plan 9 wurde entwickelt, um das Unix-Prinzip
+*9P*^[@9P] ist das Dateisystemprotokoll des Betriebssystems *Plan 9 from
+Bell Labs* ^[@Pike90plan9]. Plan 9 wurde entwickelt, um das Unix-Prinzip
 *Everything is a file* weiterzutreiben: alles – Geräte, Mailboxen, das
 Netzwerksystem, das Grafiksystem und viel mehr – wird durch *Dateisysteme*
 repräsentiert, deren Daten zumeist on-the-fly generiert werden (vgl. `/proc`
-^[vgl. @Killian84procfs]). Jeder Prozess hat einen eigenen sogenannten
+^[@Killian84procfs]). Jeder Prozess hat einen eigenen sogenannten
 *Namespace*, der die Ansammlung aller von diesem Prozess gemounteten
 Dateisysteme ist. Der Zugriff auf diese findet über 9P statt; zur
 Implementierung eines eigenen Dateisystems muss man nur einen 9P-Server
-schreiben, was durch Hilfsfunktionen sehr einfach ist ^[vgl. @9P-helpers]. Die
+schreiben, was durch Hilfsfunktionen sehr einfach ist ^[@9P-helpers]. Die
 9P-Verbindung wird zumeist über TCP getunnelt, wenn der Server nicht lokal ist.
 Man kann das `/proc`-Verzeichnis eines anderen Systems mounten und dann die
 dortigen Prozesse debuggen. Man kann den Bildschirm, die Maus und die Tastatur
@@ -390,9 +390,14 @@ ganz aus dem System gelöscht (`d`), weil Hans und Max eine Bücherverbrennung
 veranstaltet haben. Das dritte Beispiel selektiert die Ausleiher der Copies mit
 den IDs `0`, `405` und `3050` und gibt alle Informationen zu ihnen aus. Diese
 zwei Beispiele zeigen, dass die Selektionsargumente kontextgemäß interpretiert
-werden. Es wird immer das selektiert, was man erwartet.
-
-
+werden. Es wird immer das selektiert, was man erwartet. Aufgrund der internen
+Implementierung kommt es in Listen momentan zu Duplikaten.
+ 
+Elementtyp    |               ISBN                     |       Copy-ID               |                  Username
+--------------|----------------------------------------|-----------------------------|----------------------------------------------------
+Bücher        | Buch mit dieser ISBN                   | Buch der Copy mit dieser ID | Bücher, von denen der User eine Copy entliehen hat
+Copies        | alle Copies dieses Buchs               | Copy mit dieser ID          | Copies, die der User entliehen hat
+User          | alle Entleiher einer Copy dieses Buchs | Entleiher dieser Copy       | User mit diesem Namen
 
 Dokumentiert ist die Sprache in der Spezifikation (`SPEC.md`); zum Testen kann
 man einfach einen Server starten und eine Verbindung mit `netcat` ^[@netcat]
@@ -401,7 +406,41 @@ kann über unkomplizierte Skripte und Testdateien von außen angebaut werden.
 
 ### 4.2 Outputformat des print-Befehls
 
-XXX S-Expressions blah
+Wie bereits in Sektion 3.2.4 erwähnt, verwendet *libmangler* zur Speicherung
+der Daten eines Elements sowie zur Serialisierung und Übertragung über das
+Netzwerk eine S-Expression. Hier eine vollständige Protokolltransaktion, die
+das illustrieren soll:
+
+Anfrage des Clients:
+
+	C/594/p
+
+Antwort des Servers:
+
+	(copy 594
+		(user "Dominik Okwieka")
+		(book 978-0-201-07981-4
+			(authors "Alfred V. Aho" "Brian W. Kernighan" "Peter J. Weinberger")
+			(title "The AWK Programming Language")
+		)
+		(notes
+			"2016-03-24T11:01+01:00 <- ISO 8601-Date"
+			"..."
+		)
+		(tags #derp #foo)
+	)
+	---
+
+Man beachte die drei Bindestriche in der letzten Zeile; darauf komme ich später
+zurück. Fokussieren wir uns jedoch kurz auf den Ausdruck davor. Diese
+S-Expression besteht aus einem Atom `copy`, einer Zahl `594` sowie mehreren
+Unter-S-Expressions. Der Vorteil dieses alten Formats ^[@McCarthy60lisp] ist der
+Verzicht auf kompliziertere Syntaxelemente. Dadurch ist das Parsen einfach
+(*libmanglers* Parser in `sexps/sexps.go` besteht aus zwei Funktionen plus dem
+Lexer). Der Mensch kann das Format zudem sofort begreifen, wenngleich in
+komplexeren Ausdrücken viele öffnende und schließende Klammern hintereinander
+auftreten können, was Lisp, das aus S-Expressions besteht, den Titel *Lots of
+Irritating Stupid Parentheses* einbrachte.
 
 ### 4.3 Low-level-Teil des Protokolls
 
@@ -413,7 +452,7 @@ werden.
 Die Zuordnung ist in einem zustandsbasierten synchronen Protokoll ein
 Nonproblem. Ein solches Protokoll war ursprünglich vorgesehen und ist am
 optimalsten für die Anwendung geeignet, da es insbesondere auf Serverseite sehr
-einfach umzusetzen ist [vague] und logisch auch mehr Sinn ergibt. Während man
+einfach umzusetzen ist und logisch auch mehr Sinn ergibt. Während man
 auf die Informationen wartet, die vom Server geholt werden, kann der App-Nutzer
 nichts tun. Da Android verständlicherweise Netzwerkverbindungen im UI-Thread
 verhindern will, weil diese potentiell lange dauern, ist es schwer, ein
@@ -473,7 +512,7 @@ Auf Serverseite war es viel einfacher als die vorige Lösung (`main.go:handle`):
 	fmt.Fprint(rw, ret)
 	fmt.Fprint(rw, protoEndMarker)
 
-### Geschichte und Ausblick
+### 4.4 Geschichte und Ausblick
 
 Das Protokoll durchlief elf Versionen, von denen die ersten nie implementiert
 wurden und andere wieder rückgängig gemacht wurden. Zu Beginn war die
@@ -510,7 +549,7 @@ Authentifizierungssystems und Verschlüsselung mit TLS.
 5. Detailbetrachtung des Servers und des Clients
 ------------------------------------------------
 
-### Server
+### 5.1 Server
 
 Der Server basiert maßgeblich auf dem Protokoll. Zentral ist das Interface
 `Elem`, welches ein selektierbares Element repräsentiert und die auf alle
@@ -619,7 +658,7 @@ durchlaufen wird. Bei jedem Atom, d.h. bei jedem Blatt des Baums, wird eine
 Funktion aufgerufen, die eine Zustandsmachine weiterschaltet, die alle
 Informationen aus dem Baum extrahiert und so das Element erzeugt.
 
-### Client
+### 5.2 Client
 
 Die Android-App ist der Client, mit welchem dem Protokoll eine grafische und
 mobile Nutzerschnittstelle verliehen wird. Aus der Nutzerperspektive ist die App
@@ -725,20 +764,39 @@ Die Datei ist inzwischen veraltet und nur im System, um zu demonstrieren, wie es
 hätte gehen sollen. Ohne `Model.java` hat der Client überhaupt kein
 Verständnis von den Daten, welche er handhabt. Das stellte sich aber als ein
 Non-Problem heraus, weil das Protokoll alles abdeckt, was der Client können
-soll.
+soll. Screenshots dreier selbsterklärender Ansichten sind inm Ordner `img` zu
+finden.
 
 6. Ausblick
 -----------
 
+Abschließend lässt sich sagen, dass die Seminararbeit doch noch eine gute
+Wendung genommen hat, als die App endlich vervollständigt wurde. Dennoch gibt
+es einige Punkte, die man noch verbessern kann kann. So fehlt ein
+Authentifizierungssystem oder die Verschlüsselung des Protokolls mittels TLS
+noch komplett. Zudem ist das Einpflegen von Daten momentan nur mithilfe der App
+möglich; will man am Desktopcomputer Daten einpflegen, muss man eine
+`netcat`-Session öffnen und Protokollanfragen per Hand stellen; ein grafischen
+Desktop-Client, wie anfangs geplant, wurde nicht realisiert. Es war eine gute
+Entscheidung, den Server in Go zu realisieren; es war das erste Go-Projekt des
+Autors und funktionierte dennoch schon früh sehr gut. Auch die Entscheidung,
+auf eine SQL-Datenbank zu verzichten und stattdessen auf Dateien zu setzen, war
+sinnvoll: der Server läuft ohne Installation oder Konfiguration auf jedem von
+Go unterstützten Betriebssystem, also Unix-likes, Windows, Mac OS und Plan 9.
 
 7. Danksagungen
 ---------------
 
- - Leander, Klaus
- - StackOverflow
- - IETF
- - The Go Authors
- - sam
+Ich danke im Besonderen Leander Dreier für seine Kommentare zum Text, die
+verhindert haben, dass der nicht vertiefte Leser sich verläuft, und für sein
+Hilfe als Betatester der App. Des Weiteren danke ich den Erfindern von Go für
+ihre tolle Sprache, ohne die der Server weit schwieriger zu implementieren
+gewesen wäre, sowie Rob Pike, dem Autoren meines Texteditors `sam`, der die
+Inspiration für das Protokoll gegeben hat und in dem die App, der Server und
+die Seminararbeit geschrieben wurden. Zuletzt danke ich den Autoren von *The
+Elements of Style* ^[@the-elements-of-style] für die hilfreichen Ratschläge in
+ihrem Buch, sowie den zahlreichen Fragestellern und -beantwortern von
+StackOverflow.
 
 8. Glossar
 ----------
@@ -756,10 +814,6 @@ soll.
 | S-Expression    | (das (ist eine (verschachtelte) (S-Expression)) (siehe Lisp))            |
 | synchron        | nicht asynchron, blockierend                                             |
 
- 
-
- - Allg. Netzwerkbegriffe
- - Book, Copy, User, Elem, Dot, Selektionsargument.
 
 9. Bibliographie
 ----------------
