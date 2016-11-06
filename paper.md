@@ -364,7 +364,7 @@ setzen.
 	x/^ /d
 
 Diese `sam`-Schleife führt den `d` (*delete*)-Befehl für jedes Vorkommen des
-regulären Ausdrucks `^ ` in der Selektion aus; dieser Befehl entfernt also ein
+regulären Ausdrucks "`^ `" in der Selektion aus; dieser Befehl entfernt also ein
 Einrückungslevel. Dot ist zu Beginn der Operation die gesamte bisherige
 Selektion; dann wird Dot zu den jeweiligen Vorkommnissen des Ausdrucks gesetzt.
 Hier ist Dot am Ende leer, weil der Löschbefehl Dot löscht.
@@ -414,7 +414,7 @@ kann über unkomplizierte Skripte und Testdateien von außen angebaut werden.
 Wie bereits in Sektion 3.2.4 erwähnt, verwendet *libmangler* zur Speicherung
 der Daten eines Elements sowie zur Serialisierung und Übertragung über das
 Netzwerk eine S-Expression. Hier eine vollständige Protokolltransaktion, die
-das illustrieren soll:
+das illustrieren soll.
 
 Anfrage des Clients:
 
