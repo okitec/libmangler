@@ -1,7 +1,13 @@
 1. Einleitung
 -------------
 
-> **[Rule] 17. Omit needless words.** ^[@the-elements-of-style]
+> **[Rule] 17. Omit needless words.**
+> Vigorous writing is concise. A sentence should contain no unnecessary words,
+> a paragraph no unnecessary sentences, for the same reason that a drawing
+> should not have unnecessary lines and a machine no unnecessary parts.
+> This requires not that the writer make all sentences short, or avoid all
+> detail and treat subjects only in outline, but that every word tell. 
+^[@the-elements-of-style]
 
 *libmangler* ist ein Verwaltungssystem für Lernmittelbüchereien. Es besteht
 aus einem Server und einem Android-Client, die mithilfe eines einfachen
