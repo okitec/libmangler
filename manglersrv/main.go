@@ -29,7 +29,7 @@ const (
 )
 
 const (
-	autosaveTime = 10 * time.Minute  // time between two autosaves
+	autosaveTime = 10 * time.Minute // time between two autosaves
 )
 
 // The function interpret executes the line and returns a string that should be
@@ -52,9 +52,9 @@ parse:
 		case 'b':
 			// input: A (Book 978-0-201-141-03614-4 (authors "George Orwell") (title "Nineteen Eighty-Four"))
 			type bookinfo struct {
-				isbn       string
-				authors    []string
-				title      string
+				isbn    string
+				authors []string
+				title   string
 
 				isbnFilled bool
 				state      string
@@ -157,12 +157,12 @@ parse:
 			start := strings.IndexRune(s, '/')
 			if start != -1 {
 				hasarg = true
-				start++                                     // +1: skip the slash
+				start++ // +1: skip the slash
 				endslash := strings.IndexRune(s[start:], '/')
 				if endslash < 0 {
 					return "missing closing slash\n"
 				}
-				end = endslash + 2                          // +2: used as slice end
+				end = endslash + 2 // +2: used as slice end
 				csvr := csv.NewReader(strings.NewReader(s[start:end]))
 
 				args, err = csvr.Read()
@@ -180,6 +180,21 @@ parse:
 			*dot, err = elem.Select(r, *dot, args)
 			if err != nil {
 				log.Printf("cmd %c: %v", r, err)
+			}
+
+			// Remove duplicates
+			for i := 0; i < len(*dot); i++ {
+				// Don't need to check indices 0 .. i because they were already tested.
+				for j := i + 1; j < len(*dot); /* empty */ {
+					if (*dot)[i] == (*dot)[j] {
+						(*dot)[j] = (*dot)[len(*dot)-1]
+						(*dot)[len(*dot)-1] = nil       // so that it garbage-collects
+						*dot = (*dot)[:len(*dot)-1]
+						j = i + 1
+					} else {
+						j++
+					}
+				}
 			}
 
 			// Skip the selection arg, i.e. everything between the slashes (/.../).
@@ -425,7 +440,7 @@ func main() {
 	}()
 
 	// Autosave loop
-	tc := time.Tick(autosaveTime);
+	tc := time.Tick(autosaveTime)
 	go func(tc <-chan time.Time) {
 		for _ = range tc {
 			store("books.autosave", "copies.autosave", "user.autosave")

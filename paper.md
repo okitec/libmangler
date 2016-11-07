@@ -395,8 +395,7 @@ ganz aus dem System gelöscht (`d`), weil Hans und Max eine Bücherverbrennung
 veranstaltet haben. Das dritte Beispiel selektiert die Ausleiher der Copies mit
 den IDs `0`, `405` und `3050` und gibt alle Informationen zu ihnen aus. Diese
 zwei Beispiele zeigen, dass die Selektionsargumente kontextgemäß interpretiert
-werden. Es wird immer das selektiert, was man erwartet. Aufgrund der internen
-Implementierung kommt es in Listen momentan zu Duplikaten.
+werden. Es wird immer das selektiert, was man erwartet.
  
 Elementtyp    |               ISBN                     |       Copy-ID               |                  Username
 --------------|----------------------------------------|-----------------------------|----------------------------------------------------
