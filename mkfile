@@ -8,10 +8,11 @@ spec.html: SPEC.md
 	echo '<meta charset="utf8">' >>spec.html
 	markdown $prereq >>spec.html
 
-paper.odt: paper.md local.bib metadata.yaml ref.odt
+paper:V: paper/paper.md paper/local.bib paper/metadata.yaml paper/ref.odt
 	mk note
-	cat paper.md note metadata.yaml | pandoc --filter pandoc-citeproc --biblatex -o paper.odt --reference-odt ref.odt
-	rm note
+	cd paper
+	cat paper.md ../note metadata.yaml | pandoc --filter pandoc-citeproc --biblatex -o paper.odt --reference-odt ref.odt
+	rm ../note
 
 note:V:
 	echo >note
