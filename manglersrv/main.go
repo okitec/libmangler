@@ -4,12 +4,12 @@ Manglersrv does stuff.
 package main
 
 import (
+	"crypto/tls"
 	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
 	"math/rand"
-	"net"
 	"os"
 	"os/signal"
 	"strconv"
@@ -188,7 +188,7 @@ parse:
 				for j := i + 1; j < len(*dot); /* empty */ {
 					if (*dot)[i] == (*dot)[j] {
 						(*dot)[j] = (*dot)[len(*dot)-1]
-						(*dot)[len(*dot)-1] = nil       // so that it garbage-collects
+						(*dot)[len(*dot)-1] = nil // so that it garbage-collects
 						*dot = (*dot)[:len(*dot)-1]
 						j = i + 1
 					} else {
@@ -406,9 +406,16 @@ func handle(rw io.ReadWriter) {
 func main() {
 	log.Println("libmangler proto", protoVersion)
 
-	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", protoPort))
+	// cf. https://gist.github.com/denji/12b3a568f092ab951456
+	cer, err := tls.LoadX509KeyPair("server.pem", "server.key")
 	if err != nil {
-		log.Panicln("net.Listen failed:", err)
+		log.Fatalf("can't load keypair: %v", err)
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+	ln, err := tls.Listen("tcp", fmt.Sprintf(":%d", protoPort), config)
+	if err != nil {
+		log.Panicln("tls.Listen failed:", err)
 	}
 
 	nbooks, nusers, ncopies, err := load()
