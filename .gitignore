@@ -6,6 +6,11 @@
 
 *lock*
 
+# TLS key and certificate
+*.key
+*.pem
+*.crt
+
 !header.odt
 !ref.odt
 !footer.odt
