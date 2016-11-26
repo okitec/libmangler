@@ -55,6 +55,8 @@ func TestParse(t *testing.T) {
 			)
 			(notes "foo")
 		)`, `(copy . (594 . ((user . ("Dominik Okwieka" . ())) . ((book . (978... . ((authors . (herp . ())) . ((title . (derp . ())) . ())))) . ((notes . (foo . ())) . ())))))`},
+		{`(book 978-0-201-07981-4 (authors "Alfred V. Aho" "Peter S. Weinberger" "Brian W. Kernighan") (title "The Awk Programming Language"))`,
+		`(book . (978-0-201-07981-4 . ((authors . ("Alfred V. Aho" . ("Peter S. Weinberger" . ("Brian W. Kernighan" . ())))) . ((title . ("The Awk Programming Language" . ())) . ()))))`},
 
 		// XXX add failure cases (dangling braces, ...)
 	}
