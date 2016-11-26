@@ -31,6 +31,7 @@
 
 	<string name="returnall">Alles zurückgeben</string>
 	<string name="rmuser">Nutzer löschen</string>
+	<string name="multilend">Mehrere Exemplare ausleihen ...</string>
 
 	<string name="isbn">978-A-BBB-CCCCC-X</string>
 	<string name="title">Titel meines tollen Buchs</string>

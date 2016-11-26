@@ -432,6 +432,12 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:text="@string/rmtag" />
+
+					<Button
+						android:id="@+id/Bmultilend"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:text="@string/multilend" />
 		
 					<Button
 						android:id="@+id/Bflipuser1"

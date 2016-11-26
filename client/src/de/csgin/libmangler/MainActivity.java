@@ -62,6 +62,11 @@ public class MainActivity extends Activity {
 	private String isbn;
 	private String name;
 
+	/** If true, scanning a copy auto-lends it to the currently investigated user;
+	 * this stops when the user cancels the scan activity.
+	 */
+	private boolean multilend;
+
 	/**
 	 * When this is false, the back button closes the app instead of returning
 	 * to the main screen. This is the case when panic has been called, but also
@@ -169,12 +174,19 @@ public class MainActivity extends Activity {
 				String s = data.getStringExtra("SCAN_RESULT");
 				try {
 					id = Long.parseLong(s);
-					copyinfo(id);
+					if(multilend) {
+						lend(name, id);
+						scan(true);
+					} else {
+						copyinfo(id);
+					}
 				} catch(NumberFormatException nfe) {
 					toast("QR-Code ist keine Zahl");
 				}
+			} else if (ans == RESULT_CANCELED && multilend) {
+				multilend = false;
+				userinfo(name);
 			}
-			/* don't do anything on failure */
 		}
 	}
 
@@ -233,16 +245,7 @@ public class MainActivity extends Activity {
 		Bscan.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
-				try {
-					Intent i = new Intent("com.google.zxing.client.android.SCAN");
-					i.putExtra("SCAN_MODE", "QR_CODE_MODE");
-					i.putExtra("SAVE_HISTORY", false);
-					startActivityForResult(i, SCANREQ);
-				} catch(android.content.ActivityNotFoundException anfe) {
-					notice("Fehler", "Der ZXing-Barcodescanner ist nicht installiert. Bitte installieren, um QR-Codes lesen zu können.");
-					flipView(MainLayout);
-				}
+				scan(false);
 			}
 		});
 
@@ -464,13 +467,8 @@ public class MainActivity extends Activity {
 					new StringDialog.ResultTaker() {
 						@Override
 						public void take(String res) {
-							String err = conn.lend(res, id);
-							if(err.equals("")) {
-								toast("Erfolgreich verliehen");
-								copyinfo(id);
-							} else {
-								notice("Fehler beim Verleih", err);
-							}
+							lend(res, id);
+							copyinfo(id);
 						}
 					});
 			}
@@ -721,6 +719,7 @@ public class MainActivity extends Activity {
 		Button Bnote3 = (Button) findViewById(R.id.Bnote3);
 		Button Baddtag3 = (Button) findViewById(R.id.Baddtag3);
 		Button Brmtag3 = (Button) findViewById(R.id.Brmtag3);
+		Button Bmultilend = (Button) findViewById(R.id.Bmultilend);
 		Button Bflipuser1 = (Button) findViewById(R.id.Bflipuser1);
 
 		Tuserinfo.setMovementMethod(new ScrollingMovementMethod());
@@ -811,6 +810,13 @@ public class MainActivity extends Activity {
 							userinfo(name);
 						}
 					});
+			}
+		});
+
+		Bmultilend.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				scan(true);
 			}
 		});
 
@@ -952,5 +958,40 @@ public class MainActivity extends Activity {
 		aa.clear();
 		aa.addAll(ls);
 		flipView(ElemsLayout);
+	}
+
+	/**
+	 * Scan a QR code. If multilend is true, immediately scan another book after
+	 * auto-lending the first to the current user.
+	 */
+	private void scan(boolean multilend) {
+		this.multilend = multilend;
+
+		// cf. http://stackoverflow.com/questions/8831050/android-how-to-read-qr-code-in-my-application
+		try {
+			Intent i = new Intent("com.google.zxing.client.android.SCAN");
+			i.putExtra("SCAN_MODE", "QR_CODE_MODE");
+			i.putExtra("SAVE_HISTORY", false);
+			startActivityForResult(i, SCANREQ);
+		} catch(android.content.ActivityNotFoundException anfe) {
+			notice("Fehler", "Der ZXing-Barcodescanner ist nicht installiert. Bitte installieren, um QR-Codes lesen zu können.");
+
+			if(multilend)
+				userinfo(name);
+			else
+				flipView(MainLayout);
+		}
+	}
+
+	/**
+	 * Lend a copy and show success and failure to user.
+	 */
+	private void lend(String user, long id) {
+		String err = conn.lend(user, id);
+		if(err.equals("")) {
+			toast("Erfolgreich verliehen");
+		} else {
+				notice("Fehler beim Verleih", err);
+		}
 	}
 }
