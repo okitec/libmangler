@@ -35,7 +35,7 @@ client:V:
 
 install:V:
 	adb uninstall de.csgin.libmangler
-	adb install bin/libmangler-debug.apk
+	adb install client/bin/libmangler-debug.apk
 
 clean:V:
 	cd client
