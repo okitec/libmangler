@@ -1,18 +1,31 @@
 package de.csgin.libmangler;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 /**
- * Connction provides an interface to the server's RPC library, i.e. provides
+ * Connection provides an interface to the server's RPC library, i.e. provides
  * functions wrapping the protocol commands. The socket has a timeout to prevent
  * freezing; thus the synchronous nature of IO in the main thread is not as bad
  * as it would be.
@@ -29,10 +42,33 @@ public class Connection {
 	private BufferedReader in;
 	private PrintWriter out;
 
-	public Connection(String addr, int port) throws UnknownHostException, IOException, SocketTimeoutException {
+	public Connection(Context ctxt, String addr, int port) throws UnknownHostException, IOException, SocketTimeoutException,
+		KeyStoreException, NoSuchAlgorithmException, KeyManagementException, CertificateException
+	{
 		socket = new Socket();
 		socket.setSoTimeout(TIMEOUT);
 		socket.connect(new InetSocketAddress(addr, port));
+
+		KeyStore ks = KeyStore.getInstance("BKS");
+		InputStream fis = null;
+		try {
+			fis = ctxt.getAssets().open("test.bks");
+			ks.load(fis, "derp".toCharArray());       // XXX use a real password
+		} finally {
+			if(fis != null)
+				fis.close();
+		}
+
+		// cf. https://developer.android.com/training/articles/security-ssl.html
+		String algo = TrustManagerFactory.getDefaultAlgorithm();
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance(algo);
+		tmf.init(ks);
+
+		SSLContext context = SSLContext.getInstance("TLS");
+		context.init(null, tmf.getTrustManagers(), null);
+
+		SSLSocketFactory ssf = context.getSocketFactory();
+		socket = ssf.createSocket(socket, addr, port, true);
 
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new PrintWriter(socket.getOutputStream());

@@ -197,7 +197,7 @@ public class MainActivity extends Activity {
 		Connection conn;
 
 		try {
-			conn = new Connection(srvaddr, port);
+			conn = new Connection(this, srvaddr, port);
 		} catch(UnknownHostException uhe) {
 			panic("Server '" + srvaddr + "' nicht gefunden");
 			return null;
